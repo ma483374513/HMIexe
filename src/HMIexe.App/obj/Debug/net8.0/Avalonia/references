@@ -29,10 +29,17 @@
 /home/runner/work/HMIexe/HMIexe/src/HMIexe.Plugins/obj/Debug/net8.0/ref/HMIexe.Plugins.dll
 /home/runner/work/HMIexe/HMIexe/src/HMIexe.Runtime/obj/Debug/net8.0/ref/HMIexe.Runtime.dll
 /home/runner/.nuget/packages/microcom.runtime/0.11.0/lib/net5.0/MicroCom.Runtime.dll
+/home/runner/.nuget/packages/microsoft.codeanalysis.csharp/5.3.0/lib/net8.0/Microsoft.CodeAnalysis.CSharp.dll
+/home/runner/.nuget/packages/microsoft.codeanalysis.csharp.scripting/5.3.0/lib/net8.0/Microsoft.CodeAnalysis.CSharp.Scripting.dll
+/home/runner/.nuget/packages/microsoft.codeanalysis.common/5.3.0/lib/net8.0/Microsoft.CodeAnalysis.dll
+/home/runner/.nuget/packages/microsoft.codeanalysis.scripting.common/5.3.0/lib/net8.0/Microsoft.CodeAnalysis.Scripting.dll
 /usr/share/dotnet/packs/Microsoft.NETCore.App.Ref/8.0.25/ref/net8.0/Microsoft.CSharp.dll
 /home/runner/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/10.0.5/lib/net8.0/Microsoft.Extensions.DependencyInjection.Abstractions.dll
 /home/runner/.nuget/packages/microsoft.extensions.dependencyinjection/10.0.5/lib/net8.0/Microsoft.Extensions.DependencyInjection.dll
 /home/runner/.nuget/packages/microsoft.extensions.logging.abstractions/10.0.5/lib/net8.0/Microsoft.Extensions.Logging.Abstractions.dll
+/home/runner/.nuget/packages/microsoft.extensions.logging/10.0.5/lib/net8.0/Microsoft.Extensions.Logging.dll
+/home/runner/.nuget/packages/microsoft.extensions.options/10.0.5/lib/net8.0/Microsoft.Extensions.Options.dll
+/home/runner/.nuget/packages/microsoft.extensions.primitives/10.0.5/lib/net8.0/Microsoft.Extensions.Primitives.dll
 /usr/share/dotnet/packs/Microsoft.NETCore.App.Ref/8.0.25/ref/net8.0/Microsoft.VisualBasic.Core.dll
 /usr/share/dotnet/packs/Microsoft.NETCore.App.Ref/8.0.25/ref/net8.0/Microsoft.VisualBasic.dll
 /usr/share/dotnet/packs/Microsoft.NETCore.App.Ref/8.0.25/ref/net8.0/Microsoft.Win32.Primitives.dll
@@ -44,7 +51,7 @@
 /usr/share/dotnet/packs/Microsoft.NETCore.App.Ref/8.0.25/ref/net8.0/System.Buffers.dll
 /usr/share/dotnet/packs/Microsoft.NETCore.App.Ref/8.0.25/ref/net8.0/System.Collections.Concurrent.dll
 /usr/share/dotnet/packs/Microsoft.NETCore.App.Ref/8.0.25/ref/net8.0/System.Collections.dll
-/usr/share/dotnet/packs/Microsoft.NETCore.App.Ref/8.0.25/ref/net8.0/System.Collections.Immutable.dll
+/home/runner/.nuget/packages/system.collections.immutable/9.0.0/lib/net8.0/System.Collections.Immutable.dll
 /usr/share/dotnet/packs/Microsoft.NETCore.App.Ref/8.0.25/ref/net8.0/System.Collections.NonGeneric.dll
 /usr/share/dotnet/packs/Microsoft.NETCore.App.Ref/8.0.25/ref/net8.0/System.Collections.Specialized.dll
 /usr/share/dotnet/packs/Microsoft.NETCore.App.Ref/8.0.25/ref/net8.0/System.ComponentModel.Annotations.dll
@@ -127,7 +134,7 @@
 /usr/share/dotnet/packs/Microsoft.NETCore.App.Ref/8.0.25/ref/net8.0/System.Reflection.Emit.ILGeneration.dll
 /usr/share/dotnet/packs/Microsoft.NETCore.App.Ref/8.0.25/ref/net8.0/System.Reflection.Emit.Lightweight.dll
 /usr/share/dotnet/packs/Microsoft.NETCore.App.Ref/8.0.25/ref/net8.0/System.Reflection.Extensions.dll
-/usr/share/dotnet/packs/Microsoft.NETCore.App.Ref/8.0.25/ref/net8.0/System.Reflection.Metadata.dll
+/home/runner/.nuget/packages/system.reflection.metadata/9.0.0/lib/net8.0/System.Reflection.Metadata.dll
 /usr/share/dotnet/packs/Microsoft.NETCore.App.Ref/8.0.25/ref/net8.0/System.Reflection.Primitives.dll
 /usr/share/dotnet/packs/Microsoft.NETCore.App.Ref/8.0.25/ref/net8.0/System.Reflection.TypeExtensions.dll
 /usr/share/dotnet/packs/Microsoft.NETCore.App.Ref/8.0.25/ref/net8.0/System.Resources.Reader.dll
