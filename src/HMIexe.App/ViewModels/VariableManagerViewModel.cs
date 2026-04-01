@@ -20,6 +20,7 @@ public partial class VariableManagerViewModel : ObservableObject
     private string _searchText = string.Empty;
 
     public ObservableCollection<HmiVariable> Variables { get; } = new();
+    public ObservableCollection<HmiVariable> FilteredVariables { get; } = new();
     public ObservableCollection<string> Groups { get; } = new();
 
     public VariableManagerViewModel(IVariableService variableService, IDialogService dialogService)
@@ -29,6 +30,26 @@ public partial class VariableManagerViewModel : ObservableObject
 
         foreach (var v in _variableService.Variables)
             Variables.Add(v);
+
+        RefreshFilter();
+    }
+
+    partial void OnSearchTextChanged(string value) => RefreshFilter();
+
+    private void RefreshFilter()
+    {
+        FilteredVariables.Clear();
+        var term = SearchText?.Trim() ?? string.Empty;
+        foreach (var v in Variables)
+        {
+            if (string.IsNullOrEmpty(term) ||
+                v.Name.Contains(term, StringComparison.OrdinalIgnoreCase) ||
+                v.DisplayName.Contains(term, StringComparison.OrdinalIgnoreCase) ||
+                v.Group.Contains(term, StringComparison.OrdinalIgnoreCase))
+            {
+                FilteredVariables.Add(v);
+            }
+        }
     }
 
     [RelayCommand]
@@ -43,6 +64,7 @@ public partial class VariableManagerViewModel : ObservableObject
         };
         _variableService.AddVariable(variable);
         Variables.Add(variable);
+        RefreshFilter();
         SelectedVariable = variable;
     }
 
@@ -52,6 +74,7 @@ public partial class VariableManagerViewModel : ObservableObject
         if (SelectedVariable == null) return;
         _variableService.RemoveVariable(SelectedVariable.Id);
         Variables.Remove(SelectedVariable);
+        FilteredVariables.Remove(SelectedVariable);
         SelectedVariable = null;
     }
 
@@ -68,6 +91,7 @@ public partial class VariableManagerViewModel : ObservableObject
             Variables.Clear();
             foreach (var v in _variableService.Variables)
                 Variables.Add(v);
+            RefreshFilter();
             await _dialogService.ShowMessageAsync("导入成功", $"已导入 {_variableService.Variables.Count} 个变量");
         }
         catch (Exception ex)

@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.Input;
 using HMIexe.App.Services;
 using HMIexe.Core.Models.Alarm;
 using HMIexe.Core.Services;
+using HMIexe.Runtime.Services;
 
 namespace HMIexe.App.ViewModels;
 
@@ -12,6 +13,7 @@ public partial class AlarmManagerViewModel : ObservableObject
 {
     private readonly IAlarmService _alarmService;
     private readonly IDialogService _dialogService;
+    private readonly AlarmConditionEvaluator _conditionEvaluator;
 
     public ObservableCollection<HmiAlarmDefinition> AlarmDefinitions { get; } = new();
     public ObservableCollection<HmiAlarmRecord> ActiveAlarms { get; } = new();
@@ -28,10 +30,12 @@ public partial class AlarmManagerViewModel : ObservableObject
 
     public IReadOnlyList<string> SeverityLevels { get; } = Enum.GetNames<AlarmSeverity>();
 
-    public AlarmManagerViewModel(IAlarmService alarmService, IDialogService dialogService)
+    public AlarmManagerViewModel(IAlarmService alarmService, IDialogService dialogService,
+        AlarmConditionEvaluator conditionEvaluator)
     {
         _alarmService = alarmService;
         _dialogService = dialogService;
+        _conditionEvaluator = conditionEvaluator;
 
         _alarmService.AlarmRaised += OnAlarmRaised;
         _alarmService.AlarmAcknowledged += OnAlarmAcknowledged;
@@ -75,6 +79,7 @@ public partial class AlarmManagerViewModel : ObservableObject
         };
         AlarmDefinitions.Add(def);
         SelectedDefinition = def;
+        _conditionEvaluator.SetDefinitions(AlarmDefinitions);
     }
 
     [RelayCommand]
@@ -83,6 +88,7 @@ public partial class AlarmManagerViewModel : ObservableObject
         if (SelectedDefinition == null) return;
         AlarmDefinitions.Remove(SelectedDefinition);
         SelectedDefinition = AlarmDefinitions.FirstOrDefault();
+        _conditionEvaluator.SetDefinitions(AlarmDefinitions);
     }
 
     [RelayCommand]
@@ -136,5 +142,6 @@ public partial class AlarmManagerViewModel : ObservableObject
         foreach (var d in definitions)
             AlarmDefinitions.Add(d);
         SelectedDefinition = AlarmDefinitions.FirstOrDefault();
+        _conditionEvaluator.SetDefinitions(AlarmDefinitions);
     }
 }

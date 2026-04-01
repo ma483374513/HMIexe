@@ -21,6 +21,14 @@ public class UndoRedoHistory : ObservableObject
         OnPropertyChanged(nameof(RedoDescription));
     }
 
+    /// <summary>Record an already-executed action for undo without re-executing it.</summary>
+    public void Push(IUndoRedoAction action)
+    {
+        _undoStack.Push(action);
+        _redoStack.Clear();
+        NotifyAll();
+    }
+
     public void Execute(IUndoRedoAction action)
     {
         action.Execute();

@@ -68,6 +68,14 @@ public abstract class HmiControlBase : INotifyPropertyChanged
         set { _zIndex = value; OnPropertyChanged(); }
     }
 
+    // Runtime-only, not persisted
+    private bool _isSelected;
+    public bool IsSelected
+    {
+        get => _isSelected;
+        set { _isSelected = value; OnPropertyChanged(); }
+    }
+
     public string LayerId { get; set; } = string.Empty;
     public string GroupId { get; set; } = string.Empty;
     public Dictionary<string, object?> ExtendedProperties { get; set; } = new();

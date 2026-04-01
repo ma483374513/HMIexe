@@ -1,6 +1,8 @@
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Text.Json;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using HMIexe.Core.Models.Canvas;
@@ -37,6 +39,9 @@ public partial class DesignerViewModel : ObservableObject
     [ObservableProperty]
     private bool _snapToGrid = true;
 
+    // Clipboard for copy/paste
+    private string? _clipboardJson;
+
     public ObservableCollection<HmiControlBase> SelectedControls { get; } = new();
     public ObservableCollection<HmiPage> Pages { get; } = new();
 
@@ -65,6 +70,40 @@ public partial class DesignerViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void AddLayer()
+    {
+        if (CurrentPage == null) return;
+        var layer = new HmiLayer { Name = $"Layer {CurrentPage.Layers.Count + 1}" };
+        CurrentPage.Layers.Add(layer);
+    }
+
+    /// <summary>Select or add to selection. Pass null to deselect all.</summary>
+    public void SelectControl(HmiControlBase? ctrl, bool addToSelection)
+    {
+        if (!addToSelection)
+        {
+            foreach (var c in SelectedControls) c.IsSelected = false;
+            SelectedControls.Clear();
+        }
+
+        if (ctrl == null)
+        {
+            SelectedControl = null;
+            PropertyPanel.SelectedControl = null;
+            return;
+        }
+
+        if (!SelectedControls.Contains(ctrl))
+        {
+            ctrl.IsSelected = true;
+            SelectedControls.Add(ctrl);
+        }
+
+        SelectedControl = ctrl;
+        PropertyPanel.SelectedControl = ctrl;
+    }
+
+    [RelayCommand]
     private void DeleteSelectedControls()
     {
         if (CurrentPage == null) return;
@@ -73,10 +112,73 @@ public partial class DesignerViewModel : ObservableObject
                 .Where(l => l.Controls.Contains(ctrl))
                 .Select(l => (l, ctrl)))
             .ToList();
+        if (items.Count == 0) return;
         var action = new RemoveControlsAction(items);
         UndoRedo.Execute(action);
+        foreach (var c in SelectedControls) c.IsSelected = false;
         SelectedControls.Clear();
         SelectedControl = null;
+        PropertyPanel.SelectedControl = null;
+    }
+
+    [RelayCommand]
+    private void CopySelectedControls()
+    {
+        if (SelectedControls.Count == 0) return;
+        var list = SelectedControls.Select(c => new
+        {
+            TypeName = c.GetType().Name,
+            Json = JsonSerializer.Serialize(c, c.GetType())
+        }).ToList();
+        _clipboardJson = JsonSerializer.Serialize(list);
+    }
+
+    [RelayCommand]
+    private void PasteControls()
+    {
+        if (CurrentPage == null || string.IsNullOrEmpty(_clipboardJson)) return;
+        var layer = CurrentPage.Layers.FirstOrDefault();
+        if (layer == null) return;
+
+        var list = JsonSerializer.Deserialize<List<ClipboardEntry>>(_clipboardJson);
+        if (list == null) return;
+
+        // Build a lookup of control types in the Controls namespace
+        var controlTypes = typeof(HmiControlBase).Assembly
+            .GetTypes()
+            .Where(t => !t.IsAbstract && t.IsSubclassOf(typeof(HmiControlBase)))
+            .ToDictionary(t => t.Name, t => t);
+
+        var pasted = new List<HmiControlBase>();
+        foreach (var entry in list)
+        {
+            if (!controlTypes.TryGetValue(entry.TypeName, out var type)) continue;
+            if (JsonSerializer.Deserialize(entry.Json, type) is not HmiControlBase ctrl) continue;
+            ctrl.Id = Guid.NewGuid().ToString();
+            ctrl.X += 20;
+            ctrl.Y += 20;
+            ctrl.IsSelected = false;
+            pasted.Add(ctrl);
+        }
+
+        if (pasted.Count == 0) return;
+
+        var addActions = pasted.Select(c => new AddControlAction(layer, c)).ToList();
+        UndoRedo.Execute(new SetPropertyAction(
+            $"粘贴 {pasted.Count} 个控件",
+            () => { foreach (var a in addActions) a.Execute(); },
+            () => { foreach (var a in addActions) a.Undo(); }
+        ));
+
+        foreach (var c in SelectedControls) c.IsSelected = false;
+        SelectedControls.Clear();
+        foreach (var c in pasted)
+        {
+            c.IsSelected = true;
+            SelectedControls.Add(c);
+        }
+        SelectedControl = pasted.LastOrDefault();
+        PropertyPanel.SelectedControl = SelectedControl;
     }
 
     [RelayCommand]
@@ -159,7 +261,12 @@ public partial class DesignerViewModel : ObservableObject
         }
     }
 
-    public PropertyPanelViewModel PropertyPanel { get; } = new PropertyPanelViewModel();
+    public PropertyPanelViewModel PropertyPanel { get; }
+
+    public DesignerViewModel()
+    {
+        PropertyPanel = new PropertyPanelViewModel(UndoRedo);
+    }
 
     partial void OnSelectedControlChanged(HmiControlBase? value)
     {
@@ -169,6 +276,7 @@ public partial class DesignerViewModel : ObservableObject
     public void LoadProject(HmiProject project)
     {
         Pages.Clear();
+        foreach (var c in SelectedControls) c.IsSelected = false;
         SelectedControls.Clear();
         SelectedControl = null;
         UndoRedo.Clear();
@@ -184,6 +292,7 @@ public partial class DesignerViewModel : ObservableObject
     private void SelectPage(HmiPage page)
     {
         CurrentPage = page;
+        foreach (var c in SelectedControls) c.IsSelected = false;
         SelectedControls.Clear();
         SelectedControl = null;
     }
@@ -215,6 +324,8 @@ public partial class DesignerViewModel : ObservableObject
         control.Y = 100 + layer.Controls.Count * 10;
         var action = new AddControlAction(layer, control);
         UndoRedo.Execute(action);
-        SelectedControl = control;
+        SelectControl(control, false);
     }
+
+    private record ClipboardEntry(string TypeName, string Json);
 }

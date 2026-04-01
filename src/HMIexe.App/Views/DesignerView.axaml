@@ -3,7 +3,9 @@
              xmlns:vm="using:HMIexe.App.ViewModels"
              xmlns:core="using:HMIexe.Core.Models.Controls"
              x:Class="HMIexe.App.Views.DesignerView"
-             x:DataType="vm:DesignerViewModel">
+             x:DataType="vm:DesignerViewModel"
+             Focusable="True"
+             KeyDown="OnKeyDown">
 
     <Grid ColumnDefinitions="200,*,250">
 
@@ -63,7 +65,8 @@
                 <DockPanel>
                     <DockPanel DockPanel.Dock="Top" Background="#2D2D2D" LastChildFill="True">
                         <Button DockPanel.Dock="Right" Content="+" Width="24" Height="24" Padding="0"
-                                ToolTip.Tip="添加图层"/>
+                                ToolTip.Tip="添加图层"
+                                Command="{Binding $parent[UserControl].DataContext.AddLayerCommand}"/>
                         <TextBlock Text="图层" Foreground="White" Padding="8,4" FontWeight="Bold" VerticalAlignment="Center"/>
                     </DockPanel>
                     <ScrollViewer>
@@ -116,7 +119,7 @@
                                 Width="{Binding CurrentPage.Width, FallbackValue=1920}"
                                 Height="{Binding CurrentPage.Height, FallbackValue=1080}">
                             <!-- Controls rendered from all layers -->
-                            <ItemsControl ItemsSource="{Binding CurrentPage.AllControls}">
+                            <ItemsControl Name="ControlsItemsControl" ItemsSource="{Binding CurrentPage.AllControls}">
                                 <ItemsControl.ItemsPanel>
                                     <ItemsPanelTemplate>
                                         <Canvas/>
@@ -136,94 +139,138 @@
                                 <ItemsControl.DataTemplates>
                                     <!-- Button control -->
                                     <DataTemplate x:CompileBindings="False" DataType="core:ButtonControl">
-                                        <Button Content="{Binding Text}"
-                                                Background="{Binding BackgroundColor}"
-                                                Foreground="{Binding ForegroundColor}"
-                                                HorizontalAlignment="Stretch"
-                                                VerticalAlignment="Stretch"/>
+                                        <Panel>
+                                            <Button Content="{Binding Text}"
+                                                    Background="{Binding BackgroundColor}"
+                                                    Foreground="{Binding ForegroundColor}"
+                                                    HorizontalAlignment="Stretch"
+                                                    VerticalAlignment="Stretch"/>
+                                            <Border IsHitTestVisible="False" BorderBrush="#00AAFF"
+                                                    BorderThickness="2" IsVisible="{Binding IsSelected}"/>
+                                        </Panel>
                                     </DataTemplate>
                                     <!-- Label control -->
                                     <DataTemplate x:CompileBindings="False" DataType="core:LabelControl">
-                                        <TextBlock Text="{Binding Text}"
-                                                   Foreground="{Binding ForegroundColor}"
-                                                   FontSize="{Binding FontSize}"
-                                                   HorizontalAlignment="Stretch"
-                                                   VerticalAlignment="Stretch"
-                                                   TextWrapping="Wrap"/>
+                                        <Panel>
+                                            <TextBlock Text="{Binding Text}"
+                                                       Foreground="{Binding ForegroundColor}"
+                                                       FontSize="{Binding FontSize}"
+                                                       HorizontalAlignment="Stretch"
+                                                       VerticalAlignment="Stretch"
+                                                       TextWrapping="Wrap"/>
+                                            <Border IsHitTestVisible="False" BorderBrush="#00AAFF"
+                                                    BorderThickness="2" IsVisible="{Binding IsSelected}"/>
+                                        </Panel>
                                     </DataTemplate>
                                     <!-- TextBox control -->
                                     <DataTemplate x:CompileBindings="False" DataType="core:TextBoxControl">
-                                        <TextBox Text="{Binding Text}"
-                                                 Watermark="{Binding Placeholder}"
-                                                 HorizontalAlignment="Stretch"
-                                                 VerticalAlignment="Stretch"/>
+                                        <Panel>
+                                            <TextBox Text="{Binding Text}"
+                                                     Watermark="{Binding Placeholder}"
+                                                     HorizontalAlignment="Stretch"
+                                                     VerticalAlignment="Stretch"/>
+                                            <Border IsHitTestVisible="False" BorderBrush="#00AAFF"
+                                                    BorderThickness="2" IsVisible="{Binding IsSelected}"/>
+                                        </Panel>
                                     </DataTemplate>
                                     <!-- Gauge control -->
                                     <DataTemplate x:CompileBindings="False" DataType="core:GaugeControl">
-                                        <Border BorderBrush="#555" BorderThickness="1" CornerRadius="4"
-                                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="4">
-                                                <TextBlock Text="{Binding Name}" TextAlignment="Center" FontWeight="Bold"/>
-                                                <ProgressBar Value="{Binding Value}"
-                                                             Minimum="{Binding MinValue}"
-                                                             Maximum="{Binding MaxValue}"
-                                                             Width="80" Height="12"/>
-                                                <TextBlock Text="{Binding Value, StringFormat='{}{0:F1}'}"
-                                                           TextAlignment="Center" FontSize="10"/>
-                                            </StackPanel>
-                                        </Border>
+                                        <Panel>
+                                            <Border BorderBrush="#555" BorderThickness="1" CornerRadius="4"
+                                                    HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                                <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="4">
+                                                    <TextBlock Text="{Binding Name}" TextAlignment="Center" FontWeight="Bold"/>
+                                                    <ProgressBar Value="{Binding Value}"
+                                                                 Minimum="{Binding MinValue}"
+                                                                 Maximum="{Binding MaxValue}"
+                                                                 Width="80" Height="12"/>
+                                                    <TextBlock Text="{Binding Value, StringFormat='{}{0:F1}'}"
+                                                               TextAlignment="Center" FontSize="10"/>
+                                                </StackPanel>
+                                            </Border>
+                                            <Border IsHitTestVisible="False" BorderBrush="#00AAFF"
+                                                    BorderThickness="2" IsVisible="{Binding IsSelected}"/>
+                                        </Panel>
                                     </DataTemplate>
                                     <!-- IndicatorLight control -->
                                     <DataTemplate x:CompileBindings="False" DataType="core:IndicatorLightControl">
-                                        <Ellipse HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                                 Fill="{Binding OnColor}"
-                                                 Stroke="{Binding BorderColor}"
-                                                 StrokeThickness="{Binding BorderThickness}"
-                                                 ToolTip.Tip="{Binding Name}"/>
+                                        <Panel>
+                                            <Ellipse HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                                     Fill="{Binding OnColor}"
+                                                     Stroke="{Binding BorderColor}"
+                                                     StrokeThickness="{Binding BorderThickness}"
+                                                     ToolTip.Tip="{Binding Name}"/>
+                                            <Border IsHitTestVisible="False" BorderBrush="#00AAFF"
+                                                    BorderThickness="2" IsVisible="{Binding IsSelected}"/>
+                                        </Panel>
                                     </DataTemplate>
                                     <DataTemplate x:CompileBindings="False" DataType="core:SwitchControl">
-                                        <ToggleButton IsChecked="{Binding IsOn}"
-                                                      HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                            <TextBlock Text="{Binding OnLabel}" HorizontalAlignment="Center"/>
-                                        </ToggleButton>
+                                        <Panel>
+                                            <ToggleButton IsChecked="{Binding IsOn}"
+                                                          HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                                <TextBlock Text="{Binding OnLabel}" HorizontalAlignment="Center"/>
+                                            </ToggleButton>
+                                            <Border IsHitTestVisible="False" BorderBrush="#00AAFF"
+                                                    BorderThickness="2" IsVisible="{Binding IsSelected}"/>
+                                        </Panel>
                                     </DataTemplate>
                                     <DataTemplate x:CompileBindings="False" DataType="core:SliderControl">
-                                        <StackPanel VerticalAlignment="Center" Spacing="4">
-                                            <Slider Value="{Binding Value}"
-                                                    Minimum="{Binding Minimum}"
-                                                    Maximum="{Binding Maximum}"
-                                                    TickFrequency="{Binding TickFrequency}"
-                                                    TickPlacement="BottomRight"/>
-                                            <TextBlock IsVisible="{Binding ShowValue}"
-                                                       Text="{Binding Value, StringFormat='{}{0:F1}'}"
-                                                       TextAlignment="Center" FontSize="10"/>
-                                        </StackPanel>
+                                        <Panel>
+                                            <StackPanel VerticalAlignment="Center" Spacing="4">
+                                                <Slider Value="{Binding Value}"
+                                                        Minimum="{Binding Minimum}"
+                                                        Maximum="{Binding Maximum}"
+                                                        TickFrequency="{Binding TickFrequency}"
+                                                        TickPlacement="BottomRight"/>
+                                                <TextBlock IsVisible="{Binding ShowValue}"
+                                                           Text="{Binding Value, StringFormat='{}{0:F1}'}"
+                                                           TextAlignment="Center" FontSize="10"/>
+                                            </StackPanel>
+                                            <Border IsHitTestVisible="False" BorderBrush="#00AAFF"
+                                                    BorderThickness="2" IsVisible="{Binding IsSelected}"/>
+                                        </Panel>
                                     </DataTemplate>
                                     <DataTemplate x:CompileBindings="False" DataType="core:RectangleControl">
-                                        <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                                Background="{Binding FillColor}"
-                                                BorderBrush="{Binding StrokeColor}"
-                                                BorderThickness="{Binding StrokeThickness}"
-                                                CornerRadius="{Binding CornerRadius}"/>
+                                        <Panel>
+                                            <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                                    Background="{Binding FillColor}"
+                                                    BorderBrush="{Binding StrokeColor}"
+                                                    BorderThickness="{Binding StrokeThickness}"
+                                                    CornerRadius="{Binding CornerRadius}"/>
+                                            <Border IsHitTestVisible="False" BorderBrush="#00AAFF"
+                                                    BorderThickness="2" IsVisible="{Binding IsSelected}"/>
+                                        </Panel>
                                     </DataTemplate>
                                     <DataTemplate x:CompileBindings="False" DataType="core:CircleControl">
-                                        <Ellipse HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                                 Fill="{Binding FillColor}"
-                                                 Stroke="{Binding StrokeColor}"
-                                                 StrokeThickness="{Binding StrokeThickness}"/>
+                                        <Panel>
+                                            <Ellipse HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                                     Fill="{Binding FillColor}"
+                                                     Stroke="{Binding StrokeColor}"
+                                                     StrokeThickness="{Binding StrokeThickness}"/>
+                                            <Border IsHitTestVisible="False" BorderBrush="#00AAFF"
+                                                    BorderThickness="2" IsVisible="{Binding IsSelected}"/>
+                                        </Panel>
                                     </DataTemplate>
                                     <DataTemplate x:CompileBindings="False" DataType="core:LineControl">
-                                        <Line StartPoint="0,0"
-                                              Stroke="{Binding StrokeColor}"
-                                              StrokeThickness="{Binding StrokeThickness}"
-                                              HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+                                        <Panel>
+                                            <Line StartPoint="0,0"
+                                                  Stroke="{Binding StrokeColor}"
+                                                  StrokeThickness="{Binding StrokeThickness}"
+                                                  HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+                                            <Border IsHitTestVisible="False" BorderBrush="#00AAFF"
+                                                    BorderThickness="2" IsVisible="{Binding IsSelected}"/>
+                                        </Panel>
                                     </DataTemplate>
                                     <DataTemplate x:CompileBindings="False" DataType="core:HmiControlBase">
-                                        <Border BorderBrush="#888" BorderThickness="1" Background="#2D2D2D">
-                                            <TextBlock Text="{Binding Name}" Foreground="White"
-                                                       VerticalAlignment="Center" HorizontalAlignment="Center"
-                                                       FontSize="11"/>
-                                        </Border>
+                                        <Panel>
+                                            <Border BorderBrush="#888" BorderThickness="1" Background="#2D2D2D">
+                                                <TextBlock Text="{Binding Name}" Foreground="White"
+                                                           VerticalAlignment="Center" HorizontalAlignment="Center"
+                                                           FontSize="11"/>
+                                            </Border>
+                                            <Border IsHitTestVisible="False" BorderBrush="#00AAFF"
+                                                    BorderThickness="2" IsVisible="{Binding IsSelected}"/>
+                                        </Panel>
                                     </DataTemplate>
                                 </ItemsControl.DataTemplates>
                             </ItemsControl>
