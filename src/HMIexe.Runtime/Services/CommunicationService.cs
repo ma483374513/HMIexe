@@ -12,6 +12,7 @@ public class CommunicationService : ICommunicationService
     private readonly List<CommunicationChannel> _channels = new();
     private readonly ConcurrentDictionary<string, IProtocolDriver> _drivers = new();
     private readonly ConcurrentDictionary<string, ConnectionStatus> _statuses = new();
+    private readonly ConcurrentDictionary<string, EventHandler<DataReceivedEventArgs>> _driverHandlers = new();
 
     public IReadOnlyList<CommunicationChannel> Channels => _channels;
     public event EventHandler<CommunicationDataEventArgs>? DataReceived;
@@ -45,13 +46,19 @@ public class CommunicationService : ICommunicationService
             _statuses[channelId] = result ? ConnectionStatus.Connected : ConnectionStatus.Error;
             if (result)
             {
-                driver.DataReceived += (s, e) => DataReceived?.Invoke(this, new CommunicationDataEventArgs
+                // Unregister previous handler before registering a new one to prevent duplicate events on reconnect
+                if (_driverHandlers.TryRemove(channelId, out var oldHandler))
+                    driver.DataReceived -= oldHandler;
+
+                EventHandler<DataReceivedEventArgs> handler = (s, e) => DataReceived?.Invoke(this, new CommunicationDataEventArgs
                 {
                     ChannelId = channelId,
                     Address = e.Address,
                     Value = e.Value,
                     Timestamp = e.Timestamp
                 });
+                driver.DataReceived += handler;
+                _driverHandlers[channelId] = handler;
             }
             return result;
         }

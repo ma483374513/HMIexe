@@ -102,7 +102,14 @@ public class ScriptService : IScriptService
             var intervalMs = script.TimerIntervalMs > 0 ? script.TimerIntervalMs : 1000;
             var timer = new Timer(async _ =>
             {
-                await ExecuteScriptAsync(script.Code);
+                try
+                {
+                    await ExecuteScriptAsync(script.Code);
+                }
+                catch (Exception ex)
+                {
+                    Console.Error.WriteLine($"[ScriptService] Timed script '{script.Name}' failed: {ex.Message}");
+                }
             }, null, 0, intervalMs);
             _timerHandles.Add(timer);
         }

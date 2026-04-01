@@ -12,7 +12,9 @@ public class ModbusTcpDriver : IProtocolDriver
     public string ProtocolName => "Modbus TCP";
     public bool IsConnected => _client?.Connected ?? false;
 
+#pragma warning disable CS0067 // Event required by IProtocolDriver interface; raised in polling scenarios
     public event EventHandler<DataReceivedEventArgs>? DataReceived;
+#pragma warning restore CS0067
     public event EventHandler? Connected;
     public event EventHandler? Disconnected;
 
