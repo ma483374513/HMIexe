@@ -1,18 +1,16 @@
 {
   "version": 2,
-  "dgSpecHash": "r3FlQFOpW3s=",
+  "dgSpecHash": "eT/RSIJqzL8=",
   "success": true,
   "projectFilePath": "/home/runner/work/HMIexe/HMIexe/src/HMIexe.Communication/HMIexe.Communication.csproj",
   "expectedPackageFiles": [
-    "/tmp/codeql-scratch-28492fa5c00e1219/dbs/csharp/working/packages/communitytoolkit.mvvm/8.4.2/communitytoolkit.mvvm.8.4.2.nupkg.sha512",
-    "/tmp/codeql-scratch-28492fa5c00e1219/dbs/csharp/working/packages/microsoft.extensions.dependencyinjection.abstractions/10.0.5/microsoft.extensions.dependencyinjection.abstractions.10.0.5.nupkg.sha512",
-    "/tmp/codeql-scratch-28492fa5c00e1219/dbs/csharp/working/packages/microsoft.extensions.logging.abstractions/10.0.5/microsoft.extensions.logging.abstractions.10.0.5.nupkg.sha512",
-    "/tmp/codeql-scratch-28492fa5c00e1219/dbs/csharp/working/packages/system.diagnostics.diagnosticsource/10.0.5/system.diagnostics.diagnosticsource.10.0.5.nupkg.sha512",
-    "/tmp/codeql-scratch-28492fa5c00e1219/dbs/csharp/working/packages/system.io.pipelines/10.0.5/system.io.pipelines.10.0.5.nupkg.sha512",
-    "/tmp/codeql-scratch-28492fa5c00e1219/dbs/csharp/working/packages/system.text.encodings.web/10.0.5/system.text.encodings.web.10.0.5.nupkg.sha512",
-    "/tmp/codeql-scratch-28492fa5c00e1219/dbs/csharp/working/packages/system.text.json/10.0.5/system.text.json.10.0.5.nupkg.sha512",
-    "/tmp/codeql-scratch-28492fa5c00e1219/dbs/csharp/working/packages/microsoft.netcore.app.ref/8.0.25/microsoft.netcore.app.ref.8.0.25.nupkg.sha512",
-    "/tmp/codeql-scratch-28492fa5c00e1219/dbs/csharp/working/packages/microsoft.aspnetcore.app.ref/8.0.25/microsoft.aspnetcore.app.ref.8.0.25.nupkg.sha512"
+    "/home/runner/.nuget/packages/communitytoolkit.mvvm/8.4.2/communitytoolkit.mvvm.8.4.2.nupkg.sha512",
+    "/home/runner/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/10.0.5/microsoft.extensions.dependencyinjection.abstractions.10.0.5.nupkg.sha512",
+    "/home/runner/.nuget/packages/microsoft.extensions.logging.abstractions/10.0.5/microsoft.extensions.logging.abstractions.10.0.5.nupkg.sha512",
+    "/home/runner/.nuget/packages/system.diagnostics.diagnosticsource/10.0.5/system.diagnostics.diagnosticsource.10.0.5.nupkg.sha512",
+    "/home/runner/.nuget/packages/system.io.pipelines/10.0.5/system.io.pipelines.10.0.5.nupkg.sha512",
+    "/home/runner/.nuget/packages/system.text.encodings.web/10.0.5/system.text.encodings.web.10.0.5.nupkg.sha512",
+    "/home/runner/.nuget/packages/system.text.json/10.0.5/system.text.json.10.0.5.nupkg.sha512"
   ],
   "logs": []
 }

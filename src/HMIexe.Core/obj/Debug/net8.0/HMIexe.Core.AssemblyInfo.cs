@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HMIexe.Core")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+e8532441906a452d1c8d976918a5723f6dc1a368")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+55d493cacfe9b9248e2a53e5ba2df4676c4bd585")]
 [assembly: System.Reflection.AssemblyProductAttribute("HMIexe.Core")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HMIexe.Core")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
