@@ -85,7 +85,7 @@ public class ProjectService : IProjectService
     private async Task SaveToFileAsync(string filePath)
     {
         if (CurrentProject == null) return;
-        CurrentProject.ModifiedAt = DateTime.Now;
+        CurrentProject.ModifiedAt = DateTime.UtcNow;
         var json = JsonSerializer.Serialize(CurrentProject, JsonOptions);
         var dir = Path.GetDirectoryName(filePath);
         if (dir != null) Directory.CreateDirectory(dir);

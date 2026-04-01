@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Text;
 using HMIexe.Core.Models.Alarm;
 using HMIexe.Core.Services;
+using HMIexe.Runtime.Utilities;
 
 namespace HMIexe.Runtime.Services;
 
@@ -58,22 +59,15 @@ public class AlarmService : IAlarmService
         foreach (var record in _alarmHistory)
         {
             sb.AppendLine(string.Join(",",
-                QuoteCsvField(record.Id),
-                QuoteCsvField(record.AlarmDefinitionId),
-                QuoteCsvField(record.Message),
-                QuoteCsvField(record.Severity.ToString()),
-                QuoteCsvField(record.OccurredAt.ToString("yyyy-MM-dd HH:mm:ss")),
-                QuoteCsvField(record.AcknowledgedAt?.ToString("yyyy-MM-dd HH:mm:ss") ?? string.Empty),
-                QuoteCsvField(record.AcknowledgedBy),
-                QuoteCsvField(record.IsActive.ToString())));
+                CsvHelper.QuoteField(record.Id),
+                CsvHelper.QuoteField(record.AlarmDefinitionId),
+                CsvHelper.QuoteField(record.Message),
+                CsvHelper.QuoteField(record.Severity.ToString()),
+                CsvHelper.QuoteField(record.OccurredAt.ToString("yyyy-MM-dd HH:mm:ss")),
+                CsvHelper.QuoteField(record.AcknowledgedAt?.ToString("yyyy-MM-dd HH:mm:ss") ?? string.Empty),
+                CsvHelper.QuoteField(record.AcknowledgedBy),
+                CsvHelper.QuoteField(record.IsActive.ToString())));
         }
         await File.WriteAllTextAsync(filePath, sb.ToString(), Encoding.UTF8);
-    }
-
-    private static string QuoteCsvField(string field)
-    {
-        if (field.Contains(',') || field.Contains('"') || field.Contains('\n'))
-            return $"\"{field.Replace("\"", "\"\"")}\"";
-        return field;
     }
 }

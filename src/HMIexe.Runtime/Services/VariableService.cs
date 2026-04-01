@@ -1,5 +1,6 @@
 using HMIexe.Core.Models.Variables;
 using HMIexe.Core.Services;
+using HMIexe.Runtime.Utilities;
 using System.Collections.ObjectModel;
 using System.Text;
 
@@ -45,7 +46,7 @@ public class VariableService : IVariableService
         var lines = await File.ReadAllLinesAsync(filePath, Encoding.UTF8);
         for (int i = 1; i < lines.Length; i++)
         {
-            var parts = SplitCsvLine(lines[i]);
+            var parts = CsvHelper.SplitLine(lines[i]);
             if (parts.Length < 3) continue;
             var variable = new HmiVariable
             {
@@ -66,56 +67,15 @@ public class VariableService : IVariableService
         foreach (var v in _variables)
         {
             sb.AppendLine(string.Join(",",
-                QuoteCsvField(v.Name),
-                QuoteCsvField(v.DisplayName),
-                QuoteCsvField(v.Type.ToString()),
-                QuoteCsvField(v.Group),
-                QuoteCsvField(v.Description),
-                QuoteCsvField(v.DefaultValue?.ToString() ?? string.Empty),
-                QuoteCsvField(v.Unit)));
+                CsvHelper.QuoteField(v.Name),
+                CsvHelper.QuoteField(v.DisplayName),
+                CsvHelper.QuoteField(v.Type.ToString()),
+                CsvHelper.QuoteField(v.Group),
+                CsvHelper.QuoteField(v.Description),
+                CsvHelper.QuoteField(v.DefaultValue?.ToString() ?? string.Empty),
+                CsvHelper.QuoteField(v.Unit)));
         }
         await File.WriteAllTextAsync(filePath, sb.ToString(), Encoding.UTF8);
-    }
-
-    private static string QuoteCsvField(string field)
-    {
-        if (field.Contains(',') || field.Contains('"') || field.Contains('\n'))
-            return $"\"{field.Replace("\"", "\"\"")}\"";
-        return field;
-    }
-
-    private static string[] SplitCsvLine(string line)
-    {
-        var fields = new List<string>();
-        var fieldBuilder = new System.Text.StringBuilder();
-        bool inQuotes = false;
-        for (int i = 0; i < line.Length; i++)
-        {
-            char c = line[i];
-            if (inQuotes)
-            {
-                if (c == '"' && i + 1 < line.Length && line[i + 1] == '"')
-                {
-                    fieldBuilder.Append('"');
-                    i++;
-                }
-                else if (c == '"')
-                    inQuotes = false;
-                else
-                    fieldBuilder.Append(c);
-            }
-            else if (c == '"')
-                inQuotes = true;
-            else if (c == ',')
-            {
-                fields.Add(fieldBuilder.ToString());
-                fieldBuilder.Clear();
-            }
-            else
-                fieldBuilder.Append(c);
-        }
-        fields.Add(fieldBuilder.ToString());
-        return fields.ToArray();
     }
 
     private void OnVariableValueChanged(object? sender, VariableValueChangedEventArgs e)

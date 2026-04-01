@@ -1,5 +1,5 @@
-using System.Net.Sockets;
 using System.Net;
+using System.Net.Sockets;
 
 namespace HMIexe.Communication.Drivers;
 
@@ -7,7 +7,7 @@ public class ModbusTcpDriver : IProtocolDriver
 {
     private TcpClient? _client;
     private NetworkStream? _stream;
-    private ushort _transactionId;
+    private int _transactionId;
 
     public string ProtocolName => "Modbus TCP";
     public bool IsConnected => _client?.Connected ?? false;
@@ -55,19 +55,33 @@ public class ModbusTcpDriver : IProtocolDriver
         {
             var parts = address.Split(':');
             if (parts.Length < 2) return null;
-            var register = ushort.Parse(parts[1]);
+            if (!ushort.TryParse(parts[1], out var register)) return null;
 
-            var request = BuildReadHoldingRegistersRequest(register, 1);
+            var tid = (ushort)System.Threading.Interlocked.Increment(ref _transactionId);
+            var request = BuildReadHoldingRegistersRequest(tid, register, 1);
             await _stream.WriteAsync(request, cancellationToken);
 
-            var response = new byte[256];
-            var bytesRead = await _stream.ReadAsync(response, cancellationToken);
-            if (bytesRead >= 11)
-            {
-                var value = (ushort)((response[9] << 8) | response[10]);
-                return value;
-            }
-            return null;
+            // Read MBAP header (6 bytes) + PDU
+            var header = new byte[9];
+            var headerRead = await ReadExactAsync(_stream, header, 9, cancellationToken);
+            if (!headerRead) return null;
+
+            // Validate transaction ID
+            var responseTid = (ushort)((header[0] << 8) | header[1]);
+            if (responseTid != tid) return null;
+
+            // Check function code (should be 0x03), not an exception (0x83)
+            if (header[7] == 0x83) return null; // Modbus exception
+            if (header[7] != 0x03) return null;
+
+            // Byte count is header[8]
+            var byteCount = header[8];
+            if (byteCount < 2) return null;
+
+            var data = new byte[byteCount];
+            if (!await ReadExactAsync(_stream, data, byteCount, cancellationToken)) return null;
+
+            return (ushort)((data[0] << 8) | data[1]);
         }
         catch
         {
@@ -82,15 +96,22 @@ public class ModbusTcpDriver : IProtocolDriver
         {
             var parts = address.Split(':');
             if (parts.Length < 2) return false;
-            var register = ushort.Parse(parts[1]);
+            if (!ushort.TryParse(parts[1], out var register)) return false;
             var writeValue = Convert.ToUInt16(value);
 
-            var request = BuildWriteSingleRegisterRequest(register, writeValue);
+            var tid = (ushort)System.Threading.Interlocked.Increment(ref _transactionId);
+            var request = BuildWriteSingleRegisterRequest(tid, register, writeValue);
             await _stream.WriteAsync(request, cancellationToken);
 
-            var response = new byte[256];
-            await _stream.ReadAsync(response, cancellationToken);
-            return true;
+            // Read response header
+            var response = new byte[12];
+            if (!await ReadExactAsync(_stream, response, 12, cancellationToken)) return false;
+
+            // Validate transaction ID and function code
+            var responseTid = (ushort)((response[0] << 8) | response[1]);
+            if (responseTid != tid) return false;
+            if (response[7] == 0x86) return false; // Write single register exception
+            return response[7] == 0x06;
         }
         catch
         {
@@ -98,9 +119,20 @@ public class ModbusTcpDriver : IProtocolDriver
         }
     }
 
-    private byte[] BuildReadHoldingRegistersRequest(ushort startRegister, ushort count)
+    private static async Task<bool> ReadExactAsync(NetworkStream stream, byte[] buffer, int count, CancellationToken ct)
     {
-        var tid = ++_transactionId;
+        int offset = 0;
+        while (offset < count)
+        {
+            var read = await stream.ReadAsync(buffer.AsMemory(offset, count - offset), ct);
+            if (read == 0) return false;
+            offset += read;
+        }
+        return true;
+    }
+
+    private static byte[] BuildReadHoldingRegistersRequest(ushort tid, ushort startRegister, ushort count)
+    {
         return new byte[]
         {
             (byte)(tid >> 8), (byte)(tid & 0xFF),
@@ -113,9 +145,8 @@ public class ModbusTcpDriver : IProtocolDriver
         };
     }
 
-    private byte[] BuildWriteSingleRegisterRequest(ushort register, ushort value)
+    private static byte[] BuildWriteSingleRegisterRequest(ushort tid, ushort register, ushort value)
     {
-        var tid = ++_transactionId;
         return new byte[]
         {
             (byte)(tid >> 8), (byte)(tid & 0xFF),
