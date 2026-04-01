@@ -15,7 +15,7 @@
         </StackPanel>
 
         <!-- Variable Grid -->
-        <DataGrid ItemsSource="{Binding Variables}"
+        <DataGrid ItemsSource="{Binding FilteredVariables}"
                   SelectedItem="{Binding SelectedVariable}"
                   AutoGenerateColumns="False"
                   CanUserReorderColumns="True"

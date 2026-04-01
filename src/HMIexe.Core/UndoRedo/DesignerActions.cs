@@ -63,6 +63,28 @@ public class MoveControlAction : IUndoRedoAction
     public void Undo() { _control.X = _oldX; _control.Y = _oldY; }
 }
 
+public class MoveMultipleControlsAction : IUndoRedoAction
+{
+    private readonly List<(HmiControlBase Control, double OldX, double OldY, double NewX, double NewY)> _items;
+
+    public string Description => $"移动 {_items.Count} 个控件";
+
+    public MoveMultipleControlsAction(IEnumerable<(HmiControlBase, double, double, double, double)> items)
+    {
+        _items = new List<(HmiControlBase, double, double, double, double)>(items);
+    }
+
+    public void Execute()
+    {
+        foreach (var (ctrl, _, _, nx, ny) in _items) { ctrl.X = nx; ctrl.Y = ny; }
+    }
+
+    public void Undo()
+    {
+        foreach (var (ctrl, ox, oy, _, _) in _items) { ctrl.X = ox; ctrl.Y = oy; }
+    }
+}
+
 public class SetPropertyAction : IUndoRedoAction
 {
     private readonly Action _execute;

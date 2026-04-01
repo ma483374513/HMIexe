@@ -48,6 +48,9 @@ public partial class App : Application
         services.AddSingleton<IScriptService, ScriptService>();
         services.AddSingleton<ICommunicationService, CommunicationService>();
 
+        // Runtime services
+        services.AddSingleton<AlarmConditionEvaluator>();
+
         // App services
         services.AddSingleton<IDialogService, DialogService>();
 
