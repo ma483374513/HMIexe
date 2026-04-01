@@ -28,12 +28,31 @@ public partial class MainWindowViewModel : ObservableObject
 
     public ObservableCollection<string> RecentProjects { get; } = new();
 
-    public MainWindowViewModel(IProjectService projectService, IDialogService dialogService,
-        DesignerViewModel designerViewModel)
+    // Sub-panel ViewModels
+    public VariableManagerViewModel VariableManager { get; }
+    public ScriptEditorViewModel ScriptEditor { get; }
+    public AlarmManagerViewModel AlarmManager { get; }
+    public CommunicationManagerViewModel CommunicationManager { get; }
+    public ResourceManagerViewModel ResourceManager { get; }
+
+    public MainWindowViewModel(
+        IProjectService projectService,
+        IDialogService dialogService,
+        DesignerViewModel designerViewModel,
+        VariableManagerViewModel variableManager,
+        ScriptEditorViewModel scriptEditor,
+        AlarmManagerViewModel alarmManager,
+        CommunicationManagerViewModel communicationManager,
+        ResourceManagerViewModel resourceManager)
     {
         _projectService = projectService;
         _dialogService = dialogService;
         DesignerViewModel = designerViewModel;
+        VariableManager = variableManager;
+        ScriptEditor = scriptEditor;
+        AlarmManager = alarmManager;
+        CommunicationManager = communicationManager;
+        ResourceManager = resourceManager;
         CurrentContent = designerViewModel;
 
         _projectService.ProjectChanged += OnProjectChanged;
@@ -49,6 +68,10 @@ public partial class MainWindowViewModel : ObservableObject
             Title = $"HMI Designer - {project.Name}";
             IsProjectOpen = true;
             DesignerViewModel?.LoadProject(project);
+            ScriptEditor.LoadFromProject(project.Scripts);
+            AlarmManager.LoadFromProject(project.AlarmDefinitions);
+            CommunicationManager.LoadFromProject(project.CommunicationChannels);
+            ResourceManager.LoadFromProject(project.Resources);
         }
         else
         {
@@ -139,5 +162,66 @@ public partial class MainWindowViewModel : ObservableObject
         {
             await _dialogService.ShowMessageAsync("错误", $"保存失败：{ex.Message}");
         }
+    }
+
+    [RelayCommand]
+    private void Undo()
+    {
+        DesignerViewModel?.UndoRedo.Undo();
+        StatusText = "已撤销";
+    }
+
+    [RelayCommand]
+    private void Redo()
+    {
+        DesignerViewModel?.UndoRedo.Redo();
+        StatusText = "已重做";
+    }
+
+    [RelayCommand]
+    private void ShowDesigner() => CurrentContent = DesignerViewModel;
+
+    [RelayCommand]
+    private void ShowVariableManager() => CurrentContent = VariableManager;
+
+    [RelayCommand]
+    private void ShowScriptEditor() => CurrentContent = ScriptEditor;
+
+    [RelayCommand]
+    private void ShowAlarmManager() => CurrentContent = AlarmManager;
+
+    [RelayCommand]
+    private void ShowCommunicationManager() => CurrentContent = CommunicationManager;
+
+    [RelayCommand]
+    private void ShowResourceManager() => CurrentContent = ResourceManager;
+
+    [RelayCommand]
+    private void ToggleGrid()
+    {
+        if (DesignerViewModel != null)
+            DesignerViewModel.ShowGrid = !DesignerViewModel.ShowGrid;
+    }
+
+    [RelayCommand]
+    private async Task ExitApplication()
+    {
+        if (_projectService.IsDirty)
+        {
+            var save = await _dialogService.ShowConfirmAsync("退出", "工程已修改，退出前是否保存？");
+            if (save) await SaveProject();
+        }
+        if (Avalonia.Application.Current?.ApplicationLifetime is
+            Avalonia.Controls.ApplicationLifetimes.IClassicDesktopStyleApplicationLifetime desktop)
+        {
+            desktop.Shutdown();
+        }
+    }
+
+    [RelayCommand]
+    private async Task ShowAbout()
+    {
+        await _dialogService.ShowMessageAsync("关于 HMI Designer",
+            "HMI组态软件 v1.0\n基于 .NET 8 + Avalonia UI\n\n支持拖放设计、脚本编辑、变量管理、通信配置和报警管理。");
     }
 }

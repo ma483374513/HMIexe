@@ -1,0 +1,95 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:HMIexe.App.ViewModels"
+             xmlns:res="using:HMIexe.Core.Models.Resource"
+             x:Class="HMIexe.App.Views.ResourceManagerView"
+             x:DataType="vm:ResourceManagerViewModel">
+
+    <DockPanel>
+        <!-- Toolbar -->
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="4"
+                    Margin="8,4" Background="#2D2D2D">
+            <Button Content="导入资源" Command="{Binding ImportResourcesCommand}" ToolTip.Tip="导入文件到资源库"/>
+            <Button Content="删除" Command="{Binding RemoveResourceCommand}"
+                    IsEnabled="{Binding SelectedResource, Converter={x:Static ObjectConverters.IsNotNull}}"
+                    ToolTip.Tip="删除选中资源"/>
+            <Button Content="清理未使用" Command="{Binding CleanUnusedCommand}" ToolTip.Tip="删除所有未被引用的资源"/>
+            <Separator Width="1" Background="#444" Margin="4,0"/>
+            <TextBlock Text="类型:" VerticalAlignment="Center"/>
+            <ComboBox ItemsSource="{Binding TypeFilters}"
+                      SelectedItem="{Binding SelectedTypeFilter}"
+                      Width="100"/>
+            <TextBox Text="{Binding SearchText}" Watermark="搜索资源..." Width="160"/>
+        </StackPanel>
+
+        <!-- Status bar -->
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Spacing="12"
+                    Margin="8,2" Background="#1E1E1E">
+            <TextBlock Foreground="#888" VerticalAlignment="Center"
+                       Text="{Binding Resources.Count, StringFormat='共 {0} 个资源'}"/>
+        </StackPanel>
+
+        <!-- Content: Resource list + details -->
+        <Grid ColumnDefinitions="*,260">
+            <!-- Resource grid -->
+            <DataGrid Grid.Column="0"
+                      ItemsSource="{Binding FilteredResources}"
+                      SelectedItem="{Binding SelectedResource}"
+                      AutoGenerateColumns="False"
+                      IsReadOnly="True"
+                      GridLinesVisibility="Horizontal"
+                      CanUserResizeColumns="True">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="名称" Binding="{Binding Name}" Width="*"/>
+                    <DataGridTextColumn Header="类型" Binding="{Binding Type}" Width="70"/>
+                    <DataGridTextColumn Header="大小(B)" Binding="{Binding FileSize}" Width="80"/>
+                    <DataGridTextColumn Header="导入时间" Binding="{Binding ImportedAt, StringFormat='{}{0:MM-dd HH:mm}'}" Width="120"/>
+                    <DataGridTextColumn Header="引用数" Binding="{Binding UsedByControlIds.Count}" Width="60"/>
+                </DataGrid.Columns>
+            </DataGrid>
+
+            <!-- Resource details -->
+            <Border Grid.Column="1" BorderThickness="1,0,0,0" BorderBrush="#444">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="资源详情"
+                               Background="#2D2D2D" Foreground="White"
+                               Padding="8,4" FontWeight="Bold"/>
+                    <ScrollViewer
+                        IsEnabled="{Binding SelectedResource, Converter={x:Static ObjectConverters.IsNotNull}}">
+                        <StackPanel Spacing="8" Margin="12"
+                                    IsVisible="{Binding SelectedResource, Converter={x:Static ObjectConverters.IsNotNull}}">
+                            <Grid ColumnDefinitions="80,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto">
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="名称:" VerticalAlignment="Center"/>
+                                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding SelectedResource.Name}"/>
+
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="类型:" VerticalAlignment="Center" Margin="0,6,0,0"/>
+                                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding SelectedResource.Type}"
+                                           VerticalAlignment="Center" Margin="0,6,0,0"/>
+
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="大小:" VerticalAlignment="Center" Margin="0,6,0,0"/>
+                                <TextBlock Grid.Row="2" Grid.Column="1"
+                                           Text="{Binding SelectedResource.FileSize, StringFormat='{}{0} 字节'}"
+                                           VerticalAlignment="Center" Margin="0,6,0,0"/>
+
+                                <TextBlock Grid.Row="3" Grid.Column="0" Text="路径:" VerticalAlignment="Top" Margin="0,6,0,0"/>
+                                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding SelectedResource.FilePath}"
+                                         IsReadOnly="True" TextWrapping="Wrap"
+                                         MaxHeight="60" Margin="0,6,0,0"/>
+
+                                <TextBlock Grid.Row="4" Grid.Column="0" Text="备注:" VerticalAlignment="Top" Margin="0,6,0,0"/>
+                                <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding SelectedResource.Description}"
+                                         AcceptsReturn="True" Height="60" Margin="0,6,0,0"
+                                         Watermark="资源用途说明..."/>
+
+                                <TextBlock Grid.Row="5" Grid.Column="0" Text="引用数:" VerticalAlignment="Center" Margin="0,6,0,0"/>
+                                <TextBlock Grid.Row="5" Grid.Column="1"
+                                           Text="{Binding SelectedResource.UsedByControlIds.Count}"
+                                           VerticalAlignment="Center" Margin="0,6,0,0"/>
+                            </Grid>
+                        </StackPanel>
+                    </ScrollViewer>
+                </DockPanel>
+            </Border>
+        </Grid>
+    </DockPanel>
+</UserControl>

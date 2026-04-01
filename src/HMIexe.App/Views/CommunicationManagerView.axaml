@@ -1,0 +1,127 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:HMIexe.App.ViewModels"
+             xmlns:comm="using:HMIexe.Core.Models.Communication"
+             x:Class="HMIexe.App.Views.CommunicationManagerView"
+             x:DataType="vm:CommunicationManagerViewModel">
+
+    <Grid ColumnDefinitions="220,*">
+
+        <!-- Left: Channel list -->
+        <Border Grid.Column="0" BorderThickness="0,0,1,0" BorderBrush="#444">
+            <DockPanel>
+                <DockPanel DockPanel.Dock="Top" Background="#2D2D2D" LastChildFill="False">
+                    <TextBlock Text="通信通道" Foreground="White" Padding="8,6"
+                               FontWeight="Bold" VerticalAlignment="Center"/>
+                    <Button DockPanel.Dock="Right" Content="+" Width="28" Height="28"
+                            Padding="0" Margin="2" Command="{Binding AddChannelCommand}"/>
+                    <Button DockPanel.Dock="Right" Content="−" Width="28" Height="28"
+                            Padding="0" Margin="2" Command="{Binding RemoveChannelCommand}"/>
+                </DockPanel>
+                <ScrollViewer>
+                    <ItemsControl ItemsSource="{Binding Channels}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="comm:CommunicationChannel">
+                                <Border Padding="8,6" PointerPressed="ChannelItem_PointerPressed">
+                                    <StackPanel>
+                                        <TextBlock Text="{Binding Name}" FontWeight="SemiBold"/>
+                                        <TextBlock Text="{Binding Protocol}" FontSize="11" Foreground="#888"/>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </DockPanel>
+        </Border>
+
+        <!-- Right: Channel details -->
+        <TabControl Grid.Column="1"
+                    IsEnabled="{Binding SelectedChannel, Converter={x:Static ObjectConverters.IsNotNull}}">
+
+            <!-- Tab 1: Channel config -->
+            <TabItem Header="通道配置">
+                <ScrollViewer>
+                    <StackPanel Spacing="8" Margin="12">
+                        <TextBlock Text="基本设置" FontWeight="Bold" FontSize="13" Foreground="#888"/>
+                        <Grid ColumnDefinitions="120,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto">
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="通道名称:" VerticalAlignment="Center"/>
+                            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding SelectedChannel.Name}"/>
+
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="协议类型:" VerticalAlignment="Center" Margin="0,6,0,0"/>
+                            <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding ProtocolTypes}"
+                                      SelectedItem="{Binding SelectedChannel.Protocol}" Margin="0,6,0,0"/>
+
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="自动重连:" VerticalAlignment="Center" Margin="0,6,0,0"/>
+                            <CheckBox Grid.Row="2" Grid.Column="1" IsChecked="{Binding SelectedChannel.AutoReconnect}" Margin="0,6,0,0"/>
+
+                            <TextBlock Grid.Row="3" Grid.Column="0" Text="重连间隔(ms):" VerticalAlignment="Center" Margin="0,6,0,0"/>
+                            <NumericUpDown Grid.Row="3" Grid.Column="1"
+                                           Value="{Binding SelectedChannel.ReconnectIntervalMs}"
+                                           Minimum="500" Maximum="60000" Margin="0,6,0,0"/>
+
+                            <TextBlock Grid.Row="4" Grid.Column="0" Text="启用:" VerticalAlignment="Center" Margin="0,6,0,0"/>
+                            <CheckBox Grid.Row="4" Grid.Column="1" IsChecked="{Binding SelectedChannel.IsEnabled}" Margin="0,6,0,0"/>
+                        </Grid>
+
+                        <TextBlock Text="连接状态" FontWeight="Bold" FontSize="13" Foreground="#888" Margin="0,12,0,0"/>
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <TextBlock Text="状态:" VerticalAlignment="Center"/>
+                            <TextBlock Text="{Binding ChannelStatusText}" VerticalAlignment="Center" FontWeight="Bold"/>
+                        </StackPanel>
+                        <StackPanel Orientation="Horizontal" Spacing="8">
+                            <Button Content="连接" Command="{Binding ConnectChannelCommand}"/>
+                            <Button Content="断开" Command="{Binding DisconnectChannelCommand}"/>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </TabItem>
+
+            <!-- Tab 2: Device Mappings -->
+            <TabItem Header="设备映射">
+                <Grid RowDefinitions="Auto,*,Auto,200">
+                    <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="4" Margin="8,4">
+                        <Button Content="+ 添加映射" Command="{Binding AddMappingCommand}"/>
+                        <Button Content="− 删除映射" Command="{Binding RemoveMappingCommand}"
+                                IsEnabled="{Binding SelectedMapping, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+                    </StackPanel>
+
+                    <DataGrid Grid.Row="1" ItemsSource="{Binding CurrentMappings}"
+                              SelectedItem="{Binding SelectedMapping}"
+                              AutoGenerateColumns="False"
+                              CanUserResizeColumns="True"
+                              GridLinesVisibility="Horizontal">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="设备名" Binding="{Binding DeviceName}" Width="120"/>
+                            <DataGridTextColumn Header="地址" Binding="{Binding Address}" Width="100"/>
+                            <DataGridTextColumn Header="变量ID" Binding="{Binding VariableId}" Width="*"/>
+                            <DataGridTextColumn Header="轮询间隔(ms)" Binding="{Binding PollingIntervalMs}" Width="110"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+
+                    <TextBlock Grid.Row="2" Text="通信测试" FontWeight="Bold"
+                               Background="#2D2D2D" Foreground="#888" Padding="8,4"/>
+
+                    <Grid Grid.Row="3" RowDefinitions="Auto,Auto,Auto,Auto,*" Margin="8">
+                        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="8" Margin="0,4">
+                            <TextBlock Text="读取地址:" VerticalAlignment="Center" Width="80"/>
+                            <TextBox Text="{Binding TestReadAddress}" Width="140" Watermark="例如: 1:0"/>
+                            <Button Content="读取" Command="{Binding TestReadCommand}"/>
+                        </StackPanel>
+                        <TextBox Grid.Row="1" Text="{Binding TestReadResult}" IsReadOnly="True"
+                                 FontFamily="Consolas,monospace" FontSize="11"
+                                 Background="#1A1A1A" Foreground="#9CDCFE"
+                                 BorderThickness="0" Margin="0,4"/>
+                        <StackPanel Grid.Row="2" Orientation="Horizontal" Spacing="8" Margin="0,4">
+                            <TextBlock Text="写入地址:" VerticalAlignment="Center" Width="80"/>
+                            <TextBox Text="{Binding TestWriteAddress}" Width="140" Watermark="例如: 1:0"/>
+                            <TextBlock Text="值:" VerticalAlignment="Center"/>
+                            <TextBox Text="{Binding TestWriteValue}" Width="80"/>
+                            <Button Content="写入" Command="{Binding TestWriteCommand}"/>
+                        </StackPanel>
+                    </Grid>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</UserControl>
