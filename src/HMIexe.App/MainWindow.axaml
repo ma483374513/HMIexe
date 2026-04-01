@@ -1,0 +1,74 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:HMIexe.App.ViewModels"
+        x:Class="HMIexe.App.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        Title="{Binding Title}"
+        Width="1600" Height="900"
+        WindowStartupLocation="CenterScreen">
+
+    <DockPanel>
+        <!-- Menu Bar -->
+        <Menu DockPanel.Dock="Top">
+            <MenuItem Header="文件(_F)">
+                <MenuItem Header="新建工程" Command="{Binding NewProjectCommand}"/>
+                <MenuItem Header="打开工程" Command="{Binding OpenProjectCommand}"/>
+                <Separator/>
+                <MenuItem Header="保存" Command="{Binding SaveProjectCommand}"/>
+                <Separator/>
+                <MenuItem Header="退出"/>
+            </MenuItem>
+            <MenuItem Header="编辑(_E)">
+                <MenuItem Header="撤销"/>
+                <MenuItem Header="重做"/>
+                <Separator/>
+                <MenuItem Header="复制"/>
+                <MenuItem Header="粘贴"/>
+                <MenuItem Header="剪切"/>
+                <MenuItem Header="删除"/>
+            </MenuItem>
+            <MenuItem Header="视图(_V)">
+                <MenuItem Header="网格"/>
+                <MenuItem Header="标尺"/>
+                <MenuItem Header="辅助线"/>
+            </MenuItem>
+            <MenuItem Header="工程(_P)">
+                <MenuItem Header="变量管理"/>
+                <MenuItem Header="资源管理"/>
+                <MenuItem Header="脚本管理"/>
+                <MenuItem Header="通信配置"/>
+            </MenuItem>
+            <MenuItem Header="工具(_T)">
+                <MenuItem Header="设置"/>
+                <MenuItem Header="插件管理"/>
+            </MenuItem>
+            <MenuItem Header="帮助(_H)">
+                <MenuItem Header="关于"/>
+            </MenuItem>
+        </Menu>
+
+        <!-- Toolbar -->
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="4" Margin="4,2">
+            <Button Content="新建" Command="{Binding NewProjectCommand}" ToolTip.Tip="新建工程"/>
+            <Button Content="打开" Command="{Binding OpenProjectCommand}" ToolTip.Tip="打开工程"/>
+            <Button Content="保存" Command="{Binding SaveProjectCommand}" ToolTip.Tip="保存工程"/>
+            <Button Content="↩ 撤销" ToolTip.Tip="撤销"/>
+            <Button Content="↪ 重做" ToolTip.Tip="重做"/>
+            <Button Content="▶ 预览" ToolTip.Tip="预览运行"/>
+            <Button Content="⬡ 发布" ToolTip.Tip="发布工程"/>
+        </StackPanel>
+
+        <!-- Status Bar -->
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Spacing="8"
+                    Background="#1E1E1E" Margin="4,2">
+            <TextBlock Text="就绪" Foreground="#AAAAAA" VerticalAlignment="Center"/>
+            <TextBlock Text="|" Foreground="#444" VerticalAlignment="Center"/>
+            <TextBlock Text="1920 x 1080" Foreground="#AAAAAA" VerticalAlignment="Center"/>
+            <TextBlock Text="|" Foreground="#444" VerticalAlignment="Center"/>
+            <TextBlock Text="缩放: 100%" Foreground="#AAAAAA" VerticalAlignment="Center"/>
+        </StackPanel>
+
+        <!-- Main Content -->
+        <ContentControl Content="{Binding CurrentContent}"/>
+    </DockPanel>
+</Window>

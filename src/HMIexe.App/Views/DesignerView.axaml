@@ -1,0 +1,119 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:HMIexe.App.ViewModels"
+             x:Class="HMIexe.App.Views.DesignerView"
+             x:DataType="vm:DesignerViewModel">
+
+    <Grid ColumnDefinitions="200,*,250">
+
+        <!-- Left Panel: Toolbox + Layers -->
+        <Grid Grid.Column="0" RowDefinitions="*,200">
+            <!-- Toolbox -->
+            <Border Grid.Row="0" BorderThickness="0,0,1,0" BorderBrush="#444">
+                <DockPanel>
+                    <TextBlock DockPanel.Dock="Top" Text="控件工具箱"
+                               Background="#2D2D2D" Foreground="White"
+                               Padding="8,4" FontWeight="Bold"/>
+                    <ScrollViewer>
+                        <StackPanel Spacing="2" Margin="4">
+                            <TextBlock Text="基础控件" FontSize="11" Foreground="#888" Margin="0,4,0,2"/>
+                            <Button Content="按钮" HorizontalAlignment="Stretch"/>
+                            <Button Content="标签" HorizontalAlignment="Stretch"/>
+                            <Button Content="输入框" HorizontalAlignment="Stretch"/>
+                            <Button Content="图片" HorizontalAlignment="Stretch"/>
+                            <TextBlock Text="仪表控件" FontSize="11" Foreground="#888" Margin="0,4,0,2"/>
+                            <Button Content="仪表盘" HorizontalAlignment="Stretch"/>
+                            <Button Content="指示灯" HorizontalAlignment="Stretch"/>
+                            <Button Content="开关" HorizontalAlignment="Stretch"/>
+                            <Button Content="滑动杆" HorizontalAlignment="Stretch"/>
+                            <TextBlock Text="图形" FontSize="11" Foreground="#888" Margin="0,4,0,2"/>
+                            <Button Content="直线" HorizontalAlignment="Stretch"/>
+                            <Button Content="矩形" HorizontalAlignment="Stretch"/>
+                            <Button Content="圆形" HorizontalAlignment="Stretch"/>
+                            <Button Content="椭圆" HorizontalAlignment="Stretch"/>
+                            <Button Content="多边形" HorizontalAlignment="Stretch"/>
+                        </StackPanel>
+                    </ScrollViewer>
+                </DockPanel>
+            </Border>
+
+            <!-- Layer Panel -->
+            <Border Grid.Row="1" BorderThickness="0,1,1,0" BorderBrush="#444">
+                <DockPanel>
+                    <DockPanel DockPanel.Dock="Top" Background="#2D2D2D" LastChildFill="True">
+                        <Button DockPanel.Dock="Right" Content="+" Width="24" Height="24" Padding="0"
+                                ToolTip.Tip="添加图层"/>
+                        <TextBlock Text="图层" Foreground="White" Padding="8,4" FontWeight="Bold" VerticalAlignment="Center"/>
+                    </DockPanel>
+                    <ScrollViewer>
+                        <TextBlock Text="Layer 1" Padding="8,4"/>
+                    </ScrollViewer>
+                </DockPanel>
+            </Border>
+        </Grid>
+
+        <!-- Center: Canvas Area -->
+        <Grid Grid.Column="1" RowDefinitions="Auto,*">
+            <!-- Page Tabs -->
+            <Border Grid.Row="0" Background="#2D2D2D" BorderThickness="0,0,0,1" BorderBrush="#444">
+                <StackPanel Orientation="Horizontal" Spacing="2" Margin="4,2">
+                    <Button Content="+ 新建页面" Padding="8,2" Command="{Binding AddPageCommand}"/>
+                </StackPanel>
+            </Border>
+
+            <!-- Canvas with scrolling -->
+            <ScrollViewer Grid.Row="1" Background="#1E1E1E"
+                          HorizontalScrollBarVisibility="Auto"
+                          VerticalScrollBarVisibility="Auto">
+                <Border Background="#3C3C3C" Margin="20">
+                    <Panel>
+                        <Border Name="DesignCanvas"
+                                Background="White"
+                                Width="{Binding CurrentPage.Width, FallbackValue=1920}"
+                                Height="{Binding CurrentPage.Height, FallbackValue=1080}">
+                        </Border>
+                    </Panel>
+                </Border>
+            </ScrollViewer>
+        </Grid>
+
+        <!-- Right Panel: Properties -->
+        <Border Grid.Column="2" BorderThickness="1,0,0,0" BorderBrush="#444">
+            <DockPanel>
+                <TextBlock DockPanel.Dock="Top" Text="属性面板"
+                           Background="#2D2D2D" Foreground="White"
+                           Padding="8,4" FontWeight="Bold"/>
+                <TextBox DockPanel.Dock="Top" Watermark="搜索属性..." Margin="4"/>
+                <ScrollViewer>
+                    <StackPanel Spacing="4" Margin="4">
+                        <TextBlock Text="位置与大小" FontWeight="Bold" FontSize="12" Foreground="#888"/>
+                        <Grid ColumnDefinitions="60,*,60,*" RowDefinitions="Auto,Auto,Auto,Auto" Margin="0,2">
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="X:" VerticalAlignment="Center"/>
+                            <NumericUpDown Grid.Row="0" Grid.Column="1" Value="0" Minimum="-10000" Maximum="10000"/>
+                            <TextBlock Grid.Row="0" Grid.Column="2" Text="Y:" VerticalAlignment="Center" Margin="4,0,0,0"/>
+                            <NumericUpDown Grid.Row="0" Grid.Column="3" Value="0" Minimum="-10000" Maximum="10000"/>
+
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="宽:" VerticalAlignment="Center" Margin="0,4,0,0"/>
+                            <NumericUpDown Grid.Row="1" Grid.Column="1" Value="100" Minimum="1" Maximum="10000" Margin="0,4,0,0"/>
+                            <TextBlock Grid.Row="1" Grid.Column="2" Text="高:" VerticalAlignment="Center" Margin="4,4,0,0"/>
+                            <NumericUpDown Grid.Row="1" Grid.Column="3" Value="40" Minimum="1" Maximum="10000" Margin="0,4,0,0"/>
+
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Z层:" VerticalAlignment="Center" Margin="0,4,0,0"/>
+                            <NumericUpDown Grid.Row="2" Grid.Column="1" Value="0" Minimum="0" Maximum="9999" Margin="0,4,0,0"/>
+                            <TextBlock Grid.Row="2" Grid.Column="2" Text="透明:" VerticalAlignment="Center" Margin="4,4,0,0"/>
+                            <NumericUpDown Grid.Row="2" Grid.Column="3" Value="100" Minimum="0" Maximum="100" Margin="0,4,0,0"/>
+                        </Grid>
+
+                        <TextBlock Text="外观" FontWeight="Bold" FontSize="12" Foreground="#888" Margin="0,8,0,0"/>
+                        <Grid ColumnDefinitions="60,*" RowDefinitions="Auto,Auto" Margin="0,2">
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="可见:" VerticalAlignment="Center"/>
+                            <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="True"/>
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="锁定:" VerticalAlignment="Center" Margin="0,4,0,0"/>
+                            <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="False" Margin="0,4,0,0"/>
+                        </Grid>
+                    </StackPanel>
+                </ScrollViewer>
+            </DockPanel>
+        </Border>
+    </Grid>
+</UserControl>

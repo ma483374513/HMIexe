@@ -1,0 +1,16 @@
+/home/runner/work/HMIexe/HMIexe/src/HMIexe.Communication/bin/Debug/net8.0/HMIexe.Communication.deps.json
+/home/runner/work/HMIexe/HMIexe/src/HMIexe.Communication/bin/Debug/net8.0/HMIexe.Communication.dll
+/home/runner/work/HMIexe/HMIexe/src/HMIexe.Communication/bin/Debug/net8.0/HMIexe.Communication.pdb
+/home/runner/work/HMIexe/HMIexe/src/HMIexe.Communication/bin/Debug/net8.0/HMIexe.Core.dll
+/home/runner/work/HMIexe/HMIexe/src/HMIexe.Communication/bin/Debug/net8.0/HMIexe.Core.pdb
+/home/runner/work/HMIexe/HMIexe/src/HMIexe.Communication/obj/Debug/net8.0/HMIexe.Communication.csproj.AssemblyReference.cache
+/home/runner/work/HMIexe/HMIexe/src/HMIexe.Communication/obj/Debug/net8.0/HMIexe.Communication.GeneratedMSBuildEditorConfig.editorconfig
+/home/runner/work/HMIexe/HMIexe/src/HMIexe.Communication/obj/Debug/net8.0/HMIexe.Communication.AssemblyInfoInputs.cache
+/home/runner/work/HMIexe/HMIexe/src/HMIexe.Communication/obj/Debug/net8.0/HMIexe.Communication.AssemblyInfo.cs
+/home/runner/work/HMIexe/HMIexe/src/HMIexe.Communication/obj/Debug/net8.0/HMIexe.Communication.csproj.CoreCompileInputs.cache
+/home/runner/work/HMIexe/HMIexe/src/HMIexe.Communication/obj/Debug/net8.0/HMIexe.Communication.sourcelink.json
+/home/runner/work/HMIexe/HMIexe/src/HMIexe.Communication/obj/Debug/net8.0/HMIexe.C.F96CF94B.Up2Date
+/home/runner/work/HMIexe/HMIexe/src/HMIexe.Communication/obj/Debug/net8.0/HMIexe.Communication.dll
+/home/runner/work/HMIexe/HMIexe/src/HMIexe.Communication/obj/Debug/net8.0/refint/HMIexe.Communication.dll
+/home/runner/work/HMIexe/HMIexe/src/HMIexe.Communication/obj/Debug/net8.0/HMIexe.Communication.pdb
+/home/runner/work/HMIexe/HMIexe/src/HMIexe.Communication/obj/Debug/net8.0/ref/HMIexe.Communication.dll

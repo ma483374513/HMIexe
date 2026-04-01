@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/HMIexe.App/HMIexe.App.csproj" />
+    <Project Path="src/HMIexe.Communication/HMIexe.Communication.csproj" />
+    <Project Path="src/HMIexe.Core/HMIexe.Core.csproj" />
+    <Project Path="src/HMIexe.Plugins/HMIexe.Plugins.csproj" />
+    <Project Path="src/HMIexe.Runtime/HMIexe.Runtime.csproj" />
+  </Folder>
+</Solution>
