@@ -1,6 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="using:HMIexe.App.ViewModels"
+        xmlns:views="using:HMIexe.App.Views"
         x:Class="HMIexe.App.MainWindow"
         x:DataType="vm:MainWindowViewModel"
         Title="{Binding Title}"
@@ -61,14 +62,25 @@
         <!-- Status Bar -->
         <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Spacing="8"
                     Background="#1E1E1E" Margin="4,2">
-            <TextBlock Text="就绪" Foreground="#AAAAAA" VerticalAlignment="Center"/>
+            <TextBlock Text="{Binding StatusText}" Foreground="#AAAAAA" VerticalAlignment="Center"/>
             <TextBlock Text="|" Foreground="#444" VerticalAlignment="Center"/>
-            <TextBlock Text="1920 x 1080" Foreground="#AAAAAA" VerticalAlignment="Center"/>
+            <TextBlock Text="{Binding DesignerViewModel.CurrentPage.Width, StringFormat='{}{0}', FallbackValue='1920'}"
+                       Foreground="#AAAAAA" VerticalAlignment="Center"/>
+            <TextBlock Text="x" Foreground="#AAAAAA" VerticalAlignment="Center"/>
+            <TextBlock Text="{Binding DesignerViewModel.CurrentPage.Height, StringFormat='{}{0}', FallbackValue='1080'}"
+                       Foreground="#AAAAAA" VerticalAlignment="Center"/>
             <TextBlock Text="|" Foreground="#444" VerticalAlignment="Center"/>
-            <TextBlock Text="缩放: 100%" Foreground="#AAAAAA" VerticalAlignment="Center"/>
+            <TextBlock Text="{Binding DesignerViewModel.ZoomLevel, StringFormat='缩放: {0:P0}', FallbackValue='缩放: 100%'}"
+                       Foreground="#AAAAAA" VerticalAlignment="Center"/>
         </StackPanel>
 
-        <!-- Main Content -->
-        <ContentControl Content="{Binding CurrentContent}"/>
+        <!-- Main Content: DesignerView -->
+        <ContentControl Content="{Binding DesignerViewModel}">
+            <ContentControl.ContentTemplate>
+                <DataTemplate>
+                    <views:DesignerView DataContext="{Binding}"/>
+                </DataTemplate>
+            </ContentControl.ContentTemplate>
+        </ContentControl>
     </DockPanel>
 </Window>

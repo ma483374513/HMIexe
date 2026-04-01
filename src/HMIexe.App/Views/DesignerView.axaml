@@ -1,6 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:HMIexe.App.ViewModels"
+             xmlns:core="using:HMIexe.Core.Models.Controls"
              x:Class="HMIexe.App.Views.DesignerView"
              x:DataType="vm:DesignerViewModel">
 
@@ -17,12 +18,20 @@
                     <ScrollViewer>
                         <StackPanel Spacing="2" Margin="4">
                             <TextBlock Text="基础控件" FontSize="11" Foreground="#888" Margin="0,4,0,2"/>
-                            <Button Content="按钮" HorizontalAlignment="Stretch"/>
-                            <Button Content="标签" HorizontalAlignment="Stretch"/>
-                            <Button Content="输入框" HorizontalAlignment="Stretch"/>
+                            <Button Content="按钮" HorizontalAlignment="Stretch"
+                                    Command="{Binding AddControlToCanvasCommand}"
+                                    CommandParameter="Button"/>
+                            <Button Content="标签" HorizontalAlignment="Stretch"
+                                    Command="{Binding AddControlToCanvasCommand}"
+                                    CommandParameter="Label"/>
+                            <Button Content="输入框" HorizontalAlignment="Stretch"
+                                    Command="{Binding AddControlToCanvasCommand}"
+                                    CommandParameter="TextBox"/>
                             <Button Content="图片" HorizontalAlignment="Stretch"/>
                             <TextBlock Text="仪表控件" FontSize="11" Foreground="#888" Margin="0,4,0,2"/>
-                            <Button Content="仪表盘" HorizontalAlignment="Stretch"/>
+                            <Button Content="仪表盘" HorizontalAlignment="Stretch"
+                                    Command="{Binding AddControlToCanvasCommand}"
+                                    CommandParameter="Gauge"/>
                             <Button Content="指示灯" HorizontalAlignment="Stretch"/>
                             <Button Content="开关" HorizontalAlignment="Stretch"/>
                             <Button Content="滑动杆" HorizontalAlignment="Stretch"/>
@@ -46,7 +55,13 @@
                         <TextBlock Text="图层" Foreground="White" Padding="8,4" FontWeight="Bold" VerticalAlignment="Center"/>
                     </DockPanel>
                     <ScrollViewer>
-                        <TextBlock Text="Layer 1" Padding="8,4"/>
+                        <ItemsControl ItemsSource="{Binding CurrentPage.Layers}">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding Name}" Padding="8,4"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
                     </ScrollViewer>
                 </DockPanel>
             </Border>
@@ -56,9 +71,26 @@
         <Grid Grid.Column="1" RowDefinitions="Auto,*">
             <!-- Page Tabs -->
             <Border Grid.Row="0" Background="#2D2D2D" BorderThickness="0,0,0,1" BorderBrush="#444">
-                <StackPanel Orientation="Horizontal" Spacing="2" Margin="4,2">
-                    <Button Content="+ 新建页面" Padding="8,2" Command="{Binding AddPageCommand}"/>
-                </StackPanel>
+                <DockPanel>
+                    <Button DockPanel.Dock="Right" Content="+ 新建页面"
+                            Padding="8,2" Command="{Binding AddPageCommand}"/>
+                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                        <ItemsControl ItemsSource="{Binding Pages}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" Spacing="2" Margin="4,2"/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate>
+                                    <Button Content="{Binding Name}" Padding="10,2"
+                                            Command="{Binding $parent[UserControl].DataContext.SelectPageCommand}"
+                                            CommandParameter="{Binding}"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </DockPanel>
             </Border>
 
             <!-- Canvas with scrolling -->
@@ -68,9 +100,77 @@
                 <Border Background="#3C3C3C" Margin="20">
                     <Panel>
                         <Border Name="DesignCanvas"
-                                Background="White"
+                                Background="{Binding CurrentPage.BackgroundColor, FallbackValue=White}"
                                 Width="{Binding CurrentPage.Width, FallbackValue=1920}"
                                 Height="{Binding CurrentPage.Height, FallbackValue=1080}">
+                            <!-- Controls rendered from all layers -->
+                            <ItemsControl ItemsSource="{Binding CurrentPage.AllControls}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <Canvas/>
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+                                <ItemsControl.ItemContainerTheme>
+                                    <ControlTheme TargetType="ContentPresenter"
+                                                  x:CompileBindings="False">
+                                        <Setter Property="Canvas.Left" Value="{Binding X}"/>
+                                        <Setter Property="Canvas.Top" Value="{Binding Y}"/>
+                                        <Setter Property="Width" Value="{Binding Width}"/>
+                                        <Setter Property="Height" Value="{Binding Height}"/>
+                                        <Setter Property="Opacity" Value="{Binding Opacity}"/>
+                                        <Setter Property="IsVisible" Value="{Binding Visible}"/>
+                                    </ControlTheme>
+                                </ItemsControl.ItemContainerTheme>
+                                <ItemsControl.DataTemplates>
+                                    <!-- Button control -->
+                                    <DataTemplate x:CompileBindings="False" DataType="core:ButtonControl">
+                                        <Button Content="{Binding Text}"
+                                                Background="{Binding BackgroundColor}"
+                                                Foreground="{Binding ForegroundColor}"
+                                                HorizontalAlignment="Stretch"
+                                                VerticalAlignment="Stretch"/>
+                                    </DataTemplate>
+                                    <!-- Label control -->
+                                    <DataTemplate x:CompileBindings="False" DataType="core:LabelControl">
+                                        <TextBlock Text="{Binding Text}"
+                                                   Foreground="{Binding ForegroundColor}"
+                                                   FontSize="{Binding FontSize}"
+                                                   HorizontalAlignment="Stretch"
+                                                   VerticalAlignment="Stretch"
+                                                   TextWrapping="Wrap"/>
+                                    </DataTemplate>
+                                    <!-- TextBox control -->
+                                    <DataTemplate x:CompileBindings="False" DataType="core:TextBoxControl">
+                                        <TextBox Text="{Binding Text}"
+                                                 Watermark="{Binding Placeholder}"
+                                                 HorizontalAlignment="Stretch"
+                                                 VerticalAlignment="Stretch"/>
+                                    </DataTemplate>
+                                    <!-- Gauge control -->
+                                    <DataTemplate x:CompileBindings="False" DataType="core:GaugeControl">
+                                        <Border BorderBrush="#555" BorderThickness="1" CornerRadius="4"
+                                                HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="4">
+                                                <TextBlock Text="{Binding Name}" TextAlignment="Center" FontWeight="Bold"/>
+                                                <ProgressBar Value="{Binding Value}"
+                                                             Minimum="{Binding MinValue}"
+                                                             Maximum="{Binding MaxValue}"
+                                                             Width="80" Height="12"/>
+                                                <TextBlock Text="{Binding Value, StringFormat='{}{0:F1}'}"
+                                                           TextAlignment="Center" FontSize="10"/>
+                                            </StackPanel>
+                                        </Border>
+                                    </DataTemplate>
+                                    <!-- Default fallback -->
+                                    <DataTemplate x:CompileBindings="False" DataType="core:HmiControlBase">
+                                        <Border BorderBrush="#888" BorderThickness="1" Background="#2D2D2D">
+                                            <TextBlock Text="{Binding Name}" Foreground="White"
+                                                       VerticalAlignment="Center" HorizontalAlignment="Center"
+                                                       FontSize="11"/>
+                                        </Border>
+                                    </DataTemplate>
+                                </ItemsControl.DataTemplates>
+                            </ItemsControl>
                         </Border>
                     </Panel>
                 </Border>
@@ -79,37 +179,49 @@
 
         <!-- Right Panel: Properties -->
         <Border Grid.Column="2" BorderThickness="1,0,0,0" BorderBrush="#444">
-            <DockPanel>
+            <DockPanel DataContext="{Binding PropertyPanel}">
                 <TextBlock DockPanel.Dock="Top" Text="属性面板"
                            Background="#2D2D2D" Foreground="White"
                            Padding="8,4" FontWeight="Bold"/>
-                <TextBox DockPanel.Dock="Top" Watermark="搜索属性..." Margin="4"/>
+                <TextBox DockPanel.Dock="Top" Watermark="搜索属性..."
+                         Text="{Binding SearchText}" Margin="4"/>
                 <ScrollViewer>
                     <StackPanel Spacing="4" Margin="4">
                         <TextBlock Text="位置与大小" FontWeight="Bold" FontSize="12" Foreground="#888"/>
                         <Grid ColumnDefinitions="60,*,60,*" RowDefinitions="Auto,Auto,Auto,Auto" Margin="0,2">
                             <TextBlock Grid.Row="0" Grid.Column="0" Text="X:" VerticalAlignment="Center"/>
-                            <NumericUpDown Grid.Row="0" Grid.Column="1" Value="0" Minimum="-10000" Maximum="10000"/>
+                            <NumericUpDown Grid.Row="0" Grid.Column="1"
+                                           Value="{Binding ControlX}" Minimum="-10000" Maximum="10000"/>
                             <TextBlock Grid.Row="0" Grid.Column="2" Text="Y:" VerticalAlignment="Center" Margin="4,0,0,0"/>
-                            <NumericUpDown Grid.Row="0" Grid.Column="3" Value="0" Minimum="-10000" Maximum="10000"/>
+                            <NumericUpDown Grid.Row="0" Grid.Column="3"
+                                           Value="{Binding ControlY}" Minimum="-10000" Maximum="10000"/>
 
                             <TextBlock Grid.Row="1" Grid.Column="0" Text="宽:" VerticalAlignment="Center" Margin="0,4,0,0"/>
-                            <NumericUpDown Grid.Row="1" Grid.Column="1" Value="100" Minimum="1" Maximum="10000" Margin="0,4,0,0"/>
+                            <NumericUpDown Grid.Row="1" Grid.Column="1"
+                                           Value="{Binding ControlWidth}" Minimum="1" Maximum="10000" Margin="0,4,0,0"/>
                             <TextBlock Grid.Row="1" Grid.Column="2" Text="高:" VerticalAlignment="Center" Margin="4,4,0,0"/>
-                            <NumericUpDown Grid.Row="1" Grid.Column="3" Value="40" Minimum="1" Maximum="10000" Margin="0,4,0,0"/>
+                            <NumericUpDown Grid.Row="1" Grid.Column="3"
+                                           Value="{Binding ControlHeight}" Minimum="1" Maximum="10000" Margin="0,4,0,0"/>
 
                             <TextBlock Grid.Row="2" Grid.Column="0" Text="Z层:" VerticalAlignment="Center" Margin="0,4,0,0"/>
-                            <NumericUpDown Grid.Row="2" Grid.Column="1" Value="0" Minimum="0" Maximum="9999" Margin="0,4,0,0"/>
+                            <NumericUpDown Grid.Row="2" Grid.Column="1"
+                                           Value="{Binding ControlZIndex}" Minimum="0" Maximum="9999" Margin="0,4,0,0"/>
                             <TextBlock Grid.Row="2" Grid.Column="2" Text="透明:" VerticalAlignment="Center" Margin="4,4,0,0"/>
-                            <NumericUpDown Grid.Row="2" Grid.Column="3" Value="100" Minimum="0" Maximum="100" Margin="0,4,0,0"/>
+                            <NumericUpDown Grid.Row="2" Grid.Column="3"
+                                           Value="{Binding ControlOpacity}" Minimum="0" Maximum="1"
+                                           Increment="0.05" FormatString="0.00" Margin="0,4,0,0"/>
                         </Grid>
 
                         <TextBlock Text="外观" FontWeight="Bold" FontSize="12" Foreground="#888" Margin="0,8,0,0"/>
-                        <Grid ColumnDefinitions="60,*" RowDefinitions="Auto,Auto" Margin="0,2">
-                            <TextBlock Grid.Row="0" Grid.Column="0" Text="可见:" VerticalAlignment="Center"/>
-                            <CheckBox Grid.Row="0" Grid.Column="1" IsChecked="True"/>
-                            <TextBlock Grid.Row="1" Grid.Column="0" Text="锁定:" VerticalAlignment="Center" Margin="0,4,0,0"/>
-                            <CheckBox Grid.Row="1" Grid.Column="1" IsChecked="False" Margin="0,4,0,0"/>
+                        <Grid ColumnDefinitions="60,*" RowDefinitions="Auto,Auto,Auto" Margin="0,2">
+                            <TextBlock Grid.Row="0" Grid.Column="0" Text="名称:" VerticalAlignment="Center"/>
+                            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding ControlName}"/>
+                            <TextBlock Grid.Row="1" Grid.Column="0" Text="可见:" VerticalAlignment="Center" Margin="0,4,0,0"/>
+                            <CheckBox Grid.Row="1" Grid.Column="1"
+                                      IsChecked="{Binding ControlVisible}" Margin="0,4,0,0"/>
+                            <TextBlock Grid.Row="2" Grid.Column="0" Text="锁定:" VerticalAlignment="Center" Margin="0,4,0,0"/>
+                            <CheckBox Grid.Row="2" Grid.Column="1"
+                                      IsChecked="{Binding ControlLocked}" Margin="0,4,0,0"/>
                         </Grid>
                     </StackPanel>
                 </ScrollViewer>

@@ -1,14 +1,21 @@
 {
   "version": 2,
-  "dgSpecHash": "s5sbhgqvRVU=",
+  "dgSpecHash": "mfn3agr90Jw=",
   "success": true,
   "projectFilePath": "/home/runner/work/HMIexe/HMIexe/src/HMIexe.Runtime/HMIexe.Runtime.csproj",
   "expectedPackageFiles": [
     "/home/runner/.nuget/packages/communitytoolkit.mvvm/8.4.2/communitytoolkit.mvvm.8.4.2.nupkg.sha512",
+    "/home/runner/.nuget/packages/microsoft.codeanalysis.analyzers/5.3.0-2.25625.1/microsoft.codeanalysis.analyzers.5.3.0-2.25625.1.nupkg.sha512",
+    "/home/runner/.nuget/packages/microsoft.codeanalysis.common/5.3.0/microsoft.codeanalysis.common.5.3.0.nupkg.sha512",
+    "/home/runner/.nuget/packages/microsoft.codeanalysis.csharp/5.3.0/microsoft.codeanalysis.csharp.5.3.0.nupkg.sha512",
+    "/home/runner/.nuget/packages/microsoft.codeanalysis.csharp.scripting/5.3.0/microsoft.codeanalysis.csharp.scripting.5.3.0.nupkg.sha512",
+    "/home/runner/.nuget/packages/microsoft.codeanalysis.scripting.common/5.3.0/microsoft.codeanalysis.scripting.common.5.3.0.nupkg.sha512",
     "/home/runner/.nuget/packages/microsoft.extensions.dependencyinjection.abstractions/10.0.5/microsoft.extensions.dependencyinjection.abstractions.10.0.5.nupkg.sha512",
     "/home/runner/.nuget/packages/microsoft.extensions.logging.abstractions/10.0.5/microsoft.extensions.logging.abstractions.10.0.5.nupkg.sha512",
+    "/home/runner/.nuget/packages/system.collections.immutable/9.0.0/system.collections.immutable.9.0.0.nupkg.sha512",
     "/home/runner/.nuget/packages/system.diagnostics.diagnosticsource/10.0.5/system.diagnostics.diagnosticsource.10.0.5.nupkg.sha512",
     "/home/runner/.nuget/packages/system.io.pipelines/10.0.5/system.io.pipelines.10.0.5.nupkg.sha512",
+    "/home/runner/.nuget/packages/system.reflection.metadata/9.0.0/system.reflection.metadata.9.0.0.nupkg.sha512",
     "/home/runner/.nuget/packages/system.text.encodings.web/10.0.5/system.text.encodings.web.10.0.5.nupkg.sha512",
     "/home/runner/.nuget/packages/system.text.json/10.0.5/system.text.json.10.0.5.nupkg.sha512"
   ],

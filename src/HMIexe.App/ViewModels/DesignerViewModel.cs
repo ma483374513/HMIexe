@@ -5,6 +5,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using HMIexe.Core.Models.Canvas;
 using HMIexe.Core.Models.Controls;
+using HMIexe.Core.Models.Project;
 
 namespace HMIexe.App.ViewModels;
 
@@ -146,5 +147,56 @@ public partial class DesignerViewModel : ObservableObject
             c.Y = y;
             y += c.Height + gap;
         }
+    }
+
+    public PropertyPanelViewModel PropertyPanel { get; } = new PropertyPanelViewModel();
+
+    partial void OnSelectedControlChanged(HmiControlBase? value)
+    {
+        PropertyPanel.SelectedControl = value;
+    }
+
+    public void LoadProject(HmiProject project)
+    {
+        Pages.Clear();
+        SelectedControls.Clear();
+        SelectedControl = null;
+
+        foreach (var page in project.Pages)
+            Pages.Add(page);
+
+        CurrentPage = Pages.FirstOrDefault(p => p.Id == project.DefaultPageId)
+            ?? Pages.FirstOrDefault();
+    }
+
+    [RelayCommand]
+    private void SelectPage(HmiPage page)
+    {
+        CurrentPage = page;
+        SelectedControls.Clear();
+        SelectedControl = null;
+    }
+
+    [RelayCommand]
+    private void AddControlToCanvas(string controlTypeStr)
+    {
+        if (CurrentPage == null) return;
+        var layer = CurrentPage.Layers.FirstOrDefault();
+        if (layer == null) return;
+
+        HmiControlBase? control = controlTypeStr switch
+        {
+            "Button" => new Core.Models.Controls.ButtonControl { Name = $"Button{layer.Controls.Count + 1}" },
+            "Label" => new Core.Models.Controls.LabelControl { Name = $"Label{layer.Controls.Count + 1}" },
+            "TextBox" => new Core.Models.Controls.TextBoxControl { Name = $"TextBox{layer.Controls.Count + 1}" },
+            "Gauge" => new Core.Models.Controls.GaugeControl { Name = $"Gauge{layer.Controls.Count + 1}" },
+            _ => null
+        };
+
+        if (control == null) return;
+        control.X = 100 + layer.Controls.Count * 10;
+        control.Y = 100 + layer.Controls.Count * 10;
+        layer.Controls.Add(control);
+        SelectedControl = control;
     }
 }
