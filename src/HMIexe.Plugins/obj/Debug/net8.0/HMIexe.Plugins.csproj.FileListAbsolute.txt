@@ -1,0 +1,12 @@
+/home/runner/work/HMIexe/HMIexe/src/HMIexe.Plugins/bin/Debug/net8.0/HMIexe.Plugins.deps.json
+/home/runner/work/HMIexe/HMIexe/src/HMIexe.Plugins/bin/Debug/net8.0/HMIexe.Plugins.dll
+/home/runner/work/HMIexe/HMIexe/src/HMIexe.Plugins/bin/Debug/net8.0/HMIexe.Plugins.pdb
+/home/runner/work/HMIexe/HMIexe/src/HMIexe.Plugins/obj/Debug/net8.0/HMIexe.Plugins.GeneratedMSBuildEditorConfig.editorconfig
+/home/runner/work/HMIexe/HMIexe/src/HMIexe.Plugins/obj/Debug/net8.0/HMIexe.Plugins.AssemblyInfoInputs.cache
+/home/runner/work/HMIexe/HMIexe/src/HMIexe.Plugins/obj/Debug/net8.0/HMIexe.Plugins.AssemblyInfo.cs
+/home/runner/work/HMIexe/HMIexe/src/HMIexe.Plugins/obj/Debug/net8.0/HMIexe.Plugins.csproj.CoreCompileInputs.cache
+/home/runner/work/HMIexe/HMIexe/src/HMIexe.Plugins/obj/Debug/net8.0/HMIexe.Plugins.sourcelink.json
+/home/runner/work/HMIexe/HMIexe/src/HMIexe.Plugins/obj/Debug/net8.0/HMIexe.Plugins.dll
+/home/runner/work/HMIexe/HMIexe/src/HMIexe.Plugins/obj/Debug/net8.0/refint/HMIexe.Plugins.dll
+/home/runner/work/HMIexe/HMIexe/src/HMIexe.Plugins/obj/Debug/net8.0/HMIexe.Plugins.pdb
+/home/runner/work/HMIexe/HMIexe/src/HMIexe.Plugins/obj/Debug/net8.0/ref/HMIexe.Plugins.dll

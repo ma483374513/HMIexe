@@ -1,0 +1,36 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:HMIexe.App.ViewModels"
+             x:Class="HMIexe.App.Views.VariableManagerView"
+             x:DataType="vm:VariableManagerViewModel">
+
+    <DockPanel>
+        <!-- Toolbar -->
+        <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="4" Margin="4">
+            <Button Content="+ 新建变量" Command="{Binding AddVariableCommand}"/>
+            <Button Content="删除" Command="{Binding RemoveVariableCommand}"/>
+            <Button Content="导入CSV" Command="{Binding ImportFromCsvCommand}"/>
+            <Button Content="导出CSV" Command="{Binding ExportToCsvCommand}"/>
+            <TextBox Watermark="搜索变量..." Text="{Binding SearchText}" Width="200"/>
+        </StackPanel>
+
+        <!-- Variable Grid -->
+        <DataGrid ItemsSource="{Binding Variables}"
+                  SelectedItem="{Binding SelectedVariable}"
+                  AutoGenerateColumns="False"
+                  CanUserReorderColumns="True"
+                  CanUserResizeColumns="True"
+                  GridLinesVisibility="All">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="名称" Binding="{Binding Name}" Width="150"/>
+                <DataGridTextColumn Header="显示名" Binding="{Binding DisplayName}" Width="150"/>
+                <DataGridTextColumn Header="类型" Binding="{Binding Type}" Width="100"/>
+                <DataGridTextColumn Header="当前值" Binding="{Binding Value}" Width="100"/>
+                <DataGridTextColumn Header="默认值" Binding="{Binding DefaultValue}" Width="100"/>
+                <DataGridTextColumn Header="组别" Binding="{Binding Group}" Width="100"/>
+                <DataGridTextColumn Header="单位" Binding="{Binding Unit}" Width="80"/>
+                <DataGridTextColumn Header="描述" Binding="{Binding Description}" Width="200"/>
+            </DataGrid.Columns>
+        </DataGrid>
+    </DockPanel>
+</UserControl>
