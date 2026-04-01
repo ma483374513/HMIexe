@@ -54,6 +54,10 @@ public partial class App : Application
         // ViewModels
         services.AddSingleton<DesignerViewModel>();
         services.AddSingleton<VariableManagerViewModel>();
+        services.AddSingleton<ScriptEditorViewModel>();
+        services.AddSingleton<AlarmManagerViewModel>();
+        services.AddSingleton<CommunicationManagerViewModel>();
+        services.AddSingleton<ResourceManagerViewModel>();
         services.AddSingleton<MainWindowViewModel>();
 
         return services.BuildServiceProvider();

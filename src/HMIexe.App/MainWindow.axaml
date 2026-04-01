@@ -16,35 +16,39 @@
                 <MenuItem Header="打开工程" Command="{Binding OpenProjectCommand}"/>
                 <Separator/>
                 <MenuItem Header="保存" Command="{Binding SaveProjectCommand}"/>
+                <MenuItem Header="另存为" Command="{Binding SaveProjectAsCommand}"/>
                 <Separator/>
-                <MenuItem Header="退出"/>
+                <MenuItem Header="退出" Command="{Binding ExitApplicationCommand}"/>
             </MenuItem>
             <MenuItem Header="编辑(_E)">
-                <MenuItem Header="撤销"/>
-                <MenuItem Header="重做"/>
+                <MenuItem Header="{Binding DesignerViewModel.UndoRedo.UndoDescription, FallbackValue='撤销'}"
+                          Command="{Binding UndoCommand}"
+                          IsEnabled="{Binding DesignerViewModel.UndoRedo.CanUndo, FallbackValue=False}"/>
+                <MenuItem Header="{Binding DesignerViewModel.UndoRedo.RedoDescription, FallbackValue='重做'}"
+                          Command="{Binding RedoCommand}"
+                          IsEnabled="{Binding DesignerViewModel.UndoRedo.CanRedo, FallbackValue=False}"/>
                 <Separator/>
-                <MenuItem Header="复制"/>
-                <MenuItem Header="粘贴"/>
-                <MenuItem Header="剪切"/>
-                <MenuItem Header="删除"/>
+                <MenuItem Header="删除选中控件"
+                          Command="{Binding DesignerViewModel.DeleteSelectedControlsCommand}"/>
             </MenuItem>
             <MenuItem Header="视图(_V)">
-                <MenuItem Header="网格"/>
-                <MenuItem Header="标尺"/>
-                <MenuItem Header="辅助线"/>
+                <MenuItem Header="返回设计器" Command="{Binding ShowDesignerCommand}"/>
+                <Separator/>
+                <MenuItem Header="切换网格" Command="{Binding ToggleGridCommand}"/>
             </MenuItem>
             <MenuItem Header="工程(_P)">
-                <MenuItem Header="变量管理"/>
-                <MenuItem Header="资源管理"/>
-                <MenuItem Header="脚本管理"/>
-                <MenuItem Header="通信配置"/>
+                <MenuItem Header="变量管理" Command="{Binding ShowVariableManagerCommand}"/>
+                <MenuItem Header="资源管理" Command="{Binding ShowResourceManagerCommand}"/>
+                <MenuItem Header="脚本管理" Command="{Binding ShowScriptEditorCommand}"/>
+                <MenuItem Header="通信配置" Command="{Binding ShowCommunicationManagerCommand}"/>
+                <MenuItem Header="报警管理" Command="{Binding ShowAlarmManagerCommand}"/>
             </MenuItem>
             <MenuItem Header="工具(_T)">
                 <MenuItem Header="设置"/>
                 <MenuItem Header="插件管理"/>
             </MenuItem>
             <MenuItem Header="帮助(_H)">
-                <MenuItem Header="关于"/>
+                <MenuItem Header="关于" Command="{Binding ShowAboutCommand}"/>
             </MenuItem>
         </Menu>
 
@@ -53,10 +57,20 @@
             <Button Content="新建" Command="{Binding NewProjectCommand}" ToolTip.Tip="新建工程"/>
             <Button Content="打开" Command="{Binding OpenProjectCommand}" ToolTip.Tip="打开工程"/>
             <Button Content="保存" Command="{Binding SaveProjectCommand}" ToolTip.Tip="保存工程"/>
-            <Button Content="↩ 撤销" ToolTip.Tip="撤销"/>
-            <Button Content="↪ 重做" ToolTip.Tip="重做"/>
-            <Button Content="▶ 预览" ToolTip.Tip="预览运行"/>
-            <Button Content="⬡ 发布" ToolTip.Tip="发布工程"/>
+            <Separator Width="1" Background="#444" Margin="2,4"/>
+            <Button Content="↩ 撤销" Command="{Binding UndoCommand}"
+                    IsEnabled="{Binding DesignerViewModel.UndoRedo.CanUndo, FallbackValue=False}"
+                    ToolTip.Tip="{Binding DesignerViewModel.UndoRedo.UndoDescription, FallbackValue='撤销'}"/>
+            <Button Content="↪ 重做" Command="{Binding RedoCommand}"
+                    IsEnabled="{Binding DesignerViewModel.UndoRedo.CanRedo, FallbackValue=False}"
+                    ToolTip.Tip="{Binding DesignerViewModel.UndoRedo.RedoDescription, FallbackValue='重做'}"/>
+            <Separator Width="1" Background="#444" Margin="2,4"/>
+            <Button Content="设计" Command="{Binding ShowDesignerCommand}" ToolTip.Tip="返回设计器"/>
+            <Button Content="变量" Command="{Binding ShowVariableManagerCommand}" ToolTip.Tip="变量管理"/>
+            <Button Content="脚本" Command="{Binding ShowScriptEditorCommand}" ToolTip.Tip="脚本编辑器"/>
+            <Button Content="报警" Command="{Binding ShowAlarmManagerCommand}" ToolTip.Tip="报警管理"/>
+            <Button Content="通信" Command="{Binding ShowCommunicationManagerCommand}" ToolTip.Tip="通信配置"/>
+            <Button Content="资源" Command="{Binding ShowResourceManagerCommand}" ToolTip.Tip="资源管理"/>
         </StackPanel>
 
         <!-- Status Bar -->
@@ -74,13 +88,28 @@
                        Foreground="#AAAAAA" VerticalAlignment="Center"/>
         </StackPanel>
 
-        <!-- Main Content: DesignerView -->
-        <ContentControl Content="{Binding DesignerViewModel}">
-            <ContentControl.ContentTemplate>
-                <DataTemplate>
+        <!-- Main Content: switches between Designer and manager panels -->
+        <ContentControl Content="{Binding CurrentContent}">
+            <ContentControl.DataTemplates>
+                <DataTemplate DataType="vm:DesignerViewModel">
                     <views:DesignerView DataContext="{Binding}"/>
                 </DataTemplate>
-            </ContentControl.ContentTemplate>
+                <DataTemplate DataType="vm:VariableManagerViewModel">
+                    <views:VariableManagerView DataContext="{Binding}"/>
+                </DataTemplate>
+                <DataTemplate DataType="vm:ScriptEditorViewModel">
+                    <views:ScriptEditorView DataContext="{Binding}"/>
+                </DataTemplate>
+                <DataTemplate DataType="vm:AlarmManagerViewModel">
+                    <views:AlarmManagerView DataContext="{Binding}"/>
+                </DataTemplate>
+                <DataTemplate DataType="vm:CommunicationManagerViewModel">
+                    <views:CommunicationManagerView DataContext="{Binding}"/>
+                </DataTemplate>
+                <DataTemplate DataType="vm:ResourceManagerViewModel">
+                    <views:ResourceManagerView DataContext="{Binding}"/>
+                </DataTemplate>
+            </ContentControl.DataTemplates>
         </ContentControl>
     </DockPanel>
 </Window>

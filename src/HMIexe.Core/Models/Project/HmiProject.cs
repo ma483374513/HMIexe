@@ -13,6 +13,8 @@ public class HmiProject
     public List<Variables.HmiVariable> Variables { get; set; } = new();
     public List<Script.HmiScript> Scripts { get; set; } = new();
     public List<Resource.HmiResource> Resources { get; set; } = new();
+    public List<Communication.CommunicationChannel> CommunicationChannels { get; set; } = new();
+    public List<Alarm.HmiAlarmDefinition> AlarmDefinitions { get; set; } = new();
     public ProjectSettings Settings { get; set; } = new();
 }
 

@@ -44,7 +44,19 @@ build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 [/home/runner/work/HMIexe/HMIexe/src/HMIexe.App/MainWindow.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
+[/home/runner/work/HMIexe/HMIexe/src/HMIexe.App/Views/AlarmManagerView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[/home/runner/work/HMIexe/HMIexe/src/HMIexe.App/Views/CommunicationManagerView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
 [/home/runner/work/HMIexe/HMIexe/src/HMIexe.App/Views/DesignerView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[/home/runner/work/HMIexe/HMIexe/src/HMIexe.App/Views/ResourceManagerView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
+[/home/runner/work/HMIexe/HMIexe/src/HMIexe.App/Views/ScriptEditorView.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
 [/home/runner/work/HMIexe/HMIexe/src/HMIexe.App/Views/VariableManagerView.axaml]

@@ -1,0 +1,129 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:HMIexe.App.ViewModels"
+             xmlns:alarm="using:HMIexe.Core.Models.Alarm"
+             x:Class="HMIexe.App.Views.AlarmManagerView"
+             x:DataType="vm:AlarmManagerViewModel">
+
+    <Grid RowDefinitions="Auto,*">
+        <!-- Toolbar -->
+        <StackPanel Grid.Row="0" Orientation="Horizontal" Spacing="4" Margin="8,4"
+                    Background="#2D2D2D">
+            <Button Content="刷新" Command="{Binding RefreshViewCommand}" ToolTip.Tip="刷新报警"/>
+            <Button Content="全部确认" Command="{Binding AcknowledgeAllAlarmsCommand}" ToolTip.Tip="确认所有活动报警"/>
+            <Button Content="导出历史" Command="{Binding ExportHistoryCommand}" ToolTip.Tip="导出报警历史CSV"/>
+        </StackPanel>
+
+        <TabControl Grid.Row="1" SelectedIndex="{Binding SelectedTabIndex}">
+
+            <!-- Tab 1: Active Alarms -->
+            <TabItem Header="活动报警">
+                <DockPanel>
+                    <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Spacing="4" Margin="8,4">
+                        <Button Content="确认选中" Command="{Binding AcknowledgeSelectedAlarmCommand}"
+                                IsEnabled="{Binding SelectedActiveAlarm, Converter={x:Static ObjectConverters.IsNotNull}}"/>
+                    </StackPanel>
+                    <DataGrid ItemsSource="{Binding ActiveAlarms}"
+                              SelectedItem="{Binding SelectedActiveAlarm}"
+                              AutoGenerateColumns="False"
+                              IsReadOnly="True"
+                              GridLinesVisibility="Horizontal"
+                              CanUserResizeColumns="True">
+                        <DataGrid.Columns>
+                            <DataGridTextColumn Header="严重级别" Binding="{Binding Severity}" Width="80"/>
+                            <DataGridTextColumn Header="消息" Binding="{Binding Message}" Width="*"/>
+                            <DataGridTextColumn Header="发生时间" Binding="{Binding OccurredAt, StringFormat='{}{0:yyyy-MM-dd HH:mm:ss}'}" Width="160"/>
+                            <DataGridCheckBoxColumn Header="活动" Binding="{Binding IsActive}" Width="60"/>
+                        </DataGrid.Columns>
+                    </DataGrid>
+                </DockPanel>
+            </TabItem>
+
+            <!-- Tab 2: Alarm History -->
+            <TabItem Header="历史记录">
+                <DataGrid ItemsSource="{Binding AlarmHistory}"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          GridLinesVisibility="Horizontal"
+                          CanUserResizeColumns="True">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="严重级别" Binding="{Binding Severity}" Width="80"/>
+                        <DataGridTextColumn Header="消息" Binding="{Binding Message}" Width="*"/>
+                        <DataGridTextColumn Header="发生时间" Binding="{Binding OccurredAt, StringFormat='{}{0:yyyy-MM-dd HH:mm:ss}'}" Width="160"/>
+                        <DataGridTextColumn Header="确认时间" Binding="{Binding AcknowledgedAt, StringFormat='{}{0:yyyy-MM-dd HH:mm:ss}'}" Width="160"/>
+                        <DataGridTextColumn Header="确认人" Binding="{Binding AcknowledgedBy}" Width="100"/>
+                    </DataGrid.Columns>
+                </DataGrid>
+            </TabItem>
+
+            <!-- Tab 3: Alarm Definitions -->
+            <TabItem Header="报警定义">
+                <Grid ColumnDefinitions="260,*">
+                    <!-- Definition list -->
+                    <Border Grid.Column="0" BorderThickness="0,0,1,0" BorderBrush="#444">
+                        <DockPanel>
+                            <DockPanel DockPanel.Dock="Top" Background="#2D2D2D" LastChildFill="False">
+                                <TextBlock Text="报警定义" Foreground="White" Padding="8,6"
+                                           FontWeight="Bold" VerticalAlignment="Center"/>
+                                <Button DockPanel.Dock="Right" Content="+" Width="28" Height="28"
+                                        Padding="0" Margin="2" Command="{Binding AddDefinitionCommand}"/>
+                                <Button DockPanel.Dock="Right" Content="−" Width="28" Height="28"
+                                        Padding="0" Margin="2" Command="{Binding RemoveDefinitionCommand}"/>
+                            </DockPanel>
+                            <ScrollViewer>
+                                <ItemsControl ItemsSource="{Binding AlarmDefinitions}">
+                                    <ItemsControl.ItemTemplate>
+                                        <DataTemplate x:DataType="alarm:HmiAlarmDefinition">
+                                            <Border Padding="8,6" PointerPressed="AlarmDefItem_PointerPressed">
+                                                <StackPanel>
+                                                    <TextBlock Text="{Binding Name}" FontWeight="SemiBold"/>
+                                                    <TextBlock Text="{Binding Severity}" FontSize="11" Foreground="#888"/>
+                                                </StackPanel>
+                                            </Border>
+                                        </DataTemplate>
+                                    </ItemsControl.ItemTemplate>
+                                </ItemsControl>
+                            </ScrollViewer>
+                        </DockPanel>
+                    </Border>
+
+                    <!-- Definition editor -->
+                    <ScrollViewer Grid.Column="1">
+                        <StackPanel Spacing="8" Margin="12"
+                                    IsEnabled="{Binding SelectedDefinition, Converter={x:Static ObjectConverters.IsNotNull}}">
+                            <TextBlock Text="报警属性" FontWeight="Bold" FontSize="13" Foreground="#888"/>
+                            <Grid ColumnDefinitions="100,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto,Auto" Margin="0,4">
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="名称:" VerticalAlignment="Center"/>
+                                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding SelectedDefinition.Name}"/>
+
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="严重级别:" VerticalAlignment="Center" Margin="0,6,0,0"/>
+                                <ComboBox Grid.Row="1" Grid.Column="1" ItemsSource="{Binding SeverityLevels}"
+                                          SelectedItem="{Binding SelectedDefinition.Severity}" Margin="0,6,0,0"/>
+
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="消息:" VerticalAlignment="Center" Margin="0,6,0,0"/>
+                                <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding SelectedDefinition.Message}" Margin="0,6,0,0"/>
+
+                                <TextBlock Grid.Row="3" Grid.Column="0" Text="触发条件:" VerticalAlignment="Top" Margin="0,6,0,0"/>
+                                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding SelectedDefinition.Condition}"
+                                         AcceptsReturn="True" Height="60" Margin="0,6,0,0"
+                                         Watermark="例如: [温度] > 80"/>
+
+                                <TextBlock Grid.Row="4" Grid.Column="0" Text="确认脚本:" VerticalAlignment="Top" Margin="0,6,0,0"/>
+                                <TextBox Grid.Row="4" Grid.Column="1" Text="{Binding SelectedDefinition.AcknowledgeScript}"
+                                         AcceptsReturn="True" Height="60"
+                                         FontFamily="Consolas,monospace" FontSize="12"
+                                         Margin="0,6,0,0"
+                                         Watermark="确认时执行的C#脚本"/>
+
+                                <TextBlock Grid.Row="5" Grid.Column="0" Text="启用:" VerticalAlignment="Center" Margin="0,6,0,0"/>
+                                <CheckBox Grid.Row="5" Grid.Column="1" IsChecked="{Binding SelectedDefinition.IsEnabled}" Margin="0,6,0,0"/>
+                            </Grid>
+                            <Button Content="▶ 测试触发" Command="{Binding TestRaiseAlarmCommand}"
+                                    ToolTip.Tip="手动触发选中报警（测试用）" Margin="0,8,0,0"/>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</UserControl>

@@ -32,13 +32,25 @@
                             <Button Content="仪表盘" HorizontalAlignment="Stretch"
                                     Command="{Binding AddControlToCanvasCommand}"
                                     CommandParameter="Gauge"/>
-                            <Button Content="指示灯" HorizontalAlignment="Stretch"/>
-                            <Button Content="开关" HorizontalAlignment="Stretch"/>
-                            <Button Content="滑动杆" HorizontalAlignment="Stretch"/>
+                            <Button Content="指示灯" HorizontalAlignment="Stretch"
+                                    Command="{Binding AddControlToCanvasCommand}"
+                                    CommandParameter="IndicatorLight"/>
+                            <Button Content="开关" HorizontalAlignment="Stretch"
+                                    Command="{Binding AddControlToCanvasCommand}"
+                                    CommandParameter="Switch"/>
+                            <Button Content="滑动杆" HorizontalAlignment="Stretch"
+                                    Command="{Binding AddControlToCanvasCommand}"
+                                    CommandParameter="Slider"/>
                             <TextBlock Text="图形" FontSize="11" Foreground="#888" Margin="0,4,0,2"/>
-                            <Button Content="直线" HorizontalAlignment="Stretch"/>
-                            <Button Content="矩形" HorizontalAlignment="Stretch"/>
-                            <Button Content="圆形" HorizontalAlignment="Stretch"/>
+                            <Button Content="直线" HorizontalAlignment="Stretch"
+                                    Command="{Binding AddControlToCanvasCommand}"
+                                    CommandParameter="Line"/>
+                            <Button Content="矩形" HorizontalAlignment="Stretch"
+                                    Command="{Binding AddControlToCanvasCommand}"
+                                    CommandParameter="Rectangle"/>
+                            <Button Content="圆形" HorizontalAlignment="Stretch"
+                                    Command="{Binding AddControlToCanvasCommand}"
+                                    CommandParameter="Circle"/>
                             <Button Content="椭圆" HorizontalAlignment="Stretch"/>
                             <Button Content="多边形" HorizontalAlignment="Stretch"/>
                         </StackPanel>
@@ -161,7 +173,51 @@
                                             </StackPanel>
                                         </Border>
                                     </DataTemplate>
-                                    <!-- Default fallback -->
+                                    <!-- IndicatorLight control -->
+                                    <DataTemplate x:CompileBindings="False" DataType="core:IndicatorLightControl">
+                                        <Ellipse HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                                 Fill="{Binding OnColor}"
+                                                 Stroke="{Binding BorderColor}"
+                                                 StrokeThickness="{Binding BorderThickness}"
+                                                 ToolTip.Tip="{Binding Name}"/>
+                                    </DataTemplate>
+                                    <DataTemplate x:CompileBindings="False" DataType="core:SwitchControl">
+                                        <ToggleButton IsChecked="{Binding IsOn}"
+                                                      HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                            <TextBlock Text="{Binding OnLabel}" HorizontalAlignment="Center"/>
+                                        </ToggleButton>
+                                    </DataTemplate>
+                                    <DataTemplate x:CompileBindings="False" DataType="core:SliderControl">
+                                        <StackPanel VerticalAlignment="Center" Spacing="4">
+                                            <Slider Value="{Binding Value}"
+                                                    Minimum="{Binding Minimum}"
+                                                    Maximum="{Binding Maximum}"
+                                                    TickFrequency="{Binding TickFrequency}"
+                                                    TickPlacement="BottomRight"/>
+                                            <TextBlock IsVisible="{Binding ShowValue}"
+                                                       Text="{Binding Value, StringFormat='{}{0:F1}'}"
+                                                       TextAlignment="Center" FontSize="10"/>
+                                        </StackPanel>
+                                    </DataTemplate>
+                                    <DataTemplate x:CompileBindings="False" DataType="core:RectangleControl">
+                                        <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                                Background="{Binding FillColor}"
+                                                BorderBrush="{Binding StrokeColor}"
+                                                BorderThickness="{Binding StrokeThickness}"
+                                                CornerRadius="{Binding CornerRadius}"/>
+                                    </DataTemplate>
+                                    <DataTemplate x:CompileBindings="False" DataType="core:CircleControl">
+                                        <Ellipse HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                                 Fill="{Binding FillColor}"
+                                                 Stroke="{Binding StrokeColor}"
+                                                 StrokeThickness="{Binding StrokeThickness}"/>
+                                    </DataTemplate>
+                                    <DataTemplate x:CompileBindings="False" DataType="core:LineControl">
+                                        <Line StartPoint="0,0"
+                                              Stroke="{Binding StrokeColor}"
+                                              StrokeThickness="{Binding StrokeThickness}"
+                                              HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+                                    </DataTemplate>
                                     <DataTemplate x:CompileBindings="False" DataType="core:HmiControlBase">
                                         <Border BorderBrush="#888" BorderThickness="1" Background="#2D2D2D">
                                             <TextBlock Text="{Binding Name}" Foreground="White"

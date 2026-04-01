@@ -6,11 +6,13 @@ using CommunityToolkit.Mvvm.Input;
 using HMIexe.Core.Models.Canvas;
 using HMIexe.Core.Models.Controls;
 using HMIexe.Core.Models.Project;
+using HMIexe.Core.UndoRedo;
 
 namespace HMIexe.App.ViewModels;
 
 public partial class DesignerViewModel : ObservableObject
 {
+    public UndoRedoHistory UndoRedo { get; } = new();
     [ObservableProperty]
     private HmiPage? _currentPage;
 
@@ -39,6 +41,12 @@ public partial class DesignerViewModel : ObservableObject
     public ObservableCollection<HmiPage> Pages { get; } = new();
 
     [RelayCommand]
+    private void Undo() => UndoRedo.Undo();
+
+    [RelayCommand]
+    private void Redo() => UndoRedo.Redo();
+
+    [RelayCommand]
     private void ZoomIn() => ZoomLevel = Math.Min(ZoomLevel + 0.1, 5.0);
 
     [RelayCommand]
@@ -60,11 +68,13 @@ public partial class DesignerViewModel : ObservableObject
     private void DeleteSelectedControls()
     {
         if (CurrentPage == null) return;
-        foreach (var control in SelectedControls.ToList())
-        {
-            foreach (var layer in CurrentPage.Layers)
-                layer.Controls.Remove(control);
-        }
+        var items = SelectedControls
+            .SelectMany(ctrl => CurrentPage.Layers
+                .Where(l => l.Controls.Contains(ctrl))
+                .Select(l => (l, ctrl)))
+            .ToList();
+        var action = new RemoveControlsAction(items);
+        UndoRedo.Execute(action);
         SelectedControls.Clear();
         SelectedControl = null;
     }
@@ -161,6 +171,7 @@ public partial class DesignerViewModel : ObservableObject
         Pages.Clear();
         SelectedControls.Clear();
         SelectedControl = null;
+        UndoRedo.Clear();
 
         foreach (var page in project.Pages)
             Pages.Add(page);
@@ -190,13 +201,20 @@ public partial class DesignerViewModel : ObservableObject
             "Label" => new Core.Models.Controls.LabelControl { Name = $"Label{layer.Controls.Count + 1}" },
             "TextBox" => new Core.Models.Controls.TextBoxControl { Name = $"TextBox{layer.Controls.Count + 1}" },
             "Gauge" => new Core.Models.Controls.GaugeControl { Name = $"Gauge{layer.Controls.Count + 1}" },
+            "IndicatorLight" => new Core.Models.Controls.IndicatorLightControl { Name = $"Light{layer.Controls.Count + 1}" },
+            "Switch" => new Core.Models.Controls.SwitchControl { Name = $"Switch{layer.Controls.Count + 1}" },
+            "Slider" => new Core.Models.Controls.SliderControl { Name = $"Slider{layer.Controls.Count + 1}" },
+            "Line" => new Core.Models.Controls.LineControl { Name = $"Line{layer.Controls.Count + 1}" },
+            "Rectangle" => new Core.Models.Controls.RectangleControl { Name = $"Rect{layer.Controls.Count + 1}" },
+            "Circle" => new Core.Models.Controls.CircleControl { Name = $"Circle{layer.Controls.Count + 1}" },
             _ => null
         };
 
         if (control == null) return;
         control.X = 100 + layer.Controls.Count * 10;
         control.Y = 100 + layer.Controls.Count * 10;
-        layer.Controls.Add(control);
+        var action = new AddControlAction(layer, control);
+        UndoRedo.Execute(action);
         SelectedControl = control;
     }
 }
