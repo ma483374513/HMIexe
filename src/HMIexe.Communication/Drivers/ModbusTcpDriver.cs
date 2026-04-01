@@ -20,11 +20,14 @@ public class ModbusTcpDriver : IProtocolDriver
     {
         try
         {
-            var host = parameters.GetValueOrDefault("Host", "127.0.0.1");
-            var port = int.Parse(parameters.GetValueOrDefault("Port", "502")!);
+            var host = parameters.GetValueOrDefault("Host", "127.0.0.1")!;
+            if (!int.TryParse(parameters.GetValueOrDefault("Port", "502"), out var port))
+                port = 502;
+            if (!IPAddress.TryParse(host, out var ipAddress))
+                return false;
 
             _client = new TcpClient();
-            await _client.ConnectAsync(IPAddress.Parse(host!), port, cancellationToken);
+            await _client.ConnectAsync(ipAddress, port, cancellationToken);
             _stream = _client.GetStream();
             Connected?.Invoke(this, EventArgs.Empty);
             return true;

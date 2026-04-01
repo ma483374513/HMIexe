@@ -87,7 +87,7 @@ public class VariableService : IVariableService
     private static string[] SplitCsvLine(string line)
     {
         var fields = new List<string>();
-        var current = new System.Text.StringBuilder();
+        var fieldBuilder = new System.Text.StringBuilder();
         bool inQuotes = false;
         for (int i = 0; i < line.Length; i++)
         {
@@ -96,25 +96,25 @@ public class VariableService : IVariableService
             {
                 if (c == '"' && i + 1 < line.Length && line[i + 1] == '"')
                 {
-                    current.Append('"');
+                    fieldBuilder.Append('"');
                     i++;
                 }
                 else if (c == '"')
                     inQuotes = false;
                 else
-                    current.Append(c);
+                    fieldBuilder.Append(c);
             }
             else if (c == '"')
                 inQuotes = true;
             else if (c == ',')
             {
-                fields.Add(current.ToString());
-                current.Clear();
+                fields.Add(fieldBuilder.ToString());
+                fieldBuilder.Clear();
             }
             else
-                current.Append(c);
+                fieldBuilder.Append(c);
         }
-        fields.Add(current.ToString());
+        fields.Add(fieldBuilder.ToString());
         return fields.ToArray();
     }
 

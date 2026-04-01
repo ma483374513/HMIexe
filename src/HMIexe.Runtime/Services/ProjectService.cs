@@ -97,7 +97,7 @@ public class ProjectService : IProjectService
     {
         if (CurrentProject == null) throw new InvalidOperationException("No project open.");
         var json = JsonSerializer.Serialize(CurrentProject, JsonOptions);
-        var packagePath = Path.Combine(outputPath, $"{CurrentProject.Name}_{DateTime.Now:yyyyMMddHHmmss}.hmiproj");
+        var packagePath = Path.Combine(outputPath, $"{CurrentProject.Name}_{DateTime.UtcNow:yyyyMMddHHmmss}.hmiproj");
         await File.WriteAllTextAsync(packagePath, json);
         return packagePath;
     }
