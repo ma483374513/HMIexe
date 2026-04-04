@@ -182,8 +182,8 @@ public partial class PlayerViewModel : ObservableObject
                     break;
             }
         }
-        catch (InvalidCastException) { }
-        catch (FormatException) { }
-        catch (OverflowException) { }
+        catch (InvalidCastException) { /* 忽略变量类型与控件值类型不兼容的转换错误 */ }
+        catch (FormatException) { /* 忽略将字符串变量值转换为数值类型时的格式错误 */ }
+        catch (OverflowException) { /* 忽略数值转换时的溢出错误 */ }
     }
 }
