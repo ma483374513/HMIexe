@@ -73,9 +73,10 @@ public partial class App : Application
         services.AddSingleton<IScriptService, ScriptService>();
         services.AddSingleton<ICommunicationService, CommunicationService>();
 
-        // 运行时服务：报警条件求值器、数据持久化服务
+        // 运行时服务：报警条件求值器、数据持久化服务、工程发布服务
         services.AddSingleton<AlarmConditionEvaluator>();
         services.AddSingleton<DataPersistenceService>();
+        services.AddSingleton<IPublishService, PublishService>();
 
         // 应用层服务：UI 对话框抽象
         services.AddSingleton<IDialogService, DialogService>();
@@ -88,6 +89,7 @@ public partial class App : Application
         services.AddSingleton<CommunicationManagerViewModel>();
         services.AddSingleton<ResourceManagerViewModel>();
         services.AddSingleton<RuntimeViewModel>();
+        services.AddSingleton<PublishViewModel>();
         services.AddSingleton<MainWindowViewModel>();
 
         return services.BuildServiceProvider();

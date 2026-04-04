@@ -1,0 +1,190 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:HMIexe.App.ViewModels"
+             xmlns:models="using:HMIexe.Core.Models.Project"
+             x:Class="HMIexe.App.Views.PublishView"
+             x:DataType="vm:PublishViewModel">
+
+    <Grid RowDefinitions="Auto,*,Auto" Margin="16">
+
+        <!-- ── 标题栏 ─────────────────────────────────────── -->
+        <TextBlock Grid.Row="0"
+                   Text="工程发布"
+                   FontSize="20"
+                   FontWeight="SemiBold"
+                   Margin="0,0,0,16"/>
+
+        <!-- ── 主体：参数配置（左）+ 日志输出（右）─────────── -->
+        <Grid Grid.Row="1" ColumnDefinitions="320,*" ColumnSpacing="16">
+
+            <!-- ── 左侧：发布参数配置 ──────────────────────── -->
+            <ScrollViewer Grid.Column="0">
+                <StackPanel Spacing="12">
+
+                    <!-- 目标平台 -->
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="目标平台" FontWeight="Medium"/>
+                        <ComboBox ItemsSource="{Binding AvailablePlatforms}"
+                                  SelectedItem="{Binding SelectedPlatform}"
+                                  HorizontalAlignment="Stretch">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="models:PublishPlatform">
+                                    <TextBlock Text="{Binding}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                    </StackPanel>
+
+                    <!-- 分辨率 -->
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="目标分辨率" FontWeight="Medium"/>
+                        <Grid ColumnDefinitions="*,Auto,*" ColumnSpacing="4">
+                            <NumericUpDown Grid.Column="0"
+                                          Value="{Binding ResolutionWidth}"
+                                          Minimum="320"
+                                          Maximum="7680"
+                                          Increment="1"
+                                          FormatString="0"
+                                          ToolTip.Tip="画面宽度（像素）"/>
+                            <TextBlock Grid.Column="1"
+                                       Text="×"
+                                       VerticalAlignment="Center"
+                                       HorizontalAlignment="Center"/>
+                            <NumericUpDown Grid.Column="2"
+                                          Value="{Binding ResolutionHeight}"
+                                          Minimum="240"
+                                          Maximum="4320"
+                                          Increment="1"
+                                          FormatString="0"
+                                          ToolTip.Tip="画面高度（像素）"/>
+                        </Grid>
+                        <!-- 快速预设 -->
+                        <StackPanel Orientation="Horizontal" Spacing="4">
+                            <TextBlock Text="预设：" VerticalAlignment="Center" FontSize="11" Foreground="#999"/>
+                            <Button Content="1920×1080" FontSize="11" Padding="6,2"
+                                    Command="{Binding ApplyPresetCommand}"
+                                    CommandParameter="1920x1080"/>
+                            <Button Content="1280×720" FontSize="11" Padding="6,2"
+                                    Command="{Binding ApplyPresetCommand}"
+                                    CommandParameter="1280x720"/>
+                            <Button Content="800×600" FontSize="11" Padding="6,2"
+                                    Command="{Binding ApplyPresetCommand}"
+                                    CommandParameter="800x600"/>
+                        </StackPanel>
+                    </StackPanel>
+
+                    <!-- 脚本模式 -->
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="脚本模式" FontWeight="Medium"/>
+                        <ComboBox ItemsSource="{Binding AvailableScriptModes}"
+                                  SelectedItem="{Binding SelectedScriptMode}"
+                                  HorizontalAlignment="Stretch">
+                            <ComboBox.ItemTemplate>
+                                <DataTemplate x:DataType="models:ScriptMode">
+                                    <TextBlock Text="{Binding}"/>
+                                </DataTemplate>
+                            </ComboBox.ItemTemplate>
+                        </ComboBox>
+                        <TextBlock Text="调试模式保留符号信息；发布模式启用优化，适合生产部署。"
+                                   FontSize="11"
+                                   Foreground="#999"
+                                   TextWrapping="Wrap"/>
+                    </StackPanel>
+
+                    <!-- 资源加载优化 -->
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="资源选项" FontWeight="Medium"/>
+                        <CheckBox Content="启用资源加载优化（压缩图片/合并资源）"
+                                  IsChecked="{Binding OptimizeResources}"/>
+                        <CheckBox Content="单文件发布（Self-contained，将运行时内嵌到可执行文件）"
+                                  IsChecked="{Binding SingleFilePublish}"/>
+                    </StackPanel>
+
+                    <!-- 输出目录 -->
+                    <StackPanel Spacing="4">
+                        <TextBlock Text="输出目录" FontWeight="Medium"/>
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="4">
+                            <TextBox Grid.Column="0"
+                                     Text="{Binding OutputDirectory}"
+                                     Watermark="（留空时自动在桌面创建发布文件夹）"
+                                     IsReadOnly="False"/>
+                            <Button Grid.Column="1"
+                                    Content="浏览…"
+                                    Command="{Binding BrowseOutputDirectoryCommand}"
+                                    ToolTip.Tip="选择发布输出目录"/>
+                        </Grid>
+                    </StackPanel>
+
+                </StackPanel>
+            </ScrollViewer>
+
+            <!-- ── 右侧：日志输出区域 ──────────────────────── -->
+            <Grid Grid.Column="1" RowDefinitions="Auto,*">
+                <StackPanel Grid.Row="0"
+                            Orientation="Horizontal"
+                            Spacing="4"
+                            Margin="0,0,0,4">
+                    <TextBlock Text="发布日志"
+                               FontWeight="Medium"
+                               VerticalAlignment="Center"/>
+                    <Button Content="清空日志"
+                            Command="{Binding ClearLogCommand}"
+                            FontSize="11"
+                            Padding="6,2"/>
+                </StackPanel>
+                <Border Grid.Row="1"
+                        BorderBrush="#444"
+                        BorderThickness="1"
+                        CornerRadius="4">
+                    <ScrollViewer Name="LogScrollViewer">
+                        <ItemsControl ItemsSource="{Binding LogLines}" Margin="8">
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="x:String">
+                                    <TextBlock Text="{Binding}"
+                                               FontFamily="Cascadia Code,Consolas,monospace"
+                                               FontSize="12"
+                                               TextWrapping="Wrap"
+                                               Margin="0,1"/>
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </ScrollViewer>
+                </Border>
+            </Grid>
+
+        </Grid>
+
+        <!-- ── 底部：状态栏 + 操作按钮 ────────────────────── -->
+        <Grid Grid.Row="2"
+              ColumnDefinitions="*,Auto"
+              Margin="0,12,0,0">
+            <StackPanel Grid.Column="0"
+                        Orientation="Horizontal"
+                        Spacing="8"
+                        VerticalAlignment="Center">
+                <ProgressBar IsIndeterminate="{Binding IsPublishing}"
+                             IsVisible="{Binding IsPublishing}"
+                             Width="160"
+                             Height="6"/>
+                <TextBlock Text="{Binding StatusText}"
+                           Foreground="#AAAAAA"
+                           VerticalAlignment="Center"/>
+            </StackPanel>
+            <StackPanel Grid.Column="1"
+                        Orientation="Horizontal"
+                        Spacing="8">
+                <Button Content="取消发布"
+                        Command="{Binding CancelPublishCommand}"
+                        IsVisible="{Binding IsPublishing}"
+                        ToolTip.Tip="中止当前发布操作"/>
+                <Button Content="开始发布"
+                        Command="{Binding PublishCommand}"
+                        IsEnabled="{Binding !IsPublishing}"
+                        ToolTip.Tip="根据上方参数打包发布工程"
+                        FontWeight="SemiBold"
+                        Padding="16,6"/>
+            </StackPanel>
+        </Grid>
+
+    </Grid>
+</UserControl>
