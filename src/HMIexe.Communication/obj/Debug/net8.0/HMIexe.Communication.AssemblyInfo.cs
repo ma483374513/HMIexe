@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HMIexe.Communication")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+a3c4efeb8198516033a9de313d66bdfbb88f645a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2cafe68e7a522a0c44fb58a273ecbce72495c999")]
 [assembly: System.Reflection.AssemblyProductAttribute("HMIexe.Communication")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HMIexe.Communication")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

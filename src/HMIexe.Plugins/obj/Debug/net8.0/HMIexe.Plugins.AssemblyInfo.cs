@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("HMIexe.Plugins")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+630d4a4d66bb65c95229b1103be15574da913fe6")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+2cafe68e7a522a0c44fb58a273ecbce72495c999")]
 [assembly: System.Reflection.AssemblyProductAttribute("HMIexe.Plugins")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HMIexe.Plugins")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
