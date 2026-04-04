@@ -66,6 +66,8 @@
                 <MenuItem Header="脚本管理" Command="{Binding ShowScriptEditorCommand}"/>
                 <MenuItem Header="通信配置" Command="{Binding ShowCommunicationManagerCommand}"/>
                 <MenuItem Header="报警管理" Command="{Binding ShowAlarmManagerCommand}"/>
+                <Separator/>
+                <MenuItem Header="发布工程…" Command="{Binding ShowPublishCommand}"/>
             </MenuItem>
             <MenuItem Header="工具(_T)">
                 <MenuItem Header="设置"/>
@@ -96,6 +98,8 @@
             <Button Content="报警" Command="{Binding ShowAlarmManagerCommand}" ToolTip.Tip="报警管理"/>
             <Button Content="通信" Command="{Binding ShowCommunicationManagerCommand}" ToolTip.Tip="通信配置"/>
             <Button Content="资源" Command="{Binding ShowResourceManagerCommand}" ToolTip.Tip="资源管理"/>
+            <Separator Width="1" Background="#444" Margin="2,4"/>
+            <Button Content="📦 发布" Command="{Binding ShowPublishCommand}" ToolTip.Tip="工程发布（跨平台打包）"/>
         </StackPanel>
 
         <!-- Status Bar -->
@@ -136,6 +140,9 @@
                 </DataTemplate>
                 <DataTemplate DataType="vm:RuntimeViewModel">
                     <views:RuntimeView DataContext="{Binding}"/>
+                </DataTemplate>
+                <DataTemplate DataType="vm:PublishViewModel">
+                    <views:PublishView DataContext="{Binding}"/>
                 </DataTemplate>
             </ContentControl.DataTemplates>
         </ContentControl>

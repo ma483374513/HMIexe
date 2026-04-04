@@ -53,6 +53,9 @@ build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 [/home/runner/work/HMIexe/HMIexe/src/HMIexe.App/Views/DesignerView.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 
+[/home/runner/work/HMIexe/HMIexe/src/HMIexe.App/Views/PublishView.axaml]
+build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
+
 [/home/runner/work/HMIexe/HMIexe/src/HMIexe.App/Views/ResourceManagerView.axaml]
 build_metadata.AdditionalFiles.SourceItemGroup = AvaloniaXaml
 

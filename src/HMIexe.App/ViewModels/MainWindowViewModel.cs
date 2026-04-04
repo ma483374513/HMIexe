@@ -70,6 +70,9 @@ public partial class MainWindowViewModel : ObservableObject
     /// <summary>运行时预览视图模型，在设计模式下模拟控件与变量的绑定效果。</summary>
     public RuntimeViewModel RuntimePreview { get; }
 
+    /// <summary>工程发布视图模型，提供跨平台打包发布的参数配置和执行界面。</summary>
+    public PublishViewModel Publish { get; }
+
     /// <summary>
     /// 初始化主窗口视图模型。
     /// 注入所有子 ViewModel 和服务，订阅工程变更事件，并加载最近工程列表。
@@ -83,7 +86,8 @@ public partial class MainWindowViewModel : ObservableObject
         AlarmManagerViewModel alarmManager,
         CommunicationManagerViewModel communicationManager,
         ResourceManagerViewModel resourceManager,
-        RuntimeViewModel runtimePreview)
+        RuntimeViewModel runtimePreview,
+        PublishViewModel publish)
     {
         _projectService = projectService;
         _dialogService = dialogService;
@@ -94,6 +98,7 @@ public partial class MainWindowViewModel : ObservableObject
         CommunicationManager = communicationManager;
         ResourceManager = resourceManager;
         RuntimePreview = runtimePreview;
+        Publish = publish;
         CurrentContent = designerViewModel;
 
         _projectService.ProjectChanged += OnProjectChanged;
@@ -274,6 +279,10 @@ public partial class MainWindowViewModel : ObservableObject
     /// <summary>切换主内容区域为资源管理器视图。</summary>
     [RelayCommand]
     private void ShowResourceManager() => CurrentContent = ResourceManager;
+
+    /// <summary>切换主内容区域为工程发布视图。</summary>
+    [RelayCommand]
+    private void ShowPublish() => CurrentContent = Publish;
 
     /// <summary>
     /// 切换主内容区域为运行时预览视图。
