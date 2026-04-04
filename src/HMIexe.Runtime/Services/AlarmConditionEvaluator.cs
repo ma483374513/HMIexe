@@ -8,10 +8,10 @@ namespace HMIexe.Runtime.Services;
 /// 报警条件求值器，负责将报警定义中的条件表达式与变量当前值进行比对，
 /// 并在条件满足时触发报警、条件不满足时清除报警。
 /// <para>
-/// 条件语法示例：<c>[变量名] &gt; 50</c>、<c>[变量名] == true</c>、<c>[变量名] != 0</c>
+/// 条件语法示例：<c>[变量名] > 50</c>、<c>[变量名] == true</c>、<c>[变量名] != 0</c>
 /// </para>
 /// <para>
-/// 支持的比较运算符：<c>&gt;</c>、<c>&lt;</c>、<c>&gt;=</c>、<c>&lt;=</c>、<c>==</c>、<c>!=</c>
+/// 支持的比较运算符：<c>></c>、<c><</c>、<c>>=</c>、<c><=</c>、<c>==</c>、<c>!=</c>
 /// </para>
 /// </summary>
 public class AlarmConditionEvaluator
@@ -104,7 +104,7 @@ public class AlarmConditionEvaluator
     /// 对单条条件表达式进行求值。
     /// <para>
     /// 表达式格式：<c>[变量名] 运算符 值</c>，例如：
-    /// <c>[Temperature] &gt; 80</c>、<c>[Active] == true</c>
+    /// <c>[Temperature] > 80</c>、<c>[Active] == true</c>
     /// </para>
     /// <para>
     /// 求值顺序：优先尝试布尔比较，其次数值比较，最后字符串比较（不区分大小写）。
