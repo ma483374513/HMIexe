@@ -1,11 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "sbcAI+AHpM8=",
+  "dgSpecHash": "Z8u4KmUPaqQ=",
   "success": true,
   "projectFilePath": "/home/runner/work/HMIexe/HMIexe/src/HMIexe.Plugins/HMIexe.Plugins.csproj",
-  "expectedPackageFiles": [
-    "/tmp/codeql-scratch-28492fa5c00e1219/dbs/csharp/working/packages/microsoft.netcore.app.ref/8.0.25/microsoft.netcore.app.ref.8.0.25.nupkg.sha512",
-    "/tmp/codeql-scratch-28492fa5c00e1219/dbs/csharp/working/packages/microsoft.aspnetcore.app.ref/8.0.25/microsoft.aspnetcore.app.ref.8.0.25.nupkg.sha512"
-  ],
+  "expectedPackageFiles": [],
   "logs": []
 }

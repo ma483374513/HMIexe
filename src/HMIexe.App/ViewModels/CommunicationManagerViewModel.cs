@@ -37,7 +37,7 @@ public partial class CommunicationManagerViewModel : ObservableObject
     [ObservableProperty]
     private string _testWriteValue = string.Empty;
 
-    public IReadOnlyList<string> ProtocolTypes { get; } = Enum.GetNames<ProtocolType>();
+    public IReadOnlyList<ProtocolType> ProtocolTypes { get; } = Enum.GetValues<ProtocolType>();
 
     public CommunicationManagerViewModel(ICommunicationService communicationService, IDialogService dialogService)
     {

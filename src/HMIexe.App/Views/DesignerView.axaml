@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:HMIexe.App.ViewModels"
              xmlns:core="using:HMIexe.Core.Models.Controls"
+             xmlns:canvas="using:HMIexe.Core.Models.Canvas"
              x:Class="HMIexe.App.Views.DesignerView"
              x:DataType="vm:DesignerViewModel"
              Focusable="True"
@@ -70,10 +71,27 @@
                         <TextBlock Text="图层" Foreground="White" Padding="8,4" FontWeight="Bold" VerticalAlignment="Center"/>
                     </DockPanel>
                     <ScrollViewer>
-                        <ItemsControl ItemsSource="{Binding CurrentPage.Layers}">
+                        <ItemsControl ItemsSource="{Binding CurrentPage.Layers}" x:CompileBindings="False">
                             <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding Name}" Padding="8,4"/>
+                                <DataTemplate x:DataType="canvas:HmiLayer">
+                                    <Border Padding="2,2">
+                                        <Grid ColumnDefinitions="*,Auto,Auto,Auto">
+                                            <TextBlock Grid.Column="0" Text="{Binding Name}"
+                                                       Padding="4,2" VerticalAlignment="Center"/>
+                                            <ToggleButton Grid.Column="1" Width="22" Height="22" Padding="0"
+                                                          ToolTip.Tip="显示/隐藏"
+                                                          IsChecked="{Binding Visible}"
+                                                          Content="👁"/>
+                                            <ToggleButton Grid.Column="2" Width="22" Height="22" Padding="0"
+                                                          ToolTip.Tip="锁定/解锁"
+                                                          IsChecked="{Binding Locked}"
+                                                          Content="🔒"/>
+                                            <Button Grid.Column="3" Content="×" Width="22" Height="22" Padding="0"
+                                                    ToolTip.Tip="删除图层"
+                                                    Command="{Binding $parent[UserControl].DataContext.RemoveLayerCommand}"
+                                                    CommandParameter="{Binding}"/>
+                                        </Grid>
+                                    </Border>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
@@ -83,24 +101,30 @@
         </Grid>
 
         <!-- Center: Canvas Area -->
-        <Grid Grid.Column="1" RowDefinitions="Auto,*">
+        <Grid Grid.Column="1" RowDefinitions="Auto,Auto,*,Auto">
             <!-- Page Tabs -->
             <Border Grid.Row="0" Background="#2D2D2D" BorderThickness="0,0,0,1" BorderBrush="#444">
                 <DockPanel>
                     <Button DockPanel.Dock="Right" Content="+ 新建页面"
                             Padding="8,2" Command="{Binding AddPageCommand}"/>
                     <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
-                        <ItemsControl ItemsSource="{Binding Pages}">
+                        <ItemsControl ItemsSource="{Binding Pages}" x:CompileBindings="False">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <StackPanel Orientation="Horizontal" Spacing="2" Margin="4,2"/>
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Button Content="{Binding Name}" Padding="10,2"
-                                            Command="{Binding $parent[UserControl].DataContext.SelectPageCommand}"
-                                            CommandParameter="{Binding}"/>
+                                <DataTemplate x:DataType="canvas:HmiPage">
+                                    <StackPanel Orientation="Horizontal" Spacing="1">
+                                        <Button Content="{Binding Name}" Padding="8,2"
+                                                Command="{Binding $parent[UserControl].DataContext.SelectPageCommand}"
+                                                CommandParameter="{Binding}"/>
+                                        <Button Content="×" Padding="4,2" FontSize="10"
+                                                ToolTip.Tip="删除页面"
+                                                Command="{Binding $parent[UserControl].DataContext.RemovePageCommand}"
+                                                CommandParameter="{Binding}"/>
+                                    </StackPanel>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
@@ -108,8 +132,30 @@
                 </DockPanel>
             </Border>
 
+            <!-- Alignment / Z-order Toolbar -->
+            <Border Grid.Row="1" Background="#252525" BorderThickness="0,0,0,1" BorderBrush="#333">
+                <StackPanel Orientation="Horizontal" Margin="4,2" Spacing="2"
+                           IsEnabled="{Binding SelectedControl, Converter={x:Static ObjectConverters.IsNotNull}}">
+                    <TextBlock Text="对齐:" VerticalAlignment="Center" Foreground="#888" Margin="0,0,4,0"/>
+                    <Button Content="⊢" Padding="4,2" ToolTip.Tip="左对齐" Command="{Binding AlignLeftCommand}"/>
+                    <Button Content="⊣" Padding="4,2" ToolTip.Tip="右对齐" Command="{Binding AlignRightCommand}"/>
+                    <Button Content="⊤" Padding="4,2" ToolTip.Tip="顶对齐" Command="{Binding AlignTopCommand}"/>
+                    <Button Content="⊥" Padding="4,2" ToolTip.Tip="底对齐" Command="{Binding AlignBottomCommand}"/>
+                    <Button Content="⊶" Padding="4,2" ToolTip.Tip="水平居中" Command="{Binding AlignCenterVerticalCommand}"/>
+                    <Button Content="⊵" Padding="4,2" ToolTip.Tip="垂直居中" Command="{Binding AlignCenterHorizontalCommand}"/>
+                    <Separator Width="1" Background="#444" Margin="4,2"/>
+                    <Button Content="↔" Padding="4,2" ToolTip.Tip="水平均匀分布" Command="{Binding DistributeHorizontallyCommand}"/>
+                    <Button Content="↕" Padding="4,2" ToolTip.Tip="垂直均匀分布" Command="{Binding DistributeVerticallyCommand}"/>
+                    <Separator Width="1" Background="#444" Margin="4,2"/>
+                    <Button Content="▲▲" Padding="4,2" ToolTip.Tip="置于顶层" Command="{Binding BringToFrontCommand}"/>
+                    <Button Content="▲" Padding="4,2" ToolTip.Tip="向上一层" Command="{Binding BringForwardCommand}"/>
+                    <Button Content="▼" Padding="4,2" ToolTip.Tip="向下一层" Command="{Binding SendBackwardCommand}"/>
+                    <Button Content="▼▼" Padding="4,2" ToolTip.Tip="置于底层" Command="{Binding SendToBackCommand}"/>
+                </StackPanel>
+            </Border>
+
             <!-- Canvas with scrolling -->
-            <ScrollViewer Grid.Row="1" Background="#1E1E1E"
+            <ScrollViewer Grid.Row="2" Background="#1E1E1E"
                           HorizontalScrollBarVisibility="Auto"
                           VerticalScrollBarVisibility="Auto">
                 <Border Background="#3C3C3C" Margin="20">
@@ -278,6 +324,26 @@
                     </Panel>
                 </Border>
             </ScrollViewer>
+
+            <!-- Canvas Status Bar -->
+            <Border Grid.Row="3" Background="#1A1A1A" BorderThickness="0,1,0,0" BorderBrush="#333">
+                <StackPanel Orientation="Horizontal" Spacing="12" Margin="8,2">
+                    <TextBlock Text="{Binding CanvasMouseX, StringFormat='X: {0:F0}'}"
+                               Foreground="#888" VerticalAlignment="Center" FontSize="11"/>
+                    <TextBlock Text="{Binding CanvasMouseY, StringFormat='Y: {0:F0}'}"
+                               Foreground="#888" VerticalAlignment="Center" FontSize="11"/>
+                    <Separator Width="1" Background="#444" Margin="0,2"/>
+                    <TextBlock Text="{Binding SelectedControls.Count, StringFormat='已选: {0}'}"
+                               Foreground="#888" VerticalAlignment="Center" FontSize="11"/>
+                    <Separator Width="1" Background="#444" Margin="0,2"/>
+                    <TextBlock Text="{Binding ZoomLevel, StringFormat='缩放: {0:P0}'}"
+                               Foreground="#888" VerticalAlignment="Center" FontSize="11"/>
+                    <TextBlock Text="网格: 开" Foreground="#888" VerticalAlignment="Center" FontSize="11"
+                               IsVisible="{Binding ShowGrid}"/>
+                    <TextBlock Text="网格: 关" Foreground="#555" VerticalAlignment="Center" FontSize="11"
+                               IsVisible="{Binding !ShowGrid}"/>
+                </StackPanel>
+            </Border>
         </Grid>
 
         <!-- Right Panel: Properties -->
@@ -290,42 +356,72 @@
                          Text="{Binding SearchText}" Margin="4"/>
                 <ScrollViewer>
                     <StackPanel Spacing="4" Margin="4">
-                        <TextBlock Text="位置与大小" FontWeight="Bold" FontSize="12" Foreground="#888"/>
-                        <Grid ColumnDefinitions="60,*,60,*" RowDefinitions="Auto,Auto,Auto,Auto" Margin="0,2">
-                            <TextBlock Grid.Row="0" Grid.Column="0" Text="X:" VerticalAlignment="Center"/>
-                            <NumericUpDown Grid.Row="0" Grid.Column="1"
-                                           Value="{Binding ControlX}" Minimum="-10000" Maximum="10000"/>
-                            <TextBlock Grid.Row="0" Grid.Column="2" Text="Y:" VerticalAlignment="Center" Margin="4,0,0,0"/>
-                            <NumericUpDown Grid.Row="0" Grid.Column="3"
-                                           Value="{Binding ControlY}" Minimum="-10000" Maximum="10000"/>
 
-                            <TextBlock Grid.Row="1" Grid.Column="0" Text="宽:" VerticalAlignment="Center" Margin="0,4,0,0"/>
-                            <NumericUpDown Grid.Row="1" Grid.Column="1"
-                                           Value="{Binding ControlWidth}" Minimum="1" Maximum="10000" Margin="0,4,0,0"/>
-                            <TextBlock Grid.Row="1" Grid.Column="2" Text="高:" VerticalAlignment="Center" Margin="4,4,0,0"/>
-                            <NumericUpDown Grid.Row="1" Grid.Column="3"
-                                           Value="{Binding ControlHeight}" Minimum="1" Maximum="10000" Margin="0,4,0,0"/>
+                        <!-- Page properties (shown when no control selected) -->
+                        <StackPanel IsVisible="{Binding !HasSelectedControl}" Spacing="4">
+                            <TextBlock Text="画面属性" FontWeight="Bold" FontSize="12" Foreground="#888"/>
+                            <Grid ColumnDefinitions="60,*" RowDefinitions="Auto,Auto,Auto,Auto" Margin="0,2">
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="名称:" VerticalAlignment="Center"/>
+                                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding CurrentPage.Name}"/>
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="宽度:" VerticalAlignment="Center" Margin="0,4,0,0"/>
+                                <NumericUpDown Grid.Row="1" Grid.Column="1"
+                                               Value="{Binding CurrentPage.Width}"
+                                               Minimum="100" Maximum="10000" Margin="0,4,0,0"/>
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="高度:" VerticalAlignment="Center" Margin="0,4,0,0"/>
+                                <NumericUpDown Grid.Row="2" Grid.Column="1"
+                                               Value="{Binding CurrentPage.Height}"
+                                               Minimum="100" Maximum="10000" Margin="0,4,0,0"/>
+                                <TextBlock Grid.Row="3" Grid.Column="0" Text="背景色:" VerticalAlignment="Center" Margin="0,4,0,0"/>
+                                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding CurrentPage.BackgroundColor}"
+                                         Watermark="#FFFFFF" Margin="0,4,0,0"/>
+                            </Grid>
+                        </StackPanel>
 
-                            <TextBlock Grid.Row="2" Grid.Column="0" Text="Z层:" VerticalAlignment="Center" Margin="0,4,0,0"/>
-                            <NumericUpDown Grid.Row="2" Grid.Column="1"
-                                           Value="{Binding ControlZIndex}" Minimum="0" Maximum="9999" Margin="0,4,0,0"/>
-                            <TextBlock Grid.Row="2" Grid.Column="2" Text="不透明度:" VerticalAlignment="Center" Margin="4,4,0,0"/>
-                            <NumericUpDown Grid.Row="2" Grid.Column="3"
-                                           Value="{Binding ControlOpacity}" Minimum="0" Maximum="1"
-                                           Increment="0.05" FormatString="0.00" Margin="0,4,0,0"/>
-                        </Grid>
+                        <!-- Control properties (shown when control selected) -->
+                        <StackPanel IsVisible="{Binding HasSelectedControl}" Spacing="4">
+                            <TextBlock Text="位置与大小" FontWeight="Bold" FontSize="12" Foreground="#888"/>
+                            <Grid ColumnDefinitions="60,*,60,*" RowDefinitions="Auto,Auto,Auto,Auto" Margin="0,2">
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="X:" VerticalAlignment="Center"/>
+                                <NumericUpDown Grid.Row="0" Grid.Column="1"
+                                               Value="{Binding ControlX}" Minimum="-10000" Maximum="10000"/>
+                                <TextBlock Grid.Row="0" Grid.Column="2" Text="Y:" VerticalAlignment="Center" Margin="4,0,0,0"/>
+                                <NumericUpDown Grid.Row="0" Grid.Column="3"
+                                               Value="{Binding ControlY}" Minimum="-10000" Maximum="10000"/>
 
-                        <TextBlock Text="外观" FontWeight="Bold" FontSize="12" Foreground="#888" Margin="0,8,0,0"/>
-                        <Grid ColumnDefinitions="60,*" RowDefinitions="Auto,Auto,Auto" Margin="0,2">
-                            <TextBlock Grid.Row="0" Grid.Column="0" Text="名称:" VerticalAlignment="Center"/>
-                            <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding ControlName}"/>
-                            <TextBlock Grid.Row="1" Grid.Column="0" Text="可见:" VerticalAlignment="Center" Margin="0,4,0,0"/>
-                            <CheckBox Grid.Row="1" Grid.Column="1"
-                                      IsChecked="{Binding ControlVisible}" Margin="0,4,0,0"/>
-                            <TextBlock Grid.Row="2" Grid.Column="0" Text="锁定:" VerticalAlignment="Center" Margin="0,4,0,0"/>
-                            <CheckBox Grid.Row="2" Grid.Column="1"
-                                      IsChecked="{Binding ControlLocked}" Margin="0,4,0,0"/>
-                        </Grid>
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="宽:" VerticalAlignment="Center" Margin="0,4,0,0"/>
+                                <NumericUpDown Grid.Row="1" Grid.Column="1"
+                                               Value="{Binding ControlWidth}" Minimum="1" Maximum="10000" Margin="0,4,0,0"/>
+                                <TextBlock Grid.Row="1" Grid.Column="2" Text="高:" VerticalAlignment="Center" Margin="4,4,0,0"/>
+                                <NumericUpDown Grid.Row="1" Grid.Column="3"
+                                               Value="{Binding ControlHeight}" Minimum="1" Maximum="10000" Margin="0,4,0,0"/>
+
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Z层:" VerticalAlignment="Center" Margin="0,4,0,0"/>
+                                <NumericUpDown Grid.Row="2" Grid.Column="1"
+                                               Value="{Binding ControlZIndex}" Minimum="0" Maximum="9999" Margin="0,4,0,0"/>
+                                <TextBlock Grid.Row="2" Grid.Column="2" Text="不透明度:" VerticalAlignment="Center" Margin="4,4,0,0"/>
+                                <NumericUpDown Grid.Row="2" Grid.Column="3"
+                                               Value="{Binding ControlOpacity}" Minimum="0" Maximum="1"
+                                               Increment="0.05" FormatString="0.00" Margin="0,4,0,0"/>
+                            </Grid>
+
+                            <TextBlock Text="外观" FontWeight="Bold" FontSize="12" Foreground="#888" Margin="0,8,0,0"/>
+                            <Grid ColumnDefinitions="60,*" RowDefinitions="Auto,Auto,Auto,Auto,Auto" Margin="0,2">
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="名称:" VerticalAlignment="Center"/>
+                                <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding ControlName}"/>
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="可见:" VerticalAlignment="Center" Margin="0,4,0,0"/>
+                                <CheckBox Grid.Row="1" Grid.Column="1"
+                                          IsChecked="{Binding ControlVisible}" Margin="0,4,0,0"/>
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="锁定:" VerticalAlignment="Center" Margin="0,4,0,0"/>
+                                <CheckBox Grid.Row="2" Grid.Column="1"
+                                          IsChecked="{Binding ControlLocked}" Margin="0,4,0,0"/>
+                                <!-- Text property for text-capable controls -->
+                                <TextBlock Grid.Row="3" Grid.Column="0" Text="文本:" VerticalAlignment="Center" Margin="0,4,0,0"
+                                           IsVisible="{Binding HasControlText}"/>
+                                <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding ControlText}" Margin="0,4,0,0"
+                                         IsVisible="{Binding HasControlText}"/>
+                            </Grid>
+                        </StackPanel>
+
                     </StackPanel>
                 </ScrollViewer>
             </DockPanel>

@@ -11,7 +11,20 @@
             <Button Content="删除" Command="{Binding RemoveVariableCommand}"/>
             <Button Content="导入CSV" Command="{Binding ImportFromCsvCommand}"/>
             <Button Content="导出CSV" Command="{Binding ExportToCsvCommand}"/>
+            <Separator Width="1" Background="#444" Margin="2,4"/>
+            <TextBlock Text="分组:" VerticalAlignment="Center"/>
+            <ComboBox ItemsSource="{Binding Groups}" SelectedItem="{Binding SelectedGroup}" Width="120"/>
             <TextBox Watermark="搜索变量..." Text="{Binding SearchText}" Width="200"/>
+        </StackPanel>
+
+        <!-- Status Bar -->
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Spacing="12"
+                    Background="#1A1A1A" Margin="8,2">
+            <TextBlock Foreground="#888" VerticalAlignment="Center" FontSize="11"
+                       Text="{Binding Variables.Count, StringFormat='共 {0} 个变量'}"/>
+            <Separator Width="1" Background="#444" Margin="0,2"/>
+            <TextBlock Foreground="#888" VerticalAlignment="Center" FontSize="11"
+                       Text="{Binding FilteredVariables.Count, StringFormat='显示 {0} 个'}"/>
         </StackPanel>
 
         <!-- Variable Grid -->

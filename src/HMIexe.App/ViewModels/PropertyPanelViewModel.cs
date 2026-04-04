@@ -1,4 +1,5 @@
 using CommunityToolkit.Mvvm.ComponentModel;
+using HMIexe.Core.Models.Canvas;
 using HMIexe.Core.Models.Controls;
 using HMIexe.Core.UndoRedo;
 
@@ -10,6 +11,9 @@ public partial class PropertyPanelViewModel : ObservableObject
 
     [ObservableProperty]
     private HmiControlBase? _selectedControl;
+
+    [ObservableProperty]
+    private HmiPage? _currentPage;
 
     [ObservableProperty]
     private string _searchText = string.Empty;
@@ -30,6 +34,53 @@ public partial class PropertyPanelViewModel : ObservableObject
         OnPropertyChanged(nameof(ControlLocked));
         OnPropertyChanged(nameof(ControlOpacity));
         OnPropertyChanged(nameof(ControlZIndex));
+        OnPropertyChanged(nameof(ControlText));
+        OnPropertyChanged(nameof(HasControlText));
+        OnPropertyChanged(nameof(HasSelectedControl));
+    }
+
+    public bool HasSelectedControl => SelectedControl != null;
+
+    /// <summary>True for controls that have an editable Text/Label property.</summary>
+    public bool HasControlText => SelectedControl is ButtonControl
+        or LabelControl or TextBoxControl;
+
+    /// <summary>Text content for Button/Label/TextBox controls.</summary>
+    public string ControlText
+    {
+        get => SelectedControl switch
+        {
+            ButtonControl b => b.Text,
+            LabelControl l => l.Text,
+            TextBoxControl t => t.Placeholder,
+            _ => string.Empty
+        };
+        set
+        {
+            if (SelectedControl == null) return;
+            switch (SelectedControl)
+            {
+                case ButtonControl b:
+                    var oldB = b.Text;
+                    if (oldB == value) return;
+                    _undoRedo.Execute(new SetPropertyAction("修改按钮文本",
+                        () => b.Text = value, () => b.Text = oldB));
+                    break;
+                case LabelControl l:
+                    var oldL = l.Text;
+                    if (oldL == value) return;
+                    _undoRedo.Execute(new SetPropertyAction("修改标签文本",
+                        () => l.Text = value, () => l.Text = oldL));
+                    break;
+                case TextBoxControl t:
+                    var oldT = t.Placeholder;
+                    if (oldT == value) return;
+                    _undoRedo.Execute(new SetPropertyAction("修改输入框占位符",
+                        () => t.Placeholder = value, () => t.Placeholder = oldT));
+                    break;
+            }
+            OnPropertyChanged();
+        }
     }
 
     public string ControlName

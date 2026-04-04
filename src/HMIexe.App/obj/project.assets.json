@@ -124,6 +124,22 @@
           }
         }
       },
+      "Avalonia.Controls.DataGrid/11.3.12": {
+        "type": "package",
+        "dependencies": {
+          "Avalonia": "11.3.12"
+        },
+        "compile": {
+          "lib/net8.0/Avalonia.Controls.DataGrid.dll": {
+            "related": ".xml"
+          }
+        },
+        "runtime": {
+          "lib/net8.0/Avalonia.Controls.DataGrid.dll": {
+            "related": ".xml"
+          }
+        }
+      },
       "Avalonia.Desktop/11.3.12": {
         "type": "package",
         "dependencies": {
@@ -1329,6 +1345,25 @@
         "lib/net8.0/Avalonia.Controls.ColorPicker.xml",
         "lib/netstandard2.0/Avalonia.Controls.ColorPicker.dll",
         "lib/netstandard2.0/Avalonia.Controls.ColorPicker.xml"
+      ]
+    },
+    "Avalonia.Controls.DataGrid/11.3.12": {
+      "sha512": "9zlVkd23gaFtJwi4n7JaKnGdCSkD1fuiRdflzfkLoVXxHKQ2pTOcsUB26rAs7uMTCRvvte8OPwbsK8otA1wNPg==",
+      "type": "package",
+      "path": "avalonia.controls.datagrid/11.3.12",
+      "files": [
+        ".nupkg.metadata",
+        ".signature.p7s",
+        "Icon.png",
+        "avalonia.controls.datagrid.11.3.12.nupkg.sha512",
+        "avalonia.controls.datagrid.nuspec",
+        "lib/net6.0/Avalonia.Controls.DataGrid.dll",
+        "lib/net6.0/Avalonia.Controls.DataGrid.xml",
+        "lib/net8.0/Avalonia.Controls.DataGrid.dll",
+        "lib/net8.0/Avalonia.Controls.DataGrid.xml",
+        "lib/netstandard2.0/Avalonia.Controls.DataGrid.dll",
+        "lib/netstandard2.0/Avalonia.Controls.DataGrid.xml",
+        "readme.md"
       ]
     },
     "Avalonia.Desktop/11.3.12": {
@@ -2835,6 +2870,7 @@
   "projectFileDependencyGroups": {
     "net8.0": [
       "Avalonia >= 11.3.12",
+      "Avalonia.Controls.DataGrid >= 11.3.12",
       "Avalonia.Desktop >= 11.3.12",
       "Avalonia.Diagnostics >= 11.3.12",
       "Avalonia.Fonts.Inter >= 11.3.12",
@@ -2848,7 +2884,7 @@
     ]
   },
   "packageFolders": {
-    "/tmp/codeql-scratch-28492fa5c00e1219/dbs/csharp/working/packages": {}
+    "/home/runner/.nuget/packages/": {}
   },
   "project": {
     "version": "1.0.0",
@@ -2856,7 +2892,7 @@
       "projectUniqueName": "/home/runner/work/HMIexe/HMIexe/src/HMIexe.App/HMIexe.App.csproj",
       "projectName": "HMIexe.App",
       "projectPath": "/home/runner/work/HMIexe/HMIexe/src/HMIexe.App/HMIexe.App.csproj",
-      "packagesPath": "/tmp/codeql-scratch-28492fa5c00e1219/dbs/csharp/working/packages",
+      "packagesPath": "/home/runner/.nuget/packages/",
       "outputPath": "/home/runner/work/HMIexe/HMIexe/src/HMIexe.App/obj/",
       "projectStyle": "PackageReference",
       "configFilePaths": [
@@ -2904,6 +2940,10 @@
             "target": "Package",
             "version": "[11.3.12, )"
           },
+          "Avalonia.Controls.DataGrid": {
+            "target": "Package",
+            "version": "[11.3.12, )"
+          },
           "Avalonia.Desktop": {
             "target": "Package",
             "version": "[11.3.12, )"
@@ -2944,20 +2984,6 @@
         ],
         "assetTargetFallback": true,
         "warn": true,
-        "downloadDependencies": [
-          {
-            "name": "Microsoft.AspNetCore.App.Ref",
-            "version": "[8.0.25, 8.0.25]"
-          },
-          {
-            "name": "Microsoft.NETCore.App.Host.linux-x64",
-            "version": "[8.0.25, 8.0.25]"
-          },
-          {
-            "name": "Microsoft.NETCore.App.Ref",
-            "version": "[8.0.25, 8.0.25]"
-          }
-        ],
         "frameworkReferences": {
           "Microsoft.NETCore.App": {
             "privateAssets": "all"

@@ -150,3 +150,4 @@
 /home/runner/work/HMIexe/HMIexe/src/HMIexe.App/bin/Debug/net8.0/tr/Microsoft.CodeAnalysis.Scripting.resources.dll
 /home/runner/work/HMIexe/HMIexe/src/HMIexe.App/bin/Debug/net8.0/zh-Hans/Microsoft.CodeAnalysis.Scripting.resources.dll
 /home/runner/work/HMIexe/HMIexe/src/HMIexe.App/bin/Debug/net8.0/zh-Hant/Microsoft.CodeAnalysis.Scripting.resources.dll
+/home/runner/work/HMIexe/HMIexe/src/HMIexe.App/bin/Debug/net8.0/Avalonia.Controls.DataGrid.dll
