@@ -11,10 +11,13 @@ public class ModbusRtuDriver : IProtocolDriver
 {
     private SerialPort? _port;
     private byte _unitId = 1;
+    private int _readTimeoutMs = 50;
 
     public string ProtocolName => "Modbus RTU";
     public bool IsConnected => _port?.IsOpen ?? false;
 
+    // DataReceived is required by IProtocolDriver but not used in RTU polling mode;
+    // callers should use Read/WriteAsync directly for Modbus RTU.
 #pragma warning disable CS0067
     public event EventHandler<DataReceivedEventArgs>? DataReceived;
 #pragma warning restore CS0067
@@ -36,6 +39,8 @@ public class ModbusRtuDriver : IProtocolDriver
                 parity = Parity.None;
             if (!byte.TryParse(parameters.GetValueOrDefault("UnitId", "1"), out _unitId))
                 _unitId = 1;
+            if (!int.TryParse(parameters.GetValueOrDefault("ReadTimeoutMs", "50"), out _readTimeoutMs))
+                _readTimeoutMs = 50;
 
             _port = new SerialPort(portName, baud, parity, dataBits, stopBits)
             {
@@ -159,8 +164,8 @@ public class ModbusRtuDriver : IProtocolDriver
         var request = BuildReadRequest(fc, startReg, count);
         _port!.Write(request, 0, request.Length);
 
-        // Read response
-        await Task.Delay(50, ct);
+        // Wait for response with configurable timeout
+        await Task.Delay(_readTimeoutMs, ct);
         var buf = new byte[256];
         var len = _port.Read(buf, 0, buf.Length);
         if (len < 5) return null;
@@ -188,8 +193,12 @@ public class ModbusRtuDriver : IProtocolDriver
         request[7] = crc[1];
 
         _port!.Write(request, 0, 8);
-        await Task.Delay(50, ct);
-        return true;
+        await Task.Delay(_readTimeoutMs, ct);
+
+        // Validate echo response (FC05 reply mirrors the request)
+        var buf = new byte[8];
+        var len = _port.BytesToRead >= 8 ? _port.Read(buf, 0, 8) : 0;
+        return len == 8 && buf[0] == _unitId && buf[1] == 0x05;
     }
 
     private async Task<bool> WriteSingleRegisterAsync(ushort reg, ushort value, CancellationToken ct)
@@ -206,8 +215,12 @@ public class ModbusRtuDriver : IProtocolDriver
         request[7] = crc[1];
 
         _port!.Write(request, 0, 8);
-        await Task.Delay(50, ct);
-        return true;
+        await Task.Delay(_readTimeoutMs, ct);
+
+        // Validate echo response (FC06 reply mirrors the request)
+        var buf = new byte[8];
+        var len = _port.BytesToRead >= 8 ? _port.Read(buf, 0, 8) : 0;
+        return len == 8 && buf[0] == _unitId && buf[1] == 0x06;
     }
 
     private byte[] BuildReadRequest(byte fc, ushort startReg, ushort count)

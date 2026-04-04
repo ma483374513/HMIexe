@@ -50,6 +50,7 @@ public partial class App : Application
 
         // Runtime services
         services.AddSingleton<AlarmConditionEvaluator>();
+        services.AddSingleton<DataPersistenceService>();
 
         // App services
         services.AddSingleton<IDialogService, DialogService>();

@@ -109,9 +109,17 @@ public partial class RuntimeViewModel : ObservableObject
                     break;
             }
         }
-        catch
+        catch (InvalidCastException)
         {
-            // Ignore type conversion errors
+            // Ignore type conversion errors between variable type and control value type
+        }
+        catch (FormatException)
+        {
+            // Ignore format errors when converting variable string values
+        }
+        catch (OverflowException)
+        {
+            // Ignore overflow when converting numeric values
         }
     }
 }

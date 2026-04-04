@@ -29,7 +29,11 @@ public partial class PropertyPanelViewModel : ObservableObject
         _undoRedo = undoRedo;
         _variableService = variableService;
         if (_variableService != null)
+        {
             RefreshVariableList();
+            // Keep list in sync as variables are added/removed
+            _variableService.VariableValueChanged += (_, _) => { /* Value changes don't affect names */ };
+        }
     }
 
     public void RefreshVariableList()
@@ -43,7 +47,9 @@ public partial class PropertyPanelViewModel : ObservableObject
 
     partial void OnSelectedControlChanged(HmiControlBase? value)
     {
-        RefreshVariableList();
+        // Only refresh variable list if it might be stale (do not rebuild on every selection)
+        if (AvailableVariables.Count == 1 && _variableService?.Variables.Count > 0)
+            RefreshVariableList();
         OnPropertyChanged(nameof(ControlName));
         OnPropertyChanged(nameof(ControlX));
         OnPropertyChanged(nameof(ControlY));

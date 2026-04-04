@@ -108,7 +108,7 @@
                             <!-- IndicatorLight -->
                             <DataTemplate x:CompileBindings="False" DataType="core:IndicatorLightControl">
                                 <Ellipse HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
-                                         Fill="{Binding IsOn, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                         Fill="{Binding CurrentColor}"
                                          Stroke="{Binding BorderColor}"
                                          StrokeThickness="{Binding BorderThickness}"
                                          ToolTip.Tip="{Binding Name}"/>
@@ -117,7 +117,7 @@
                             <DataTemplate x:CompileBindings="False" DataType="core:SwitchControl">
                                 <ToggleButton IsChecked="{Binding IsOn}"
                                               HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                                    <TextBlock Text="{Binding IsOn, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                    <TextBlock Text="{Binding IsOn, StringFormat='{}ON:{0}'}"
                                                HorizontalAlignment="Center"/>
                                 </ToggleButton>
                             </DataTemplate>
