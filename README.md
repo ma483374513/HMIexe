@@ -1,190 +1,189 @@
-# HMI组态软件（基于 .NET 8 + Avalonia UI）所有模块细化需求
+# HMI Configuration Software (Based on .NET 8 + Avalonia UI) Detailed Module Requirements
 
 ---
 
-## 一、画面设计模块
+## I. Screen Design Module
 
-### 1.1 画布与布局
-- 画布可自定义宽高、单位（像素、毫米等）
-- 支持任意拖拽缩放，画布可平移视图
-- 多级缩放（快捷键±，鼠标滚轮缩放）
-- 显示/隐藏网格、可设置网格间隔、颜色
-- 辅助线自动显示、可手动添加/删除，自定义颜色和位置
-- 页面背景可自定义颜色、渐变色、图片或透明
+### 1.1 Canvas and Layout
+- Customizable canvas width, height, and units (pixels, millimeters, etc.)
+- Support arbitrary dragging and zooming, canvas panning and view translation
+- Multi-level zoom (shortcut keys ±, mouse wheel zoom)
+- Show/hide grid with configurable spacing and color
+- Auto-display guide lines, manual add/delete with custom color and position
+- Customizable page background: solid color, gradient, image, or transparent
 
-### 1.2 层/控件分层
-- 控件分层管理（层级树），显示/隐藏/锁定
-- 支持多层操作：添加、删除、重命名、分级缩进
-- 控件分组操作，支持组内独立控件修改
-- 可配置显示顺序、快捷键调整前后层级
+### 1.2 Layer/Control Hierarchy
+- Control hierarchy management (layer tree) with show/hide/lock functions
+- Multi-layer operations: add, delete, rename, hierarchical indentation
+- Control grouping with support for independent modification of grouped controls
+- Configurable display order with shortcut keys to adjust layer levels
 
-### 1.3 页面导航与多画面
-- 支持多页面设计，可设置初始/默认画面
-- 控件/按钮支持一键画面切换，带动效
-- 支持页面跳转动画类型、时长配置
-- 页面复制、粘贴、批量重命名、批量删除
+### 1.3 Page Navigation and Multi-Screen
+- Support multi-page design with configurable initial/default screen
+- One-click screen switching for controls/buttons with animation effects
+- Configurable page transition animation types and durations
+- Page copy, paste, batch rename, and batch delete operations
 
-### 1.4 对齐与分布
-- 支持基于选中控件的对齐（左/中/右，上/中/下）
-- 均匀分布（水平、垂直）
-- 坐标和对齐参考线展示，显示距离提示线
+### 1.4 Alignment and Distribution
+- Support alignment based on selected controls (left/center/right, top/center/bottom)
+- Uniform distribution (horizontal and vertical)
+- Coordinate and alignment reference line display with distance hint lines
 
-### 1.5 批量操作
-- 框选、Shift/Ctrl多选控件
-- 支持属性批量修改（如统一大小、颜色、字体等）
-- 一键复制/剪切/粘贴/重复粘贴，粘贴时定位可选
-- 批量删除/批量锁定/解锁控件
-
----
-
-## 二、控件与插件模块
-
-### 2.1 基础控件细则
-- 按钮（可配置文本、颜色、图标、可选动画）
-- 标签（字体、颜色、对齐方式等）
-- 输入框（文本、密码、数字模式、输入校验、最小最大限制）
-- 图片控件（图片自适应/缩放/填充/裁剪）
-- 动画控件（帧动画、GIF、SVG动画等，帧速可调）
-- 指示灯、开关、滑动杆、仪表盘（刻度数、单位、指针样式自定义）
-- 基础图形：直线、多边线、折线、矩形、圆、椭圆、扇形、圆环等
-- 多边形编辑（节点增删/移动）
-
-### 2.2 属性面板及属性扩展
-- 所有控件的共有属性（大小、位置、可见性、锁定、透明度、Z-Index等）
-- 支持扩展属性（如业务自定义字段/属性评论）
-- 属性面板搜索、显示属性历史
-- 属性修改支持Undo/Redo
-
-### 2.3 插件控件
-- 控件插件采用强类型接口，支持加载/移除/版本控制
-- 插件属性自动映射到属性面板中，支持自定义事件绑定
-- 插件可带有特有渲染、交互属性、特殊动画
-- 插件支持图标、缩略图、预览图自定义
-- 插件控件文档与实例代码、属性描述展示
+### 1.5 Batch Operations
+- Frame selection and Shift/Ctrl multi-select controls
+- Support batch property modification (unified size, color, font, etc.)
+- One-click copy/cut/paste/repeat paste with optional positioning
+- Batch delete/lock/unlock operations for controls
 
 ---
 
-## 三、变量与数据系统
+## II. Controls and Plugins Module
 
-### 3.1 变量数据结构
-- 支持数值（Byte, Short, Int, Float, Double）、布尔、字符串、时间、枚举、自定义结构（如Record/Struct）
-- 变量支持批量导入导出Excel/CSV，格式错误提示与校验
-- 支持变量快捷分组、标签分类（如“设备变量”、“用户输入”等）
+### 2.1 Basic Controls
+- Button with configurable text, color, icon, and optional animation
+- Label with font, color, alignment, and other properties
+- Input box supporting text, password, numeric mode, input validation, and min/max limits
+- Image control with adaptation, zoom, fill, and crop features
+- Animation control supporting frame animation, GIF, SVG animation with adjustable frame rate
+- Indicator light, switch, slider, gauge with customizable scale, unit, and pointer style
+- Basic shapes: line, polyline, broken line, rectangle, circle, ellipse, sector, ring, etc.
+- Polygon editing with node add/delete/move operations
 
-### 3.2 数据绑定与表达式
-- 任意控件属性（如Text、Color、Value等）均可数据绑定
-- 支持单/双向绑定机制
-- 支持公式表达式表达（如“[温度]>50 ? '报警' : '正常'”）
-- 可用表达式函数库（数学/字符串/日期等）
-- 支持绑定调试模式，及时预览表达式值
+### 2.2 Property Panel and Extensions
+- Common properties for all controls (size, position, visibility, lock, transparency, Z-Index, etc.)
+- Support for extended properties (custom business fields/property comments)
+- Property panel search and property history display
+- Undo/Redo support for property modifications
 
-### 3.3 变量调试与监控
-- 支持变量实时监控曲线、快速手动赋值、批量模拟变量
-- 变量历史记录、变化记录导出
-- 支持变量快照、恢复功能
-- 变量使用处查询、未绑定变量提示
-
----
-
-## 四、事件驱动与C#脚本模块
-
-### 4.1 脚本管理
-- 内建脚本编辑器带Code高亮、自动完成、格式化、查找/替换功能
-- 针对控件事件（如点击、焦点变化、值变动）、变量事件、页面加载/关闭事件，均可勾选挂载脚本
-- 全局脚本、定时脚本、循环脚本和自定义函数支持
-
-### 4.2 脚本运行与调试
-- Roslyn动态编译，支持运行时热重载
-- 异常捕获、错误行提示、调用栈分析
-- 断点调试、逐行执行、变量查询窗口
-- 输出日志展示、脚本运行时性能统计
-
-### 4.3 宿主API支持
-- API支持：获取/设置变量，读写控件属性，触发事件，页面跳转，通信发送，日志记录等
-- 可调用API帮助文档
-- 支持导入自定义C#库（做接口或算法扩展）
+### 2.3 Plugin Controls
+- Control plugins use strong-type interfaces with load/remove/version control support
+- Plugin properties auto-map to property panel with custom event binding support
+- Plugins support special rendering, interactive properties, and animations
+- Custom icons, thumbnails, and preview images for plugins
+- Plugin documentation with example code and property descriptions
 
 ---
 
-## 五、工程与资源管理模块
+## III. Variables and Data System
 
-### 5.1 工程文件管理
-- 工程结构为多目录（页面、资源、脚本、变量等分文件夹管理）
-- 支持工程打包、解包，支持增量保存/自动保存
-- 最近工程列表、打开历史、工程回收站
-- 工程一键模板化导入/导出（带全部依赖资源）
+### 3.1 Variable Data Structures
+- Support for numeric types (Byte, Short, Int, Float, Double), boolean, string, time, enum, and custom structures (Record/Struct)
+- Batch import/export variables to Excel/CSV with format error prompts and validation
+- Quick variable grouping and tag classification (e.g., "Device Variables", "User Input", etc.)
 
-### 5.2 资源管理
-- 统一文件管理：图片（静/动态图）、音频、视频、字体、SVG
-- 资源文件属性（名称、类型、大小、来源、用途备注）
-- 资源一键批量导入（拖拽或选择文件夹）、去重，批量重命名、删除、引用溯源查询
-- 支持资源未引用自动标记和清理
+### 3.2 Data Binding and Expressions
+- Data binding for any control property (Text, Color, Value, etc.)
+- Single and bidirectional binding mechanisms
+- Formula expression support (e.g., "[Temperature]>50 ? 'Alarm' : 'Normal'")
+- Expression function library (mathematical, string, date functions, etc.)
+- Binding debug mode with real-time expression value preview
 
----
-
-## 六、预览、运行与发布模块
-
-### 6.1 实时预览
-- 编辑/预览一体化，支持实时同步变量值和控件状态
-- 全屏/窗口化预览，支持调整分辨率、模拟不同终端
-- 实时打印调试信息
-
-### 6.2 工程发布
-- 支持跨平台打包发布编辑的运行画面,而不是整个软件（Windows exe、Linux elf/可执行画面包）
-- 
-
-### 6.3 运行时特性
-- 工程文件（如json/xml）加载、界面动态渲染
-- 插件、脚本、资源动态加载
-- 日志、报警、异常自动记录
-- 工程自动本地数据存储、定时备份
+### 3.3 Variable Debugging and Monitoring
+- Real-time variable monitoring curves, quick manual assignment, batch variable simulation
+- Variable history records and change record export
+- Variable snapshot and recovery functions
+- Variable usage query and unbound variable alerts
 
 ---
 
-## 七、系统、拓展与通讯模块
+## IV. Event-Driven and C# Script Module
 
-### 7.1 多语言支持
-- 系统界面与工程可双语/多语，用户可切换
-- 多语言词条导入导出、翻译快捷对照与校验
-- 动态切换工程/控件/资源多语言属性
+### 4.1 Script Management
+- Built-in script editor with code highlighting, auto-complete, formatting, find/replace
+- Script mounting support for control events (click, focus change, value change), variable events, and page load/close events
+- Global scripts, timed scripts, loop scripts, and custom function support
 
-### 7.2 主题与皮肤
-- 多主题风格一键切换（亮色、暗色、自定义）
-- 控件全局风格配置、字体包加载
-- 支持用户自定义主题编辑导入/导出
+### 4.2 Script Runtime and Debugging
+- Roslyn dynamic compilation with runtime hot-reload support
+- Exception catching, error line hints, and call stack analysis
+- Breakpoint debugging, step-by-step execution, and variable query window
+- Output log display and script runtime performance statistics
 
-### 7.3 插件SDK与开发支持
-- 完整SDK文档、API示例工程、测试工程
-- 插件自动注册、卸载、禁用、升级与回滚
-- 支持插件市场、在线插件搜索/下载
-- 插件安全沙箱与权限管理
-
-### 7.4 通信与IO接口
-- 内置支持协议驱动（Modbus RTU/TCP、OPC UA/DA、MQTT、WebAPI、UDP/TCP、串口等）
-- 通信管理器：设备配置、状态监控、自动重连
-- 通信数据采集与队列缓冲，异常报警
-- 通信测试工具、手动收发调试
-- 设备/变量映射、快速绑定
+### 4.3 Host API Support
+- API support for: get/set variables, read/write control properties, trigger events, page navigation, communication sending, logging, etc.
+- Accessible API help documentation
+- Support for importing custom C# libraries (for interface or algorithm extensions)
 
 ---
 
-## 八、扩展功能
+## V. Engineering and Resource Management Module
 
-### 8.1 报警与日志系统
-- 支持报警条件脚本化配置
-- 报警分级、显示、历史记录查询/导出
-- 日志类型（系统/通信/用户操作/脚本）分级别存储与检索
+### 5.1 Engineering File Management
+- Multi-directory engineering structure (pages, resources, scripts, variables in separate folders)
+- Support for engineering packaging/unpacking with incremental save and auto-save
+- Recent engineering list, open history, and engineering recycle bin
+- One-click engineering template import/export (with all dependencies)
 
-### 8.2 权限与用户管理
-- 支持多角色权限控制、操作密码保护
-- 动作与脚本可加权限判定
-- 用户日志和操作追溯
-
-### 8.3 数据持久化与本地数据库
-- 支持SQLite/本地文件存储变量、事件、报警、日志数据
-- 数据导入导出CSV/Excel
-- 数据定时备份、恢复
+### 5.2 Resource Management
+- Unified file management: images (static/dynamic), audio, video, fonts, SVG
+- Resource file properties (name, type, size, source, usage notes)
+- One-click batch import (drag or select folder), deduplication, batch rename/delete, reference traceability query
+- Auto-marking and cleaning of unreferenced resources
 
 ---
 
-**以上所有功能应具备良好的UI/UE设计，界面可自适应、易用性高、运行高效稳定。模块间体系结构清晰，便于后续拓展和维护。**
+## VI. Preview, Runtime and Publishing Module
+
+### 6.1 Real-time Preview
+- Integrated edit/preview with real-time synchronization of variable values and control states
+- Full-screen and windowed preview modes with resolution adjustment and terminal simulation
+- Real-time debug information printing
+
+### 6.2 Engineering Publishing
+- Cross-platform packaging and publishing of edited runtime screens (not the entire software) - Windows exe, Linux elf/executable screen package
+
+### 6.3 Runtime Features
+- Load engineering files (JSON/XML) with dynamic interface rendering
+- Dynamic loading of plugins, scripts, and resources
+- Automatic logging of logs, alarms, and exceptions
+- Automatic local data storage and scheduled backup of engineering projects
+
+---
+
+## VII. System, Extension and Communication Module
+
+### 7.1 Multi-language Support
+- Bilingual/multi-lingual system interface and engineering with user-switchable languages
+- Multi-language entry import/export with translation comparison and validation
+- Dynamic switching of engineering/control/resource multi-language properties
+
+### 7.2 Theme and Skin
+- Multiple theme styles (light, dark, custom) with one-click switching
+- Global control style configuration and font package loading
+- User-defined theme editing with import/export support
+
+### 7.3 Plugin SDK and Development Support
+- Complete SDK documentation, API example projects, and test projects
+- Plugin auto-registration, uninstall, disable, upgrade, and rollback
+- Plugin marketplace with online search and download support
+- Plugin security sandbox and permission management
+
+### 7.4 Communication and IO Interface
+- Built-in support for protocol drivers (Modbus RTU/TCP, OPC UA/DA, MQTT, WebAPI, UDP/TCP, serial port, etc.)
+- Communication manager with device configuration, status monitoring, and auto-reconnect
+- Communication data collection with queue buffering and exception alarms
+- Communication testing tools and manual send/receive debugging
+- Device/variable mapping and quick binding
+
+---
+
+## VIII. Extended Features
+
+### 8.1 Alarm and Logging System
+- Alarm condition scripted configuration support
+- Alarm grading, display, history record query/export
+- Log types (system/communication/user operation/script) with level-based storage and retrieval
+
+### 8.2 Permission and User Management
+- Multi-role permission control with operation password protection
+- Permission judgment for actions and scripts
+- User logs and operation traceability
+
+### 8.3 Data Persistence and Local Database
+- SQLite/local file storage support for variables, events, alarms, and log data
+- Data import/export to CSV/Excel
+- Scheduled data backup and recovery
+
+---
+
+**All the above features should have good UI/UE design, an auto-adaptive interface, high usability, and efficient, stable operation. The inter-module structure should be clear, facilitating future extension and maintenance.**
