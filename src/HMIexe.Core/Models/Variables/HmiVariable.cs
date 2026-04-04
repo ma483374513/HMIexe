@@ -32,7 +32,7 @@ public class HmiVariable : INotifyPropertyChanged
                 _value = value;
                 LastModified = DateTime.Now;
                 PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(Value)));
-                ValueChanged?.Invoke(this, new VariableValueChangedEventArgs(oldValue, value));
+                ValueChanged?.Invoke(this, new VariableValueChangedEventArgs(Name, oldValue, value));
             }
         }
     }
@@ -43,12 +43,14 @@ public class HmiVariable : INotifyPropertyChanged
 
 public class VariableValueChangedEventArgs : EventArgs
 {
+    public string VariableName { get; }
     public object? OldValue { get; }
     public object? NewValue { get; }
     public DateTime Timestamp { get; } = DateTime.Now;
 
-    public VariableValueChangedEventArgs(object? oldValue, object? newValue)
+    public VariableValueChangedEventArgs(string variableName, object? oldValue, object? newValue)
     {
+        VariableName = variableName;
         OldValue = oldValue;
         NewValue = newValue;
     }

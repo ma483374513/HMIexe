@@ -101,6 +101,7 @@
 /home/runner/.nuget/packages/system.io.pipelines/10.0.5/lib/net8.0/System.IO.Pipelines.dll
 /usr/share/dotnet/packs/Microsoft.NETCore.App.Ref/8.0.25/ref/net8.0/System.IO.Pipes.AccessControl.dll
 /usr/share/dotnet/packs/Microsoft.NETCore.App.Ref/8.0.25/ref/net8.0/System.IO.Pipes.dll
+/home/runner/.nuget/packages/system.io.ports/9.0.0/lib/net8.0/System.IO.Ports.dll
 /usr/share/dotnet/packs/Microsoft.NETCore.App.Ref/8.0.25/ref/net8.0/System.IO.UnmanagedMemoryStream.dll
 /usr/share/dotnet/packs/Microsoft.NETCore.App.Ref/8.0.25/ref/net8.0/System.Linq.dll
 /usr/share/dotnet/packs/Microsoft.NETCore.App.Ref/8.0.25/ref/net8.0/System.Linq.Expressions.dll

@@ -54,7 +54,9 @@
                             <Button Content="圆形" HorizontalAlignment="Stretch"
                                     Command="{Binding AddControlToCanvasCommand}"
                                     CommandParameter="Circle"/>
-                            <Button Content="椭圆" HorizontalAlignment="Stretch"/>
+                            <Button Content="椭圆" HorizontalAlignment="Stretch"
+                                    Command="{Binding AddControlToCanvasCommand}"
+                                    CommandParameter="Ellipse"/>
                             <Button Content="多边形" HorizontalAlignment="Stretch"/>
                         </StackPanel>
                     </ScrollViewer>
@@ -297,6 +299,16 @@
                                                     BorderThickness="2" IsVisible="{Binding IsSelected}"/>
                                         </Panel>
                                     </DataTemplate>
+                                    <DataTemplate x:CompileBindings="False" DataType="core:EllipseControl">
+                                        <Panel>
+                                            <Ellipse HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                                     Fill="{Binding FillColor}"
+                                                     Stroke="{Binding StrokeColor}"
+                                                     StrokeThickness="{Binding StrokeThickness}"/>
+                                            <Border IsHitTestVisible="False" BorderBrush="#00AAFF"
+                                                    BorderThickness="2" IsVisible="{Binding IsSelected}"/>
+                                        </Panel>
+                                    </DataTemplate>
                                     <DataTemplate x:CompileBindings="False" DataType="core:LineControl">
                                         <Panel>
                                             <Line StartPoint="0,0"
@@ -420,6 +432,123 @@
                                 <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding ControlText}" Margin="0,4,0,0"
                                          IsVisible="{Binding HasControlText}"/>
                             </Grid>
+
+                            <!-- Variable Binding -->
+                            <TextBlock Text="变量绑定" FontWeight="Bold" FontSize="12" Foreground="#888" Margin="0,8,0,0"/>
+                            <Grid ColumnDefinitions="60,*" Margin="0,2">
+                                <TextBlock Grid.Column="0" Text="绑定变量:" VerticalAlignment="Center"/>
+                                <ComboBox Grid.Column="1" ItemsSource="{Binding AvailableVariables}"
+                                          SelectedItem="{Binding ControlValueVariable}"
+                                          HorizontalAlignment="Stretch"/>
+                            </Grid>
+
+                            <!-- Button-specific -->
+                            <StackPanel IsVisible="{Binding IsButtonControl}" Spacing="4">
+                                <TextBlock Text="按钮属性" FontWeight="Bold" FontSize="12" Foreground="#888" Margin="0,8,0,0"/>
+                                <Grid ColumnDefinitions="60,*" RowDefinitions="Auto,Auto" Margin="0,2">
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="背景色:" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding ControlBackgroundColor}" Watermark="#4CAF50"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="文字色:" VerticalAlignment="Center" Margin="0,4,0,0"/>
+                                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding ControlForegroundColor}"
+                                             Watermark="#FFFFFF" Margin="0,4,0,0"/>
+                                </Grid>
+                            </StackPanel>
+
+                            <!-- Label-specific -->
+                            <StackPanel IsVisible="{Binding IsLabelControl}" Spacing="4">
+                                <TextBlock Text="标签属性" FontWeight="Bold" FontSize="12" Foreground="#888" Margin="0,8,0,0"/>
+                                <Grid ColumnDefinitions="60,*" RowDefinitions="Auto,Auto" Margin="0,2">
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="文字色:" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding ControlForegroundColor}" Watermark="#000000"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="字体大小:" VerticalAlignment="Center" Margin="0,4,0,0"/>
+                                    <NumericUpDown Grid.Row="1" Grid.Column="1" Value="{Binding LabelFontSize}"
+                                                   Minimum="6" Maximum="200" Margin="0,4,0,0"/>
+                                </Grid>
+                            </StackPanel>
+
+                            <!-- Gauge-specific -->
+                            <StackPanel IsVisible="{Binding IsGaugeControl}" Spacing="4">
+                                <TextBlock Text="仪表属性" FontWeight="Bold" FontSize="12" Foreground="#888" Margin="0,8,0,0"/>
+                                <Grid ColumnDefinitions="60,*" RowDefinitions="Auto,Auto,Auto,Auto" Margin="0,2">
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="当前值:" VerticalAlignment="Center"/>
+                                    <NumericUpDown Grid.Row="0" Grid.Column="1" Value="{Binding GaugeValue}"
+                                                   Minimum="-99999" Maximum="99999"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="最小值:" VerticalAlignment="Center" Margin="0,4,0,0"/>
+                                    <NumericUpDown Grid.Row="1" Grid.Column="1" Value="{Binding GaugeMinValue}"
+                                                   Minimum="-99999" Maximum="99999" Margin="0,4,0,0"/>
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="最大值:" VerticalAlignment="Center" Margin="0,4,0,0"/>
+                                    <NumericUpDown Grid.Row="2" Grid.Column="1" Value="{Binding GaugeMaxValue}"
+                                                   Minimum="-99999" Maximum="99999" Margin="0,4,0,0"/>
+                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="单位:" VerticalAlignment="Center" Margin="0,4,0,0"/>
+                                    <TextBox Grid.Row="3" Grid.Column="1" Text="{Binding GaugeUnit}" Margin="0,4,0,0"/>
+                                </Grid>
+                            </StackPanel>
+
+                            <!-- IndicatorLight-specific -->
+                            <StackPanel IsVisible="{Binding IsIndicatorLightControl}" Spacing="4">
+                                <TextBlock Text="指示灯属性" FontWeight="Bold" FontSize="12" Foreground="#888" Margin="0,8,0,0"/>
+                                <Grid ColumnDefinitions="60,*" RowDefinitions="Auto,Auto,Auto" Margin="0,2">
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="状态:" VerticalAlignment="Center"/>
+                                    <CheckBox Grid.Row="0" Grid.Column="1" Content="点亮"
+                                              IsChecked="{Binding LightIsOn}"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="亮色:" VerticalAlignment="Center" Margin="0,4,0,0"/>
+                                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding LightOnColor}"
+                                             Watermark="#00FF00" Margin="0,4,0,0"/>
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="灭色:" VerticalAlignment="Center" Margin="0,4,0,0"/>
+                                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding LightOffColor}"
+                                             Watermark="#444444" Margin="0,4,0,0"/>
+                                </Grid>
+                            </StackPanel>
+
+                            <!-- Switch-specific -->
+                            <StackPanel IsVisible="{Binding IsSwitchControl}" Spacing="4">
+                                <TextBlock Text="开关属性" FontWeight="Bold" FontSize="12" Foreground="#888" Margin="0,8,0,0"/>
+                                <Grid ColumnDefinitions="60,*" RowDefinitions="Auto,Auto,Auto" Margin="0,2">
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="状态:" VerticalAlignment="Center"/>
+                                    <CheckBox Grid.Row="0" Grid.Column="1" Content="接通"
+                                              IsChecked="{Binding SwitchIsOn}"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="开标签:" VerticalAlignment="Center" Margin="0,4,0,0"/>
+                                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding SwitchOnLabel}" Margin="0,4,0,0"/>
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="关标签:" VerticalAlignment="Center" Margin="0,4,0,0"/>
+                                    <TextBox Grid.Row="2" Grid.Column="1" Text="{Binding SwitchOffLabel}" Margin="0,4,0,0"/>
+                                </Grid>
+                            </StackPanel>
+
+                            <!-- Slider-specific -->
+                            <StackPanel IsVisible="{Binding IsSliderControl}" Spacing="4">
+                                <TextBlock Text="滑动杆属性" FontWeight="Bold" FontSize="12" Foreground="#888" Margin="0,8,0,0"/>
+                                <Grid ColumnDefinitions="60,*" RowDefinitions="Auto,Auto,Auto" Margin="0,2">
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="当前值:" VerticalAlignment="Center"/>
+                                    <NumericUpDown Grid.Row="0" Grid.Column="1" Value="{Binding SliderValue}"
+                                                   Minimum="-99999" Maximum="99999"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="最小值:" VerticalAlignment="Center" Margin="0,4,0,0"/>
+                                    <NumericUpDown Grid.Row="1" Grid.Column="1" Value="{Binding SliderMinimum}"
+                                                   Minimum="-99999" Maximum="99999" Margin="0,4,0,0"/>
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="最大值:" VerticalAlignment="Center" Margin="0,4,0,0"/>
+                                    <NumericUpDown Grid.Row="2" Grid.Column="1" Value="{Binding SliderMaximum}"
+                                                   Minimum="-99999" Maximum="99999" Margin="0,4,0,0"/>
+                                </Grid>
+                            </StackPanel>
+
+                            <!-- Shape-specific (rect, circle, ellipse, line) -->
+                            <StackPanel IsVisible="{Binding IsShapeControl}" Spacing="4">
+                                <TextBlock Text="图形属性" FontWeight="Bold" FontSize="12" Foreground="#888" Margin="0,8,0,0"/>
+                                <Grid ColumnDefinitions="60,*" RowDefinitions="Auto,Auto,Auto,Auto" Margin="0,2">
+                                    <TextBlock Grid.Row="0" Grid.Column="0" Text="填充色:" VerticalAlignment="Center"/>
+                                    <TextBox Grid.Row="0" Grid.Column="1" Text="{Binding ControlFillColor}"
+                                             Watermark="Transparent"/>
+                                    <TextBlock Grid.Row="1" Grid.Column="0" Text="描边色:" VerticalAlignment="Center" Margin="0,4,0,0"/>
+                                    <TextBox Grid.Row="1" Grid.Column="1" Text="{Binding ControlStrokeColor}"
+                                             Watermark="#FFFFFF" Margin="0,4,0,0"/>
+                                    <TextBlock Grid.Row="2" Grid.Column="0" Text="描边宽:" VerticalAlignment="Center" Margin="0,4,0,0"/>
+                                    <NumericUpDown Grid.Row="2" Grid.Column="1" Value="{Binding ControlStrokeThickness}"
+                                                   Minimum="0" Maximum="100" Margin="0,4,0,0"/>
+                                    <TextBlock Grid.Row="3" Grid.Column="0" Text="圆角:" VerticalAlignment="Center" Margin="0,4,0,0"/>
+                                    <NumericUpDown Grid.Row="3" Grid.Column="1" Value="{Binding CornerRadius}"
+                                                   Minimum="0" Maximum="500" Margin="0,4,0,0"/>
+                                </Grid>
+                            </StackPanel>
+
                         </StackPanel>
 
                     </StackPanel>

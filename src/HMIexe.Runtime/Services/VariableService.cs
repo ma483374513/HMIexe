@@ -80,8 +80,8 @@ public class VariableService : IVariableService
 
     private void OnVariableValueChanged(object? sender, VariableValueChangedEventArgs e)
     {
-        if (sender is HmiVariable)
-            VariableValueChanged?.Invoke(this, e);
+        if (sender is HmiVariable variable)
+            VariableValueChanged?.Invoke(this, new VariableValueChangedEventArgs(variable.Name, e.OldValue, e.NewValue));
     }
 
     public event EventHandler<VariableValueChangedEventArgs>? VariableValueChanged;

@@ -61,6 +61,7 @@ public partial class App : Application
         services.AddSingleton<AlarmManagerViewModel>();
         services.AddSingleton<CommunicationManagerViewModel>();
         services.AddSingleton<ResourceManagerViewModel>();
+        services.AddSingleton<RuntimeViewModel>();
         services.AddSingleton<MainWindowViewModel>();
 
         return services.BuildServiceProvider();

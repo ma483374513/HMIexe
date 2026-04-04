@@ -1,4 +1,5 @@
 using System.Collections.ObjectModel;
+using Avalonia.Styling;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using HMIexe.App.Services;
@@ -26,6 +27,9 @@ public partial class MainWindowViewModel : ObservableObject
     [ObservableProperty]
     private DesignerViewModel? _designerViewModel;
 
+    [ObservableProperty]
+    private bool _isDarkTheme = true;
+
     public ObservableCollection<string> RecentProjects { get; } = new();
 
     // Sub-panel ViewModels
@@ -34,6 +38,7 @@ public partial class MainWindowViewModel : ObservableObject
     public AlarmManagerViewModel AlarmManager { get; }
     public CommunicationManagerViewModel CommunicationManager { get; }
     public ResourceManagerViewModel ResourceManager { get; }
+    public RuntimeViewModel RuntimePreview { get; }
 
     public MainWindowViewModel(
         IProjectService projectService,
@@ -43,7 +48,8 @@ public partial class MainWindowViewModel : ObservableObject
         ScriptEditorViewModel scriptEditor,
         AlarmManagerViewModel alarmManager,
         CommunicationManagerViewModel communicationManager,
-        ResourceManagerViewModel resourceManager)
+        ResourceManagerViewModel resourceManager,
+        RuntimeViewModel runtimePreview)
     {
         _projectService = projectService;
         _dialogService = dialogService;
@@ -53,6 +59,7 @@ public partial class MainWindowViewModel : ObservableObject
         AlarmManager = alarmManager;
         CommunicationManager = communicationManager;
         ResourceManager = resourceManager;
+        RuntimePreview = runtimePreview;
         CurrentContent = designerViewModel;
 
         _projectService.ProjectChanged += OnProjectChanged;
@@ -179,7 +186,11 @@ public partial class MainWindowViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void ShowDesigner() => CurrentContent = DesignerViewModel;
+    private void ShowDesigner()
+    {
+        CurrentContent = DesignerViewModel;
+        StatusText = "设计模式";
+    }
 
     [RelayCommand]
     private void ShowVariableManager() => CurrentContent = VariableManager;
@@ -197,10 +208,33 @@ public partial class MainWindowViewModel : ObservableObject
     private void ShowResourceManager() => CurrentContent = ResourceManager;
 
     [RelayCommand]
+    private void ShowRuntimePreview()
+    {
+        if (DesignerViewModel == null) return;
+        RuntimePreview.LoadPages(
+            DesignerViewModel.Pages,
+            _projectService.CurrentProject?.Variables ?? []);
+        CurrentContent = RuntimePreview;
+        StatusText = "预览运行中";
+    }
+
+    [RelayCommand]
     private void ToggleGrid()
     {
         if (DesignerViewModel != null)
             DesignerViewModel.ShowGrid = !DesignerViewModel.ShowGrid;
+    }
+
+    [RelayCommand]
+    private void ToggleTheme()
+    {
+        IsDarkTheme = !IsDarkTheme;
+        if (Avalonia.Application.Current != null)
+        {
+            Avalonia.Application.Current.RequestedThemeVariant =
+                IsDarkTheme ? ThemeVariant.Dark : ThemeVariant.Light;
+        }
+        StatusText = IsDarkTheme ? "已切换为深色主题" : "已切换为浅色主题";
     }
 
     [RelayCommand]

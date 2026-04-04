@@ -1,0 +1,191 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:HMIexe.App.ViewModels"
+             xmlns:core="using:HMIexe.Core.Models.Controls"
+             xmlns:canvas="using:HMIexe.Core.Models.Canvas"
+             x:Class="HMIexe.App.Views.RuntimeView"
+             x:DataType="vm:RuntimeViewModel">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- Top toolbar -->
+        <Border Grid.Row="0" Background="#1A3A1A" BorderThickness="0,0,0,1" BorderBrush="#2D6A2D">
+            <DockPanel Margin="8,4">
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="6">
+                    <Button Content="🔍+" Command="{Binding ZoomInCommand}" ToolTip.Tip="放大"/>
+                    <Button Content="🔍-" Command="{Binding ZoomOutCommand}" ToolTip.Tip="缩小"/>
+                    <Button Content="1:1" Command="{Binding ResetZoomCommand}" ToolTip.Tip="重置缩放"/>
+                </StackPanel>
+                <!-- Page tabs -->
+                <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
+                    <ItemsControl ItemsSource="{Binding Pages}" x:CompileBindings="False">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="2"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="canvas:HmiPage">
+                                <Button Content="{Binding Name}" Padding="10,4"
+                                        Foreground="LightGreen"
+                                        Command="{Binding $parent[UserControl].DataContext.SelectPageCommand}"
+                                        CommandParameter="{Binding}"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </DockPanel>
+        </Border>
+
+        <!-- Canvas area -->
+        <ScrollViewer Grid.Row="1" Background="#0A0A0A"
+                      HorizontalScrollBarVisibility="Auto"
+                      VerticalScrollBarVisibility="Auto">
+            <Border Margin="20">
+                <Border Background="{Binding CurrentPage.BackgroundColor, FallbackValue=White}"
+                        Width="{Binding CurrentPage.Width, FallbackValue=1920}"
+                        Height="{Binding CurrentPage.Height, FallbackValue=1080}">
+                    <ItemsControl ItemsSource="{Binding CurrentPage.AllControls}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <Canvas/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemContainerTheme>
+                            <ControlTheme TargetType="ContentPresenter" x:CompileBindings="False">
+                                <Setter Property="Canvas.Left" Value="{Binding X}"/>
+                                <Setter Property="Canvas.Top" Value="{Binding Y}"/>
+                                <Setter Property="Width" Value="{Binding Width}"/>
+                                <Setter Property="Height" Value="{Binding Height}"/>
+                                <Setter Property="Opacity" Value="{Binding Opacity}"/>
+                                <Setter Property="IsVisible" Value="{Binding Visible}"/>
+                            </ControlTheme>
+                        </ItemsControl.ItemContainerTheme>
+                        <ItemsControl.DataTemplates>
+                            <!-- Button -->
+                            <DataTemplate x:CompileBindings="False" DataType="core:ButtonControl">
+                                <Button Content="{Binding Text}"
+                                        Background="{Binding BackgroundColor}"
+                                        Foreground="{Binding ForegroundColor}"
+                                        HorizontalAlignment="Stretch"
+                                        VerticalAlignment="Stretch"
+                                        HorizontalContentAlignment="Center"/>
+                            </DataTemplate>
+                            <!-- Label -->
+                            <DataTemplate x:CompileBindings="False" DataType="core:LabelControl">
+                                <TextBlock Text="{Binding Text}"
+                                           Foreground="{Binding ForegroundColor}"
+                                           FontSize="{Binding FontSize}"
+                                           TextWrapping="Wrap"
+                                           HorizontalAlignment="Stretch"
+                                           VerticalAlignment="Stretch"/>
+                            </DataTemplate>
+                            <!-- TextBox -->
+                            <DataTemplate x:CompileBindings="False" DataType="core:TextBoxControl">
+                                <TextBox Text="{Binding Text}"
+                                         Watermark="{Binding Placeholder}"
+                                         HorizontalAlignment="Stretch"
+                                         VerticalAlignment="Stretch"/>
+                            </DataTemplate>
+                            <!-- Gauge -->
+                            <DataTemplate x:CompileBindings="False" DataType="core:GaugeControl">
+                                <Border BorderBrush="#555" BorderThickness="1" CornerRadius="4"
+                                        HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="4">
+                                        <TextBlock Text="{Binding Name}" TextAlignment="Center" FontWeight="Bold"/>
+                                        <ProgressBar Value="{Binding Value}"
+                                                     Minimum="{Binding MinValue}"
+                                                     Maximum="{Binding MaxValue}"
+                                                     Width="80" Height="16"/>
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="2">
+                                            <TextBlock Text="{Binding Value, StringFormat='{}{0:F1}'}"
+                                                       TextAlignment="Center" FontSize="12" FontWeight="Bold"/>
+                                            <TextBlock Text="{Binding Unit}" FontSize="10" VerticalAlignment="Bottom"/>
+                                        </StackPanel>
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                            <!-- IndicatorLight -->
+                            <DataTemplate x:CompileBindings="False" DataType="core:IndicatorLightControl">
+                                <Ellipse HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                         Fill="{Binding IsOn, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                         Stroke="{Binding BorderColor}"
+                                         StrokeThickness="{Binding BorderThickness}"
+                                         ToolTip.Tip="{Binding Name}"/>
+                            </DataTemplate>
+                            <!-- Switch -->
+                            <DataTemplate x:CompileBindings="False" DataType="core:SwitchControl">
+                                <ToggleButton IsChecked="{Binding IsOn}"
+                                              HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                    <TextBlock Text="{Binding IsOn, Converter={x:Static ObjectConverters.IsNotNull}}"
+                                               HorizontalAlignment="Center"/>
+                                </ToggleButton>
+                            </DataTemplate>
+                            <!-- Slider -->
+                            <DataTemplate x:CompileBindings="False" DataType="core:SliderControl">
+                                <StackPanel VerticalAlignment="Center" Spacing="4">
+                                    <Slider Value="{Binding Value}"
+                                            Minimum="{Binding Minimum}"
+                                            Maximum="{Binding Maximum}"
+                                            TickFrequency="{Binding TickFrequency}"/>
+                                    <TextBlock IsVisible="{Binding ShowValue}"
+                                               Text="{Binding Value, StringFormat='{}{0:F1}'}"
+                                               TextAlignment="Center" FontSize="10"/>
+                                </StackPanel>
+                            </DataTemplate>
+                            <!-- Rectangle -->
+                            <DataTemplate x:CompileBindings="False" DataType="core:RectangleControl">
+                                <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                        Background="{Binding FillColor}"
+                                        BorderBrush="{Binding StrokeColor}"
+                                        BorderThickness="{Binding StrokeThickness}"
+                                        CornerRadius="{Binding CornerRadius}"/>
+                            </DataTemplate>
+                            <!-- Circle -->
+                            <DataTemplate x:CompileBindings="False" DataType="core:CircleControl">
+                                <Ellipse HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                         Fill="{Binding FillColor}"
+                                         Stroke="{Binding StrokeColor}"
+                                         StrokeThickness="{Binding StrokeThickness}"/>
+                            </DataTemplate>
+                            <!-- Ellipse -->
+                            <DataTemplate x:CompileBindings="False" DataType="core:EllipseControl">
+                                <Ellipse HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                         Fill="{Binding FillColor}"
+                                         Stroke="{Binding StrokeColor}"
+                                         StrokeThickness="{Binding StrokeThickness}"/>
+                            </DataTemplate>
+                            <!-- Line -->
+                            <DataTemplate x:CompileBindings="False" DataType="core:LineControl">
+                                <Line StartPoint="0,0" EndPoint="100,0"
+                                      Stroke="{Binding StrokeColor}"
+                                      StrokeThickness="{Binding StrokeThickness}"
+                                      HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+                            </DataTemplate>
+                            <!-- Fallback -->
+                            <DataTemplate x:CompileBindings="False" DataType="core:HmiControlBase">
+                                <Border BorderBrush="#555" BorderThickness="1">
+                                    <TextBlock Text="{Binding Name}" VerticalAlignment="Center"
+                                               HorizontalAlignment="Center" FontSize="11"/>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.DataTemplates>
+                    </ItemsControl>
+                </Border>
+            </Border>
+        </ScrollViewer>
+
+        <!-- Status bar -->
+        <Border Grid.Row="2" Background="#1A3A1A" BorderThickness="0,1,0,0" BorderBrush="#2D6A2D">
+            <StackPanel Orientation="Horizontal" Spacing="12" Margin="8,2">
+                <TextBlock Text="▶ 运行预览" Foreground="LightGreen" FontWeight="Bold"
+                           VerticalAlignment="Center" FontSize="11"/>
+                <TextBlock Text="{Binding ZoomLevel, StringFormat='缩放: {0:P0}'}"
+                           Foreground="#88FF88" VerticalAlignment="Center" FontSize="11"/>
+                <TextBlock Text="{Binding StatusText}"
+                           Foreground="#88FF88" VerticalAlignment="Center" FontSize="11"/>
+            </StackPanel>
+        </Border>
+
+    </Grid>
+</UserControl>

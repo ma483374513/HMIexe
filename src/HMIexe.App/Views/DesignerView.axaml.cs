@@ -23,6 +23,7 @@ public partial class DesignerView : UserControl
         DesignCanvas.AddHandler(PointerPressedEvent, OnCanvasPointerPressed, RoutingStrategies.Tunnel);
         DesignCanvas.AddHandler(PointerMovedEvent, OnCanvasPointerMoved, RoutingStrategies.Tunnel);
         DesignCanvas.AddHandler(PointerReleasedEvent, OnCanvasPointerReleased, RoutingStrategies.Tunnel);
+        DesignCanvas.AddHandler(PointerWheelChangedEvent, OnCanvasPointerWheel, RoutingStrategies.Tunnel);
     }
 
     private DesignerViewModel? Vm => DataContext as DesignerViewModel;
@@ -182,5 +183,18 @@ public partial class DesignerView : UserControl
             .Where(c => c.Visible && x >= c.X && x <= c.X + c.Width && y >= c.Y && y <= c.Y + c.Height)
             .OrderByDescending(c => c.ZIndex)
             .FirstOrDefault();
+    }
+
+    private void OnCanvasPointerWheel(object? sender, PointerWheelEventArgs e)
+    {
+        var vm = Vm;
+        if (vm == null) return;
+        if (e.KeyModifiers.HasFlag(KeyModifiers.Control) ||
+            e.KeyModifiers.HasFlag(KeyModifiers.Meta))
+        {
+            var delta = e.Delta.Y > 0 ? 0.1 : -0.1;
+            vm.ZoomLevel = Math.Clamp(vm.ZoomLevel + delta, 0.1, 5.0);
+            e.Handled = true;
+        }
     }
 }
