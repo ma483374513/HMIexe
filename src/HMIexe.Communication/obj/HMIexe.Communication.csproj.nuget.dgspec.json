@@ -10,7 +10,7 @@
         "projectUniqueName": "/home/runner/work/HMIexe/HMIexe/src/HMIexe.Communication/HMIexe.Communication.csproj",
         "projectName": "HMIexe.Communication",
         "projectPath": "/home/runner/work/HMIexe/HMIexe/src/HMIexe.Communication/HMIexe.Communication.csproj",
-        "packagesPath": "/home/runner/.nuget/packages/",
+        "packagesPath": "/tmp/codeql-scratch-28492fa5c00e1219/dbs/csharp/working/packages",
         "outputPath": "/home/runner/work/HMIexe/HMIexe/src/HMIexe.Communication/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
@@ -64,6 +64,16 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.25, 8.0.25]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.25, 8.0.25]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"
@@ -79,7 +89,7 @@
         "projectUniqueName": "/home/runner/work/HMIexe/HMIexe/src/HMIexe.Core/HMIexe.Core.csproj",
         "projectName": "HMIexe.Core",
         "projectPath": "/home/runner/work/HMIexe/HMIexe/src/HMIexe.Core/HMIexe.Core.csproj",
-        "packagesPath": "/home/runner/.nuget/packages/",
+        "packagesPath": "/tmp/codeql-scratch-28492fa5c00e1219/dbs/csharp/working/packages",
         "outputPath": "/home/runner/work/HMIexe/HMIexe/src/HMIexe.Core/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
@@ -137,6 +147,16 @@
           ],
           "assetTargetFallback": true,
           "warn": true,
+          "downloadDependencies": [
+            {
+              "name": "Microsoft.AspNetCore.App.Ref",
+              "version": "[8.0.25, 8.0.25]"
+            },
+            {
+              "name": "Microsoft.NETCore.App.Ref",
+              "version": "[8.0.25, 8.0.25]"
+            }
+          ],
           "frameworkReferences": {
             "Microsoft.NETCore.App": {
               "privateAssets": "all"

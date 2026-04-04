@@ -18,10 +18,10 @@ public class ImageControl : HmiControlBase
     /// <summary>控件类型标识，固定返回 ControlType.Image。</summary>
     public override ControlType ControlType => ControlType.Image;
 
-    /// <summary>Resource name or file path.</summary>
+    /// <summary>图像的资源名称或文件路径，用于定位并加载要显示的图片。</summary>
     public string ImagePath { get => _imagePath; set { _imagePath = value; OnPropertyChanged(); } }
 
-    /// <summary>Stretch mode: None, Fill, Uniform, UniformToFill.</summary>
+    /// <summary>图像拉伸填充模式：None（原始尺寸）、Fill（拉伸填满）、Uniform（等比缩放）、UniformToFill（等比裁剪填满）。</summary>
     public string Stretch { get => _stretch; set { _stretch = value; OnPropertyChanged(); } }
 
     /// <summary>初始化图片控件，默认宽高均为 120px。</summary>

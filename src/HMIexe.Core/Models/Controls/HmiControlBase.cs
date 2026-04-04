@@ -112,7 +112,7 @@ public abstract class HmiControlBase : INotifyPropertyChanged
 
     private string _valueBindingVariable = string.Empty;
 
-    /// <summary>Variable name bound to the control's primary value property at runtime.</summary>
+    /// <summary>运行时绑定到控件主值属性的变量名称，用于将 HMI 变量值动态映射到控件的主要显示属性。</summary>
     public string ValueBindingVariable
     {
         get => _valueBindingVariable;

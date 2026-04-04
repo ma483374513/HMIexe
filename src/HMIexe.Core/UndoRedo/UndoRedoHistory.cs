@@ -43,7 +43,10 @@ public class UndoRedoHistory : ObservableObject
         OnPropertyChanged(nameof(RedoDescription));
     }
 
-    /// <summary>Record an already-executed action for undo without re-executing it.</summary>
+    /// <summary>
+    /// 将一个已执行完毕的操作直接压入撤销栈，而不重新执行它。
+    /// 适用于操作已在外部执行（如拖放操作结束时）需要登记到历史记录的场景。
+    /// </summary>
     public void Push(IUndoRedoAction action)
     {
         _undoStack.Push(action);

@@ -88,7 +88,7 @@ public class IndicatorLightControl : HmiControlBase
     /// <summary>闪烁间隔时间（毫秒），即亮灭交替的周期，默认为 500ms。</summary>
     public int BlinkIntervalMs { get => _blinkIntervalMs; set { _blinkIntervalMs = value; OnPropertyChanged(); } }
 
-    /// <summary>Current display color: OnColor when IsOn, otherwise OffColor.</summary>
+    /// <summary>当前实际显示颜色：IsOn 为 true 时返回 OnColor，否则返回 OffColor。</summary>
     public string CurrentColor => IsOn ? OnColor : OffColor;
 
     /// <summary>初始化指示灯控件，默认宽高均为 40px。</summary>
