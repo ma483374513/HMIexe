@@ -19,6 +19,9 @@ public partial class VariableManagerViewModel : ObservableObject
     [ObservableProperty]
     private string _searchText = string.Empty;
 
+    [ObservableProperty]
+    private string _selectedGroup = "全部";
+
     public ObservableCollection<HmiVariable> Variables { get; } = new();
     public ObservableCollection<HmiVariable> FilteredVariables { get; } = new();
     public ObservableCollection<string> Groups { get; } = new();
@@ -31,10 +34,22 @@ public partial class VariableManagerViewModel : ObservableObject
         foreach (var v in _variableService.Variables)
             Variables.Add(v);
 
+        RefreshGroups();
         RefreshFilter();
     }
 
     partial void OnSearchTextChanged(string value) => RefreshFilter();
+    partial void OnSelectedGroupChanged(string value) => RefreshFilter();
+
+    private void RefreshGroups()
+    {
+        var current = SelectedGroup;
+        Groups.Clear();
+        Groups.Add("全部");
+        foreach (var g in Variables.Select(v => v.Group).Where(g => !string.IsNullOrEmpty(g)).Distinct().OrderBy(g => g))
+            Groups.Add(g);
+        SelectedGroup = Groups.Contains(current) ? current : "全部";
+    }
 
     private void RefreshFilter()
     {
@@ -42,13 +57,13 @@ public partial class VariableManagerViewModel : ObservableObject
         var term = SearchText?.Trim() ?? string.Empty;
         foreach (var v in Variables)
         {
-            if (string.IsNullOrEmpty(term) ||
+            var matchesGroup = SelectedGroup == "全部" || v.Group == SelectedGroup;
+            var matchesSearch = string.IsNullOrEmpty(term) ||
                 v.Name.Contains(term, StringComparison.OrdinalIgnoreCase) ||
                 v.DisplayName.Contains(term, StringComparison.OrdinalIgnoreCase) ||
-                v.Group.Contains(term, StringComparison.OrdinalIgnoreCase))
-            {
+                v.Group.Contains(term, StringComparison.OrdinalIgnoreCase);
+            if (matchesGroup && matchesSearch)
                 FilteredVariables.Add(v);
-            }
         }
     }
 
@@ -64,6 +79,7 @@ public partial class VariableManagerViewModel : ObservableObject
         };
         _variableService.AddVariable(variable);
         Variables.Add(variable);
+        RefreshGroups();
         RefreshFilter();
         SelectedVariable = variable;
     }
@@ -74,8 +90,9 @@ public partial class VariableManagerViewModel : ObservableObject
         if (SelectedVariable == null) return;
         _variableService.RemoveVariable(SelectedVariable.Id);
         Variables.Remove(SelectedVariable);
-        FilteredVariables.Remove(SelectedVariable);
-        SelectedVariable = null;
+        RefreshGroups();
+        RefreshFilter();
+        SelectedVariable = FilteredVariables.FirstOrDefault();
     }
 
     [RelayCommand]
@@ -91,6 +108,7 @@ public partial class VariableManagerViewModel : ObservableObject
             Variables.Clear();
             foreach (var v in _variableService.Variables)
                 Variables.Add(v);
+            RefreshGroups();
             RefreshFilter();
             await _dialogService.ShowMessageAsync("导入成功", $"已导入 {_variableService.Variables.Count} 个变量");
         }

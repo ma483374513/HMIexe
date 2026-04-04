@@ -28,7 +28,7 @@ public partial class AlarmManagerViewModel : ObservableObject
     [ObservableProperty]
     private int _selectedTabIndex;
 
-    public IReadOnlyList<string> SeverityLevels { get; } = Enum.GetNames<AlarmSeverity>();
+    public IReadOnlyList<AlarmSeverity> SeverityLevels { get; } = Enum.GetValues<AlarmSeverity>();
 
     public AlarmManagerViewModel(IAlarmService alarmService, IDialogService dialogService,
         AlarmConditionEvaluator conditionEvaluator)

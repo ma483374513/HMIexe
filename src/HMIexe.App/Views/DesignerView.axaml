@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:HMIexe.App.ViewModels"
              xmlns:core="using:HMIexe.Core.Models.Controls"
+             xmlns:canvas="using:HMIexe.Core.Models.Canvas"
              x:Class="HMIexe.App.Views.DesignerView"
              x:DataType="vm:DesignerViewModel"
              Focusable="True"
@@ -70,10 +71,27 @@
                         <TextBlock Text="图层" Foreground="White" Padding="8,4" FontWeight="Bold" VerticalAlignment="Center"/>
                     </DockPanel>
                     <ScrollViewer>
-                        <ItemsControl ItemsSource="{Binding CurrentPage.Layers}">
+                        <ItemsControl ItemsSource="{Binding CurrentPage.Layers}" x:CompileBindings="False">
                             <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding Name}" Padding="8,4"/>
+                                <DataTemplate x:DataType="canvas:HmiLayer">
+                                    <Border Padding="2,2">
+                                        <Grid ColumnDefinitions="*,Auto,Auto,Auto">
+                                            <TextBlock Grid.Column="0" Text="{Binding Name}"
+                                                       Padding="4,2" VerticalAlignment="Center"/>
+                                            <ToggleButton Grid.Column="1" Width="22" Height="22" Padding="0"
+                                                          ToolTip.Tip="显示/隐藏"
+                                                          IsChecked="{Binding Visible}"
+                                                          Content="👁"/>
+                                            <ToggleButton Grid.Column="2" Width="22" Height="22" Padding="0"
+                                                          ToolTip.Tip="锁定/解锁"
+                                                          IsChecked="{Binding Locked}"
+                                                          Content="🔒"/>
+                                            <Button Grid.Column="3" Content="×" Width="22" Height="22" Padding="0"
+                                                    ToolTip.Tip="删除图层"
+                                                    Command="{Binding $parent[UserControl].DataContext.RemoveLayerCommand}"
+                                                    CommandParameter="{Binding}"/>
+                                        </Grid>
+                                    </Border>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
@@ -83,24 +101,30 @@
         </Grid>
 
         <!-- Center: Canvas Area -->
-        <Grid Grid.Column="1" RowDefinitions="Auto,*">
+        <Grid Grid.Column="1" RowDefinitions="Auto,Auto,*">
             <!-- Page Tabs -->
             <Border Grid.Row="0" Background="#2D2D2D" BorderThickness="0,0,0,1" BorderBrush="#444">
                 <DockPanel>
                     <Button DockPanel.Dock="Right" Content="+ 新建页面"
                             Padding="8,2" Command="{Binding AddPageCommand}"/>
                     <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled">
-                        <ItemsControl ItemsSource="{Binding Pages}">
+                        <ItemsControl ItemsSource="{Binding Pages}" x:CompileBindings="False">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <StackPanel Orientation="Horizontal" Spacing="2" Margin="4,2"/>
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
-                                <DataTemplate>
-                                    <Button Content="{Binding Name}" Padding="10,2"
-                                            Command="{Binding $parent[UserControl].DataContext.SelectPageCommand}"
-                                            CommandParameter="{Binding}"/>
+                                <DataTemplate x:DataType="canvas:HmiPage">
+                                    <StackPanel Orientation="Horizontal" Spacing="1">
+                                        <Button Content="{Binding Name}" Padding="8,2"
+                                                Command="{Binding $parent[UserControl].DataContext.SelectPageCommand}"
+                                                CommandParameter="{Binding}"/>
+                                        <Button Content="×" Padding="4,2" FontSize="10"
+                                                ToolTip.Tip="删除页面"
+                                                Command="{Binding $parent[UserControl].DataContext.RemovePageCommand}"
+                                                CommandParameter="{Binding}"/>
+                                    </StackPanel>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>
                         </ItemsControl>
@@ -108,8 +132,30 @@
                 </DockPanel>
             </Border>
 
+            <!-- Alignment / Z-order Toolbar -->
+            <Border Grid.Row="1" Background="#252525" BorderThickness="0,0,0,1" BorderBrush="#333">
+                <StackPanel Orientation="Horizontal" Margin="4,2" Spacing="2"
+                           IsEnabled="{Binding SelectedControl, Converter={x:Static ObjectConverters.IsNotNull}}">
+                    <TextBlock Text="对齐:" VerticalAlignment="Center" Foreground="#888" Margin="0,0,4,0"/>
+                    <Button Content="⊢" Padding="4,2" ToolTip.Tip="左对齐" Command="{Binding AlignLeftCommand}"/>
+                    <Button Content="⊣" Padding="4,2" ToolTip.Tip="右对齐" Command="{Binding AlignRightCommand}"/>
+                    <Button Content="⊤" Padding="4,2" ToolTip.Tip="顶对齐" Command="{Binding AlignTopCommand}"/>
+                    <Button Content="⊥" Padding="4,2" ToolTip.Tip="底对齐" Command="{Binding AlignBottomCommand}"/>
+                    <Button Content="⊶" Padding="4,2" ToolTip.Tip="水平居中" Command="{Binding AlignCenterVerticalCommand}"/>
+                    <Button Content="⊵" Padding="4,2" ToolTip.Tip="垂直居中" Command="{Binding AlignCenterHorizontalCommand}"/>
+                    <Separator Width="1" Background="#444" Margin="4,2"/>
+                    <Button Content="↔" Padding="4,2" ToolTip.Tip="水平均匀分布" Command="{Binding DistributeHorizontallyCommand}"/>
+                    <Button Content="↕" Padding="4,2" ToolTip.Tip="垂直均匀分布" Command="{Binding DistributeVerticallyCommand}"/>
+                    <Separator Width="1" Background="#444" Margin="4,2"/>
+                    <Button Content="▲▲" Padding="4,2" ToolTip.Tip="置于顶层" Command="{Binding BringToFrontCommand}"/>
+                    <Button Content="▲" Padding="4,2" ToolTip.Tip="向上一层" Command="{Binding BringForwardCommand}"/>
+                    <Button Content="▼" Padding="4,2" ToolTip.Tip="向下一层" Command="{Binding SendBackwardCommand}"/>
+                    <Button Content="▼▼" Padding="4,2" ToolTip.Tip="置于底层" Command="{Binding SendToBackCommand}"/>
+                </StackPanel>
+            </Border>
+
             <!-- Canvas with scrolling -->
-            <ScrollViewer Grid.Row="1" Background="#1E1E1E"
+            <ScrollViewer Grid.Row="2" Background="#1E1E1E"
                           HorizontalScrollBarVisibility="Auto"
                           VerticalScrollBarVisibility="Auto">
                 <Border Background="#3C3C3C" Margin="20">

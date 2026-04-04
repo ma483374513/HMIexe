@@ -70,12 +70,35 @@ public partial class DesignerViewModel : ObservableObject
     }
 
     [RelayCommand]
+    private void RemovePage(HmiPage page)
+    {
+        if (Pages.Count <= 1) return;
+        var idx = Pages.IndexOf(page);
+        Pages.Remove(page);
+        if (CurrentPage == page)
+            CurrentPage = Pages.Count > 0 ? Pages[Math.Max(0, idx - 1)] : null;
+    }
+
+    [RelayCommand]
     private void AddLayer()
     {
         if (CurrentPage == null) return;
         var layer = new HmiLayer { Name = $"Layer {CurrentPage.Layers.Count + 1}" };
         CurrentPage.Layers.Add(layer);
     }
+
+    [RelayCommand]
+    private void RemoveLayer(HmiLayer layer)
+    {
+        if (CurrentPage == null || CurrentPage.Layers.Count <= 1) return;
+        CurrentPage.Layers.Remove(layer);
+    }
+
+    [RelayCommand]
+    private void ToggleLayerVisible(HmiLayer layer) => layer.Visible = !layer.Visible;
+
+    [RelayCommand]
+    private void ToggleLayerLock(HmiLayer layer) => layer.Locked = !layer.Locked;
 
     /// <summary>Select or add to selection. Pass null to deselect all.</summary>
     public void SelectControl(HmiControlBase? ctrl, bool addToSelection)
@@ -259,6 +282,38 @@ public partial class DesignerViewModel : ObservableObject
             c.Y = y;
             y += c.Height + gap;
         }
+    }
+
+    [RelayCommand]
+    private void BringToFront()
+    {
+        if (SelectedControl == null || CurrentPage == null) return;
+        var allControls = CurrentPage.AllControls.ToList();
+        var maxZ = allControls.Count > 0 ? allControls.Max(c => c.ZIndex) : 0;
+        SelectedControl.ZIndex = maxZ + 1;
+    }
+
+    [RelayCommand]
+    private void SendToBack()
+    {
+        if (SelectedControl == null || CurrentPage == null) return;
+        var allControls = CurrentPage.AllControls.ToList();
+        var minZ = allControls.Count > 0 ? allControls.Min(c => c.ZIndex) : 0;
+        SelectedControl.ZIndex = minZ - 1;
+    }
+
+    [RelayCommand]
+    private void BringForward()
+    {
+        if (SelectedControl == null) return;
+        SelectedControl.ZIndex++;
+    }
+
+    [RelayCommand]
+    private void SendBackward()
+    {
+        if (SelectedControl == null) return;
+        SelectedControl.ZIndex--;
     }
 
     public PropertyPanelViewModel PropertyPanel { get; }

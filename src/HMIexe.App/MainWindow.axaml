@@ -30,6 +30,28 @@
                 <Separator/>
                 <MenuItem Header="删除选中控件"
                           Command="{Binding DesignerViewModel.DeleteSelectedControlsCommand}"/>
+                <MenuItem Header="复制"
+                          Command="{Binding DesignerViewModel.CopySelectedControlsCommand}"/>
+                <MenuItem Header="粘贴"
+                          Command="{Binding DesignerViewModel.PasteControlsCommand}"/>
+                <Separator/>
+                <MenuItem Header="对齐">
+                    <MenuItem Header="左对齐" Command="{Binding DesignerViewModel.AlignLeftCommand}"/>
+                    <MenuItem Header="右对齐" Command="{Binding DesignerViewModel.AlignRightCommand}"/>
+                    <MenuItem Header="顶对齐" Command="{Binding DesignerViewModel.AlignTopCommand}"/>
+                    <MenuItem Header="底对齐" Command="{Binding DesignerViewModel.AlignBottomCommand}"/>
+                    <MenuItem Header="水平居中" Command="{Binding DesignerViewModel.AlignCenterVerticalCommand}"/>
+                    <MenuItem Header="垂直居中" Command="{Binding DesignerViewModel.AlignCenterHorizontalCommand}"/>
+                    <Separator/>
+                    <MenuItem Header="水平均匀分布" Command="{Binding DesignerViewModel.DistributeHorizontallyCommand}"/>
+                    <MenuItem Header="垂直均匀分布" Command="{Binding DesignerViewModel.DistributeVerticallyCommand}"/>
+                </MenuItem>
+                <MenuItem Header="层次顺序">
+                    <MenuItem Header="置于顶层" Command="{Binding DesignerViewModel.BringToFrontCommand}"/>
+                    <MenuItem Header="向上一层" Command="{Binding DesignerViewModel.BringForwardCommand}"/>
+                    <MenuItem Header="向下一层" Command="{Binding DesignerViewModel.SendBackwardCommand}"/>
+                    <MenuItem Header="置于底层" Command="{Binding DesignerViewModel.SendToBackCommand}"/>
+                </MenuItem>
             </MenuItem>
             <MenuItem Header="视图(_V)">
                 <MenuItem Header="返回设计器" Command="{Binding ShowDesignerCommand}"/>

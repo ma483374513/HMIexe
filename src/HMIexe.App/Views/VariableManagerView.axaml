@@ -11,6 +11,9 @@
             <Button Content="删除" Command="{Binding RemoveVariableCommand}"/>
             <Button Content="导入CSV" Command="{Binding ImportFromCsvCommand}"/>
             <Button Content="导出CSV" Command="{Binding ExportToCsvCommand}"/>
+            <Separator Width="1" Background="#444" Margin="2,4"/>
+            <TextBlock Text="分组:" VerticalAlignment="Center"/>
+            <ComboBox ItemsSource="{Binding Groups}" SelectedItem="{Binding SelectedGroup}" Width="120"/>
             <TextBox Watermark="搜索变量..." Text="{Binding SearchText}" Width="200"/>
         </StackPanel>
 

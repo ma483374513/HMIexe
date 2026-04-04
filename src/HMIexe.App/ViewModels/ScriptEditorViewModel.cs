@@ -30,7 +30,7 @@ public partial class ScriptEditorViewModel : ObservableObject
     [ObservableProperty]
     private bool _isRunning;
 
-    public IReadOnlyList<string> TriggerTypes { get; } = Enum.GetNames<ScriptTriggerType>();
+    public IReadOnlyList<ScriptTriggerType> TriggerTypes { get; } = Enum.GetValues<ScriptTriggerType>();
 
     public ScriptEditorViewModel(IScriptService scriptService, IDialogService dialogService)
     {
