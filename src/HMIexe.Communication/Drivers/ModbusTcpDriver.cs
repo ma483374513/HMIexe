@@ -22,7 +22,7 @@ public class ModbusTcpDriver : IProtocolDriver
     {
         try
         {
-            var host = parameters.GetValueOrDefault("Host", "127.0.0.1")!;
+            var host = parameters.GetValueOrDefault("Host", "127.0.0.1");
             if (!int.TryParse(parameters.GetValueOrDefault("Port", "502"), out var port))
                 port = 502;
             if (!IPAddress.TryParse(host, out var ipAddress))

@@ -50,6 +50,7 @@ public partial class App : Application
 
         // Runtime services
         services.AddSingleton<AlarmConditionEvaluator>();
+        services.AddSingleton<DataPersistenceService>();
 
         // App services
         services.AddSingleton<IDialogService, DialogService>();
@@ -61,6 +62,7 @@ public partial class App : Application
         services.AddSingleton<AlarmManagerViewModel>();
         services.AddSingleton<CommunicationManagerViewModel>();
         services.AddSingleton<ResourceManagerViewModel>();
+        services.AddSingleton<RuntimeViewModel>();
         services.AddSingleton<MainWindowViewModel>();
 
         return services.BuildServiceProvider();

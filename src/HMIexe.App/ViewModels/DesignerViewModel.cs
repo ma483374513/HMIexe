@@ -324,9 +324,9 @@ public partial class DesignerViewModel : ObservableObject
 
     public PropertyPanelViewModel PropertyPanel { get; }
 
-    public DesignerViewModel()
+    public DesignerViewModel(HMIexe.Core.Services.IVariableService? variableService = null)
     {
-        PropertyPanel = new PropertyPanelViewModel(UndoRedo);
+        PropertyPanel = new PropertyPanelViewModel(UndoRedo, variableService);
     }
 
     partial void OnSelectedControlChanged(HmiControlBase? value)
@@ -382,6 +382,7 @@ public partial class DesignerViewModel : ObservableObject
             "Line" => new Core.Models.Controls.LineControl { Name = $"Line{layer.Controls.Count + 1}" },
             "Rectangle" => new Core.Models.Controls.RectangleControl { Name = $"Rect{layer.Controls.Count + 1}" },
             "Circle" => new Core.Models.Controls.CircleControl { Name = $"Circle{layer.Controls.Count + 1}" },
+            "Ellipse" => new Core.Models.Controls.EllipseControl { Name = $"Ellipse{layer.Controls.Count + 1}" },
             _ => null
         };
 

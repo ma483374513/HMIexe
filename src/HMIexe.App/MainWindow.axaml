@@ -55,8 +55,10 @@
             </MenuItem>
             <MenuItem Header="视图(_V)">
                 <MenuItem Header="返回设计器" Command="{Binding ShowDesignerCommand}"/>
+                <MenuItem Header="运行预览" Command="{Binding ShowRuntimePreviewCommand}"/>
                 <Separator/>
                 <MenuItem Header="切换网格" Command="{Binding ToggleGridCommand}"/>
+                <MenuItem Header="切换主题(深色/浅色)" Command="{Binding ToggleThemeCommand}"/>
             </MenuItem>
             <MenuItem Header="工程(_P)">
                 <MenuItem Header="变量管理" Command="{Binding ShowVariableManagerCommand}"/>
@@ -88,6 +90,7 @@
                     ToolTip.Tip="{Binding DesignerViewModel.UndoRedo.RedoDescription, FallbackValue='重做'}"/>
             <Separator Width="1" Background="#444" Margin="2,4"/>
             <Button Content="设计" Command="{Binding ShowDesignerCommand}" ToolTip.Tip="返回设计器"/>
+            <Button Content="▶ 预览" Command="{Binding ShowRuntimePreviewCommand}" ToolTip.Tip="运行预览"/>
             <Button Content="变量" Command="{Binding ShowVariableManagerCommand}" ToolTip.Tip="变量管理"/>
             <Button Content="脚本" Command="{Binding ShowScriptEditorCommand}" ToolTip.Tip="脚本编辑器"/>
             <Button Content="报警" Command="{Binding ShowAlarmManagerCommand}" ToolTip.Tip="报警管理"/>
@@ -130,6 +133,9 @@
                 </DataTemplate>
                 <DataTemplate DataType="vm:ResourceManagerViewModel">
                     <views:ResourceManagerView DataContext="{Binding}"/>
+                </DataTemplate>
+                <DataTemplate DataType="vm:RuntimeViewModel">
+                    <views:RuntimeView DataContext="{Binding}"/>
                 </DataTemplate>
             </ContentControl.DataTemplates>
         </ContentControl>

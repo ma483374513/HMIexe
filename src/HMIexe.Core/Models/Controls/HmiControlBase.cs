@@ -76,6 +76,14 @@ public abstract class HmiControlBase : INotifyPropertyChanged
         set { _isSelected = value; OnPropertyChanged(); }
     }
 
+    private string _valueBindingVariable = string.Empty;
+    /// <summary>Variable name bound to the control's primary value property at runtime.</summary>
+    public string ValueBindingVariable
+    {
+        get => _valueBindingVariable;
+        set { _valueBindingVariable = value; OnPropertyChanged(); }
+    }
+
     public string LayerId { get; set; } = string.Empty;
     public string GroupId { get; set; } = string.Empty;
     public Dictionary<string, object?> ExtendedProperties { get; set; } = new();

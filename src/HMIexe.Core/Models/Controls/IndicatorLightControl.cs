@@ -12,13 +12,45 @@ public class IndicatorLightControl : HmiControlBase
 
     public override ControlType ControlType => ControlType.IndicatorLight;
 
-    public bool IsOn { get => _isOn; set { _isOn = value; OnPropertyChanged(); } }
-    public string OnColor { get => _onColor; set { _onColor = value; OnPropertyChanged(); } }
-    public string OffColor { get => _offColor; set { _offColor = value; OnPropertyChanged(); } }
+    public bool IsOn
+    {
+        get => _isOn;
+        set
+        {
+            _isOn = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(CurrentColor));
+        }
+    }
+
+    public string OnColor
+    {
+        get => _onColor;
+        set
+        {
+            _onColor = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(CurrentColor));
+        }
+    }
+
+    public string OffColor
+    {
+        get => _offColor;
+        set
+        {
+            _offColor = value;
+            OnPropertyChanged();
+            OnPropertyChanged(nameof(CurrentColor));
+        }
+    }
     public string BorderColor { get => _borderColor; set { _borderColor = value; OnPropertyChanged(); } }
     public double BorderThickness { get => _borderThickness; set { _borderThickness = value; OnPropertyChanged(); } }
     public bool BlinkWhenOn { get => _blinkWhenOn; set { _blinkWhenOn = value; OnPropertyChanged(); } }
     public int BlinkIntervalMs { get => _blinkIntervalMs; set { _blinkIntervalMs = value; OnPropertyChanged(); } }
+
+    /// <summary>Current display color: OnColor when IsOn, otherwise OffColor.</summary>
+    public string CurrentColor => IsOn ? OnColor : OffColor;
 
     public IndicatorLightControl()
     {
