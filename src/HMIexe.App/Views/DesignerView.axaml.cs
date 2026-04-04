@@ -65,11 +65,17 @@ public partial class DesignerView : UserControl
 
     private void OnCanvasPointerMoved(object? sender, PointerEventArgs e)
     {
-        if (_dragItems.Count == 0) return;
+        var pos = e.GetCurrentPoint(DesignCanvas).Position;
         var vm = Vm;
+        if (vm != null)
+        {
+            vm.CanvasMouseX = Math.Round(pos.X);
+            vm.CanvasMouseY = Math.Round(pos.Y);
+        }
+
+        if (_dragItems.Count == 0) return;
         if (vm == null) return;
 
-        var pos = e.GetCurrentPoint(DesignCanvas).Position;
         var dx = pos.X - _dragStartPoint.X;
         var dy = pos.Y - _dragStartPoint.Y;
 

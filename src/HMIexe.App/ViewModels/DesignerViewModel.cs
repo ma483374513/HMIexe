@@ -39,6 +39,12 @@ public partial class DesignerViewModel : ObservableObject
     [ObservableProperty]
     private bool _snapToGrid = true;
 
+    [ObservableProperty]
+    private double _canvasMouseX;
+
+    [ObservableProperty]
+    private double _canvasMouseY;
+
     // Clipboard for copy/paste
     private string? _clipboardJson;
 
@@ -326,6 +332,11 @@ public partial class DesignerViewModel : ObservableObject
     partial void OnSelectedControlChanged(HmiControlBase? value)
     {
         PropertyPanel.SelectedControl = value;
+    }
+
+    partial void OnCurrentPageChanged(HmiPage? value)
+    {
+        PropertyPanel.CurrentPage = value;
     }
 
     public void LoadProject(HmiProject project)

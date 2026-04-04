@@ -17,6 +17,16 @@
             <TextBox Watermark="搜索变量..." Text="{Binding SearchText}" Width="200"/>
         </StackPanel>
 
+        <!-- Status Bar -->
+        <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" Spacing="12"
+                    Background="#1A1A1A" Margin="8,2">
+            <TextBlock Foreground="#888" VerticalAlignment="Center" FontSize="11"
+                       Text="{Binding Variables.Count, StringFormat='共 {0} 个变量'}"/>
+            <Separator Width="1" Background="#444" Margin="0,2"/>
+            <TextBlock Foreground="#888" VerticalAlignment="Center" FontSize="11"
+                       Text="{Binding FilteredVariables.Count, StringFormat='显示 {0} 个'}"/>
+        </StackPanel>
+
         <!-- Variable Grid -->
         <DataGrid ItemsSource="{Binding FilteredVariables}"
                   SelectedItem="{Binding SelectedVariable}"

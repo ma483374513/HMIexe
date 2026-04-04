@@ -46,7 +46,13 @@ public partial class VariableManagerViewModel : ObservableObject
         var current = SelectedGroup;
         Groups.Clear();
         Groups.Add("全部");
-        foreach (var g in Variables.Select(v => v.Group).Where(g => !string.IsNullOrEmpty(g)).Distinct().OrderBy(g => g))
+        var groups = Variables
+            .Select(v => v.Group)
+            .Where(g => !string.IsNullOrEmpty(g))
+            .Distinct()
+            .OrderBy(g => g)
+            .ToList();
+        foreach (var g in groups)
             Groups.Add(g);
         SelectedGroup = Groups.Contains(current) ? current : "全部";
     }
