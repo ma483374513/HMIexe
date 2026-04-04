@@ -14,20 +14,32 @@ namespace HMIexe.App.Views;
 /// </summary>
 public partial class PublishView : UserControl
 {
+    /// <summary>上一个已订阅的 ViewModel，用于在 DataContext 切换时解除旧订阅，防止内存泄漏。</summary>
+    private PublishViewModel? _previousVm;
+
     /// <summary>
-    /// 初始化 <see cref="PublishView"/> 的新实例，并注册日志集合变更事件以实现自动滚动。
+    /// 初始化 <see cref="PublishView"/> 的新实例，并注册 DataContext 变更事件。
     /// </summary>
     public PublishView()
     {
         InitializeComponent();
 
-        DataContextChanged += (_, _) =>
-        {
-            if (DataContext is PublishViewModel vm)
-            {
-                vm.LogLines.CollectionChanged += OnLogLinesChanged;
-            }
-        };
+        DataContextChanged += OnDataContextChanged;
+    }
+
+    /// <summary>
+    /// DataContext 变更事件处理器。
+    /// 先解除旧 ViewModel 的日志集合订阅，再订阅新 ViewModel，防止重复订阅或内存泄漏。
+    /// </summary>
+    private void OnDataContextChanged(object? sender, EventArgs e)
+    {
+        if (_previousVm != null)
+            _previousVm.LogLines.CollectionChanged -= OnLogLinesChanged;
+
+        _previousVm = DataContext as PublishViewModel;
+
+        if (_previousVm != null)
+            _previousVm.LogLines.CollectionChanged += OnLogLinesChanged;
     }
 
     /// <summary>

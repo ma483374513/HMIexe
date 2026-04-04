@@ -228,6 +228,7 @@ public class PublishService : IPublishService
         var rid        = settings.ToRuntimeIdentifier();
         var config     = settings.ScriptMode == ScriptMode.Debug ? "Debug" : "Release";
         var singleFile = settings.SingleFilePublish ? " -p:PublishSingleFile=true" : string.Empty;
+        var exeExt     = settings.ExecutableExtension();
         var readme = $"""
             HMI 工程发布包 — {project.Name}
             ======================================
@@ -246,7 +247,7 @@ public class PublishService : IPublishService
                 -o <输出目录>
 
             然后将本目录中的 project.hmiproj 和 runtime.config.json
-            复制到输出目录中，启动 HMIexe.App{settings.ExecutableExtension()} 即可运行。
+            复制到输出目录中，启动 HMIexe.App{exeExt} 即可运行。
             """;
 
         await File.WriteAllTextAsync(

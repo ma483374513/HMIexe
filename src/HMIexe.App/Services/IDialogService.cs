@@ -43,6 +43,13 @@ public interface IDialogService
     Task<bool> ShowConfirmAsync(string title, string message);
 
     /// <summary>
+    /// 显示文件夹选择对话框，允许用户选择单个目录。
+    /// </summary>
+    /// <param name="title">对话框标题。</param>
+    /// <returns>用户选中的目录本地路径；若取消则返回 <c>null</c>。</returns>
+    Task<string?> OpenFolderAsync(string title);
+
+    /// <summary>
     /// 显示文本输入对话框，允许用户输入一行文本。
     /// </summary>
     /// <param name="title">对话框标题。</param>

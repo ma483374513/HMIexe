@@ -105,12 +105,9 @@ public partial class PublishViewModel : ObservableObject
     [RelayCommand]
     private async Task BrowseOutputDirectory()
     {
-        var path = await _dialogService.SaveFileAsync(
-            "选择发布输出目录（在此目录下创建发布文件夹）",
-            [new FileFilter("所有文件", ["*"])],
-            "publish_output");
+        var path = await _dialogService.OpenFolderAsync("选择发布输出目录");
         if (!string.IsNullOrEmpty(path))
-            OutputDirectory = Path.GetDirectoryName(path) ?? path;
+            OutputDirectory = path;
     }
 
     /// <summary>

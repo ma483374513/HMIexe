@@ -89,6 +89,25 @@ public class DialogService : IDialogService
     }
 
     /// <summary>
+    /// 显示文件夹选择对话框，允许用户选择单个目录。
+    /// </summary>
+    /// <param name="title">对话框标题。</param>
+    /// <returns>用户选中目录的本地路径；若取消则返回 <c>null</c>。</returns>
+    public async Task<string?> OpenFolderAsync(string title)
+    {
+        var provider = GetStorageProvider();
+        if (provider == null) return null;
+
+        var folders = await provider.OpenFolderPickerAsync(new FolderPickerOpenOptions
+        {
+            Title = title,
+            AllowMultiple = false
+        });
+
+        return folders.Count > 0 ? folders[0].TryGetLocalPath() : null;
+    }
+
+    /// <summary>
     /// 显示仅含"确定"按钮的信息提示对话框。
     /// 对话框以主窗口为父窗口居中显示。
     /// </summary>
