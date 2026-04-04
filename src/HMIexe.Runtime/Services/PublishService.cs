@@ -140,7 +140,7 @@ public class PublishService : IPublishService
         var appCsproj = FindAppCsproj();
         if (appCsproj == null)
         {
-            progress?.Report("⚠ 未能找到 HMIexe.App.csproj，跳过 dotnet publish。");
+            progress?.Report("⚠ 未能找到 HMIexe.RuntimePlayer.csproj，跳过 dotnet publish。");
             return;
         }
 
@@ -198,17 +198,19 @@ public class PublishService : IPublishService
         }
 
         progress?.Report($"dotnet publish 完成（配置：{config}，RID：{rid}）。");
+        progress?.Report($"可在发布目录中运行 HMIexe.Player{settings.ExecutableExtension()} 启动 HMI 画面。");
     }
 
     /// <summary>
-    /// 从当前程序集所在目录向上最多遍历 8 层，寻找 <c>HMIexe.App.csproj</c>。
+    /// 从当前程序集所在目录向上最多遍历 8 层，寻找 <c>HMIexe.RuntimePlayer.csproj</c>。
+    /// 发布运行时播放器而非完整设计器，使发布包体积最小且不含编辑器代码。
     /// </summary>
     private static string? FindAppCsproj()
     {
         var dir = Path.GetDirectoryName(typeof(PublishService).Assembly.Location);
         for (var i = 0; i < 8 && dir != null; i++)
         {
-            var candidate = Directory.GetFiles(dir, "HMIexe.App.csproj", SearchOption.AllDirectories)
+            var candidate = Directory.GetFiles(dir, "HMIexe.RuntimePlayer.csproj", SearchOption.AllDirectories)
                                      .FirstOrDefault();
             if (candidate != null) return candidate;
             dir = Path.GetDirectoryName(dir);
@@ -230,7 +232,7 @@ public class PublishService : IPublishService
         var singleFile = settings.SingleFilePublish ? " -p:PublishSingleFile=true" : string.Empty;
         var exeExt     = settings.ExecutableExtension();
         var readme = $"""
-            HMI 工程发布包 — {project.Name}
+            HMI 运行画面发布包 — {project.Name}
             ======================================
             目标平台   : {settings.Platform} ({rid})
             分辨率     : {settings.ResolutionWidth} × {settings.ResolutionHeight}
@@ -238,16 +240,28 @@ public class PublishService : IPublishService
             资源优化   : {(settings.OptimizeResources ? "启用" : "禁用")}
             单文件发布 : {(settings.SingleFilePublish ? "是" : "否")}
 
+            发布内容说明
+            ──────────────────────────────────────
+            本包仅包含 HMI 运行画面播放器（HMIexe.Player），不含设计器。
+            将此发布包下载到目标设备后，双击（或命令行运行）：
+
+              HMIexe.Player{exeExt}
+
+            即可在目标设备上运行 HMI 画面，无需安装设计器软件。
+            也可通过命令行指定工程文件路径：
+
+              HMIexe.Player{exeExt} <path/to/project.hmiproj>
+
             此包因未检测到 .NET SDK 而未执行编译，仅包含工程数据文件。
             如需生成可执行文件，请在安装了 .NET 8 SDK 的环境中执行：
 
-              dotnet publish src/HMIexe.App/HMIexe.App.csproj \
+              dotnet publish src/HMIexe.RuntimePlayer/HMIexe.RuntimePlayer.csproj \
                 -r {rid} -c {config}{singleFile} \
                 --self-contained true \
                 -o <输出目录>
 
             然后将本目录中的 project.hmiproj 和 runtime.config.json
-            复制到输出目录中，启动 HMIexe.App{exeExt} 即可运行。
+            复制到输出目录中，启动 HMIexe.Player{exeExt} 即可运行。
             """;
 
         await File.WriteAllTextAsync(
