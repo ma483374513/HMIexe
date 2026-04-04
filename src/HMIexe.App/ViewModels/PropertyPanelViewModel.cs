@@ -29,11 +29,7 @@ public partial class PropertyPanelViewModel : ObservableObject
         _undoRedo = undoRedo;
         _variableService = variableService;
         if (_variableService != null)
-        {
             RefreshVariableList();
-            // Keep list in sync as variables are added/removed
-            _variableService.VariableValueChanged += (_, _) => { /* Value changes don't affect names */ };
-        }
     }
 
     public void RefreshVariableList()

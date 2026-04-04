@@ -192,8 +192,8 @@ public partial class DesignerView : UserControl
         if (e.KeyModifiers.HasFlag(KeyModifiers.Control) ||
             e.KeyModifiers.HasFlag(KeyModifiers.Meta))
         {
-            var delta = e.Delta.Y > 0 ? 0.1 : -0.1;
-            vm.ZoomLevel = Math.Clamp(vm.ZoomLevel + delta, 0.1, 5.0);
+            var zoomDelta = e.Delta.Y > 0 ? 0.1 : -0.1;
+            vm.ZoomLevel = Math.Clamp(vm.ZoomLevel + zoomDelta, 0.1, 5.0);
             e.Handled = true;
         }
     }

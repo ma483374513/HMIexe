@@ -28,7 +28,7 @@ public class ModbusRtuDriver : IProtocolDriver
     {
         try
         {
-            var portName = parameters.GetValueOrDefault("PortName", "COM1")!;
+            var portName = parameters.GetValueOrDefault("PortName", "COM1");
             if (!int.TryParse(parameters.GetValueOrDefault("BaudRate", "9600"), out var baud))
                 baud = 9600;
             if (!int.TryParse(parameters.GetValueOrDefault("DataBits", "8"), out var dataBits))
@@ -168,12 +168,20 @@ public class ModbusRtuDriver : IProtocolDriver
         await Task.Delay(_readTimeoutMs, ct);
         var buf = new byte[256];
         var len = _port.Read(buf, 0, buf.Length);
+
+        // Minimum valid response: unitId(1) + fc(1) + byteCount(1) + data + crc(2) = at least 5
         if (len < 5) return null;
 
-        // Validate address and FC
+        // Validate unit ID and function code
         if (buf[0] != _unitId || buf[1] != fc) return null;
         var byteCount = buf[2];
-        if (len < 3 + byteCount) return null;
+        var expectedLen = 3 + byteCount + 2; // header + data + CRC
+        if (len < expectedLen) return null;
+
+        // Validate CRC over entire response (excluding the CRC bytes themselves)
+        var responseCrc = ComputeCrc(buf, 3 + byteCount);
+        if (buf[3 + byteCount] != responseCrc[0] || buf[3 + byteCount + 1] != responseCrc[1])
+            return null;
 
         var data = buf[3..(3 + byteCount)];
         return decode(data);

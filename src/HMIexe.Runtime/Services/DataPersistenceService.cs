@@ -86,6 +86,8 @@ public class DataPersistenceService : IDisposable
         string variableName, DateTime? from = null, DateTime? to = null, int limit = 1000)
     {
         await using var cmd = _connection.CreateCommand();
+        // WHERE clause is assembled from hardcoded string literals only;
+        // all user-supplied values use parameterized placeholders ($name, $from, $to, $limit).
         var where = "VariableName = $name";
         if (from.HasValue) where += " AND Timestamp >= $from";
         if (to.HasValue) where += " AND Timestamp <= $to";
@@ -101,6 +103,7 @@ public class DataPersistenceService : IDisposable
         {
             if (DateTime.TryParse(reader.GetString(0), out var ts))
                 result.Add((ts, reader.IsDBNull(1) ? null : reader.GetString(1)));
+            // Skip records with unparseable timestamps (data integrity issue in DB)
         }
         return result;
     }
@@ -148,6 +151,7 @@ public class DataPersistenceService : IDisposable
         string? level = null, string? category = null, int limit = 500)
     {
         await using var cmd = _connection.CreateCommand();
+        // Conditions list contains only hardcoded column = $param strings; values are parameterized.
         var conditions = new List<string>();
         if (level != null) conditions.Add("Level = $level");
         if (category != null) conditions.Add("Category = $cat");
@@ -163,6 +167,7 @@ public class DataPersistenceService : IDisposable
         {
             if (DateTime.TryParse(reader.GetString(0), out var ts))
                 result.Add((ts, reader.GetString(1), reader.GetString(2), reader.GetString(3)));
+            // Skip records with unparseable timestamps
         }
         return result;
     }
