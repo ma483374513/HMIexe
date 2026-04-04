@@ -1,3 +1,8 @@
+/// <summary>
+/// 属性面板视图模型文件。
+/// 通过统一的属性代理为不同类型的 HMI 控件提供属性编辑能力，
+/// 所有属性修改均通过撤销/重做系统记录，支持多步撤销。
+/// </summary>
 using System.Collections.ObjectModel;
 using CommunityToolkit.Mvvm.ComponentModel;
 using HMIexe.Core.Models.Canvas;
@@ -7,23 +12,40 @@ using HMIexe.Core.UndoRedo;
 
 namespace HMIexe.App.ViewModels;
 
+/// <summary>
+/// 属性面板视图模型。
+/// 作为设计器属性面板的数据源，将选中控件的各项属性通过代理属性暴露给视图绑定。
+/// 每次属性写入均封装为 <see cref="SetPropertyAction"/> 并提交到
+/// <see cref="UndoRedoHistory"/>，以支持撤销/重做。
+/// </summary>
 public partial class PropertyPanelViewModel : ObservableObject
 {
+    /// <summary>撤销/重做历史记录管理器，由设计器视图模型共享传入。</summary>
     private readonly UndoRedoHistory _undoRedo;
+
+    /// <summary>变量服务，用于获取可绑定变量名列表（可为 null，表示不支持变量绑定）。</summary>
     private readonly IVariableService? _variableService;
 
+    /// <summary>当前选中的控件；变更时触发所有代理属性的 PropertyChanged 通知。</summary>
     [ObservableProperty]
     private HmiControlBase? _selectedControl;
 
+    /// <summary>当前编辑的 HMI 页面，供属性面板扩展使用。</summary>
     [ObservableProperty]
     private HmiPage? _currentPage;
 
+    /// <summary>属性搜索关键字（预留，用于过滤属性列表）。</summary>
     [ObservableProperty]
     private string _searchText = string.Empty;
 
     /// <summary>All variable names available for binding (populated from IVariableService).</summary>
     public ObservableCollection<string> AvailableVariables { get; } = new() { string.Empty };
 
+    /// <summary>
+    /// 初始化属性面板视图模型。
+    /// </summary>
+    /// <param name="undoRedo">共享的撤销/重做历史记录管理器。</param>
+    /// <param name="variableService">变量服务，可选；提供时自动加载变量名列表。</param>
     public PropertyPanelViewModel(UndoRedoHistory undoRedo, IVariableService? variableService = null)
     {
         _undoRedo = undoRedo;
@@ -32,6 +54,10 @@ public partial class PropertyPanelViewModel : ObservableObject
             RefreshVariableList();
     }
 
+    /// <summary>
+    /// 刷新可绑定变量名列表。清空并重新从变量服务加载所有变量名。
+    /// 列表首项保留空字符串，表示不绑定任何变量。
+    /// </summary>
     public void RefreshVariableList()
     {
         AvailableVariables.Clear();
@@ -41,6 +67,11 @@ public partial class PropertyPanelViewModel : ObservableObject
             AvailableVariables.Add(v.Name);
     }
 
+    /// <summary>
+    /// 选中控件变更时的响应方法。
+    /// 若变量列表尚未加载则触发加载，并逐一通知所有代理属性刷新，
+    /// 确保视图中的属性值与新选中控件保持同步。
+    /// </summary>
     partial void OnSelectedControlChanged(HmiControlBase? value)
     {
         // Only refresh variable list if it might be stale (do not rebuild on every selection)
@@ -89,23 +120,34 @@ public partial class PropertyPanelViewModel : ObservableObject
         OnPropertyChanged(nameof(CornerRadius));
     }
 
+    /// <summary>是否有控件处于选中状态，用于控制属性面板的可用性。</summary>
     public bool HasSelectedControl => SelectedControl != null;
 
     /// <summary>True for controls that have an editable Text/Label property.</summary>
     public bool HasControlText => SelectedControl is ButtonControl
         or LabelControl or TextBoxControl;
 
-    // ── Type guards ──────────────────────────────────────────────────
+    // ── 控件类型判断属性 ──────────────────────────────────────────────────
+    /// <summary>是否为按钮控件，控制按钮专属属性区域的显示。</summary>
     public bool IsButtonControl => SelectedControl is ButtonControl;
+    /// <summary>是否为标签控件，控制标签专属属性区域的显示。</summary>
     public bool IsLabelControl => SelectedControl is LabelControl;
+    /// <summary>是否为仪表控件，控制仪表专属属性区域的显示。</summary>
     public bool IsGaugeControl => SelectedControl is GaugeControl;
+    /// <summary>是否为指示灯控件，控制指示灯专属属性区域的显示。</summary>
     public bool IsIndicatorLightControl => SelectedControl is IndicatorLightControl;
+    /// <summary>是否为开关控件，控制开关专属属性区域的显示。</summary>
     public bool IsSwitchControl => SelectedControl is SwitchControl;
+    /// <summary>是否为滑动条控件，控制滑动条专属属性区域的显示。</summary>
     public bool IsSliderControl => SelectedControl is SliderControl;
+    /// <summary>是否为形状控件（矩形、圆形、椭圆或直线），控制形状专属属性区域的显示。</summary>
     public bool IsShapeControl => SelectedControl is RectangleControl
         or CircleControl or EllipseControl or LineControl;
 
-    // ── Variable binding ─────────────────────────────────────────────
+    // ── 变量绑定属性 ─────────────────────────────────────────────
+    /// <summary>
+    /// 控件绑定的变量名称。读取或设置绑定变量时通过撤销/重做系统记录操作。
+    /// </summary>
     public string ControlValueVariable
     {
         get => SelectedControl?.ValueBindingVariable ?? string.Empty;
@@ -121,7 +163,12 @@ public partial class PropertyPanelViewModel : ObservableObject
         }
     }
 
-    // ── Text ─────────────────────────────────────────────────────────
+    // ── 文本属性 ─────────────────────────────────────────────────────────
+    /// <summary>
+    /// 控件的文本内容代理属性。
+    /// 对按钮返回/设置按钮文本，对标签返回/设置标签文本，
+    /// 对输入框返回/设置占位符文本。修改通过撤销/重做系统记录。
+    /// </summary>
     public string ControlText
     {
         get => SelectedControl switch
@@ -159,7 +206,11 @@ public partial class PropertyPanelViewModel : ObservableObject
         }
     }
 
-    // ── Colors ───────────────────────────────────────────────────────
+    // ── 颜色属性 ───────────────────────────────────────────────────────
+    /// <summary>
+    /// 控件背景颜色代理属性（仅对按钮控件有效）。
+    /// 颜色值为十六进制字符串，例如 "#FF0000"。修改通过撤销/重做系统记录。
+    /// </summary>
     public string ControlBackgroundColor
     {
         get => (SelectedControl as ButtonControl)?.BackgroundColor ?? string.Empty;
@@ -174,6 +225,7 @@ public partial class PropertyPanelViewModel : ObservableObject
         }
     }
 
+    /// <summary>控件前景色代理属性（按钮文字颜色或标签文字颜色）。修改通过撤销/重做系统记录。</summary>
     public string ControlForegroundColor
     {
         get => SelectedControl switch
@@ -204,6 +256,7 @@ public partial class PropertyPanelViewModel : ObservableObject
         }
     }
 
+    /// <summary>形状控件填充色代理属性（矩形、圆形、椭圆）。修改通过撤销/重做系统记录。</summary>
     public string ControlFillColor
     {
         get => SelectedControl switch
@@ -241,6 +294,7 @@ public partial class PropertyPanelViewModel : ObservableObject
         }
     }
 
+    /// <summary>形状控件描边颜色代理属性（矩形、圆形、椭圆、直线）。修改通过撤销/重做系统记录。</summary>
     public string ControlStrokeColor
     {
         get => SelectedControl switch
@@ -286,6 +340,7 @@ public partial class PropertyPanelViewModel : ObservableObject
         }
     }
 
+    /// <summary>形状控件描边宽度代理属性（最小值为 0）。修改通过撤销/重做系统记录。</summary>
     public double ControlStrokeThickness
     {
         get => SelectedControl switch
@@ -330,6 +385,7 @@ public partial class PropertyPanelViewModel : ObservableObject
         }
     }
 
+    /// <summary>矩形控件圆角半径代理属性（最小值为 0，0 表示直角）。修改通过撤销/重做系统记录。</summary>
     public double CornerRadius
     {
         get => (SelectedControl as RectangleControl)?.CornerRadius ?? 0;
@@ -344,7 +400,10 @@ public partial class PropertyPanelViewModel : ObservableObject
         }
     }
 
-    // ── Gauge ────────────────────────────────────────────────────────
+    // ── 仪表专属属性 ────────────────────────────────────────────────────
+    /// <summary>
+    /// 仪表控件当前显示值的代理属性。修改通过撤销/重做系统记录。
+    /// </summary>
     public double GaugeValue
     {
         get => (SelectedControl as GaugeControl)?.Value ?? 0;
@@ -359,6 +418,7 @@ public partial class PropertyPanelViewModel : ObservableObject
         }
     }
 
+    /// <summary>仪表控件量程最小值代理属性。修改通过撤销/重做系统记录。</summary>
     public double GaugeMinValue
     {
         get => (SelectedControl as GaugeControl)?.MinValue ?? 0;
@@ -373,6 +433,7 @@ public partial class PropertyPanelViewModel : ObservableObject
         }
     }
 
+    /// <summary>仪表控件量程最大值代理属性。修改通过撤销/重做系统记录。</summary>
     public double GaugeMaxValue
     {
         get => (SelectedControl as GaugeControl)?.MaxValue ?? 100;
@@ -387,6 +448,7 @@ public partial class PropertyPanelViewModel : ObservableObject
         }
     }
 
+    /// <summary>仪表控件单位文本代理属性（例如 "℃"、"RPM"）。修改通过撤销/重做系统记录。</summary>
     public string GaugeUnit
     {
         get => (SelectedControl as GaugeControl)?.Unit ?? string.Empty;
@@ -401,7 +463,10 @@ public partial class PropertyPanelViewModel : ObservableObject
         }
     }
 
-    // ── IndicatorLight ───────────────────────────────────────────────
+    // ── 指示灯专属属性 ───────────────────────────────────────────────────
+    /// <summary>
+    /// 指示灯当前亮灭状态的代理属性。修改通过撤销/重做系统记录。
+    /// </summary>
     public bool LightIsOn
     {
         get => (SelectedControl as IndicatorLightControl)?.IsOn ?? false;
@@ -416,6 +481,7 @@ public partial class PropertyPanelViewModel : ObservableObject
         }
     }
 
+    /// <summary>指示灯点亮时的颜色代理属性。修改通过撤销/重做系统记录。</summary>
     public string LightOnColor
     {
         get => (SelectedControl as IndicatorLightControl)?.OnColor ?? string.Empty;
@@ -430,6 +496,7 @@ public partial class PropertyPanelViewModel : ObservableObject
         }
     }
 
+    /// <summary>指示灯熄灭时的颜色代理属性。修改通过撤销/重做系统记录。</summary>
     public string LightOffColor
     {
         get => (SelectedControl as IndicatorLightControl)?.OffColor ?? string.Empty;
@@ -444,7 +511,10 @@ public partial class PropertyPanelViewModel : ObservableObject
         }
     }
 
-    // ── Switch ───────────────────────────────────────────────────────
+    // ── 开关专属属性 ───────────────────────────────────────────────────
+    /// <summary>
+    /// 开关控件当前通断状态的代理属性。修改通过撤销/重做系统记录。
+    /// </summary>
     public bool SwitchIsOn
     {
         get => (SelectedControl as SwitchControl)?.IsOn ?? false;
@@ -459,6 +529,7 @@ public partial class PropertyPanelViewModel : ObservableObject
         }
     }
 
+    /// <summary>开关控件接通状态的显示标签文本代理属性。修改通过撤销/重做系统记录。</summary>
     public string SwitchOnLabel
     {
         get => (SelectedControl as SwitchControl)?.OnLabel ?? string.Empty;
@@ -473,6 +544,7 @@ public partial class PropertyPanelViewModel : ObservableObject
         }
     }
 
+    /// <summary>开关控件断开状态的显示标签文本代理属性。修改通过撤销/重做系统记录。</summary>
     public string SwitchOffLabel
     {
         get => (SelectedControl as SwitchControl)?.OffLabel ?? string.Empty;
@@ -487,7 +559,10 @@ public partial class PropertyPanelViewModel : ObservableObject
         }
     }
 
-    // ── Slider ───────────────────────────────────────────────────────
+    // ── 滑动条专属属性 ───────────────────────────────────────────────────
+    /// <summary>
+    /// 滑动条当前值的代理属性。修改通过撤销/重做系统记录。
+    /// </summary>
     public double SliderValue
     {
         get => (SelectedControl as SliderControl)?.Value ?? 0;
@@ -502,6 +577,7 @@ public partial class PropertyPanelViewModel : ObservableObject
         }
     }
 
+    /// <summary>滑动条最小值代理属性。修改通过撤销/重做系统记录。</summary>
     public double SliderMinimum
     {
         get => (SelectedControl as SliderControl)?.Minimum ?? 0;
@@ -516,6 +592,7 @@ public partial class PropertyPanelViewModel : ObservableObject
         }
     }
 
+    /// <summary>滑动条最大值代理属性。修改通过撤销/重做系统记录。</summary>
     public double SliderMaximum
     {
         get => (SelectedControl as SliderControl)?.Maximum ?? 100;
@@ -530,7 +607,10 @@ public partial class PropertyPanelViewModel : ObservableObject
         }
     }
 
-    // ── Label ────────────────────────────────────────────────────────
+    // ── 标签专属属性 ────────────────────────────────────────────────────
+    /// <summary>
+    /// 标签控件字体大小的代理属性（最小值为 1）。修改通过撤销/重做系统记录。
+    /// </summary>
     public double LabelFontSize
     {
         get => (SelectedControl as LabelControl)?.FontSize ?? 14;
@@ -545,7 +625,10 @@ public partial class PropertyPanelViewModel : ObservableObject
         }
     }
 
-    // ── Common (unchanged) ───────────────────────────────────────────
+    // ── 通用控件属性 ───────────────────────────────────────────────────
+    /// <summary>
+    /// 控件名称代理属性。修改通过撤销/重做系统记录，操作描述包含新名称。
+    /// </summary>
     public string ControlName
     {
         get => SelectedControl?.Name ?? string.Empty;
@@ -561,6 +644,7 @@ public partial class PropertyPanelViewModel : ObservableObject
         }
     }
 
+    /// <summary>控件 X 轴坐标（画布左上角为原点，向右为正方向）。修改通过撤销/重做系统记录。</summary>
     public double ControlX
     {
         get => SelectedControl?.X ?? 0;
@@ -576,6 +660,7 @@ public partial class PropertyPanelViewModel : ObservableObject
         }
     }
 
+    /// <summary>控件 Y 轴坐标（画布左上角为原点，向下为正方向）。修改通过撤销/重做系统记录。</summary>
     public double ControlY
     {
         get => SelectedControl?.Y ?? 0;
@@ -591,6 +676,7 @@ public partial class PropertyPanelViewModel : ObservableObject
         }
     }
 
+    /// <summary>控件宽度（像素，最小值为 1）。修改通过撤销/重做系统记录。</summary>
     public double ControlWidth
     {
         get => SelectedControl?.Width ?? 0;
@@ -606,6 +692,7 @@ public partial class PropertyPanelViewModel : ObservableObject
         }
     }
 
+    /// <summary>控件高度（像素，最小值为 1）。修改通过撤销/重做系统记录。</summary>
     public double ControlHeight
     {
         get => SelectedControl?.Height ?? 0;
@@ -621,6 +708,7 @@ public partial class PropertyPanelViewModel : ObservableObject
         }
     }
 
+    /// <summary>控件是否可见（false 时控件在运行时隐藏）。修改通过撤销/重做系统记录。</summary>
     public bool ControlVisible
     {
         get => SelectedControl?.Visible ?? true;
@@ -636,6 +724,7 @@ public partial class PropertyPanelViewModel : ObservableObject
         }
     }
 
+    /// <summary>控件是否锁定（true 时不可通过画布拖拽移动或调整大小）。修改通过撤销/重做系统记录。</summary>
     public bool ControlLocked
     {
         get => SelectedControl?.Locked ?? false;
@@ -651,6 +740,7 @@ public partial class PropertyPanelViewModel : ObservableObject
         }
     }
 
+    /// <summary>控件透明度，范围 0.0（完全透明）～1.0（完全不透明）。修改通过撤销/重做系统记录。</summary>
     public double ControlOpacity
     {
         get => SelectedControl?.Opacity ?? 1.0;
@@ -666,6 +756,7 @@ public partial class PropertyPanelViewModel : ObservableObject
         }
     }
 
+    /// <summary>控件的 Z 轴层级索引，值越大显示在越上层。修改通过撤销/重做系统记录。</summary>
     public int ControlZIndex
     {
         get => SelectedControl?.ZIndex ?? 0;
