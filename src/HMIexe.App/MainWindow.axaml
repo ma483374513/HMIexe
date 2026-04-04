@@ -8,98 +8,98 @@
         Width="1600" Height="900"
         WindowStartupLocation="CenterScreen">
 
-    <DockPanel>
+ <DockPanel>
         <!-- Menu Bar -->
         <Menu DockPanel.Dock="Top">
-            <MenuItem Header="文件(_F)">
-                <MenuItem Header="新建工程" Command="{Binding NewProjectCommand}"/>
-                <MenuItem Header="打开工程" Command="{Binding OpenProjectCommand}"/>
+            <MenuItem Header="_File">
+                <MenuItem Header="New Project" Command="{Binding NewProjectCommand}"/>
+                <MenuItem Header="Open Project" Command="{Binding OpenProjectCommand}"/>
                 <Separator/>
-                <MenuItem Header="保存" Command="{Binding SaveProjectCommand}"/>
-                <MenuItem Header="另存为" Command="{Binding SaveProjectAsCommand}"/>
+                <MenuItem Header="Save" Command="{Binding SaveProjectCommand}"/>
+                <MenuItem Header="Save As..." Command="{Binding SaveProjectAsCommand}"/>
                 <Separator/>
-                <MenuItem Header="退出" Command="{Binding ExitApplicationCommand}"/>
+                <MenuItem Header="Exit" Command="{Binding ExitApplicationCommand}"/>
             </MenuItem>
-            <MenuItem Header="编辑(_E)">
-                <MenuItem Header="{Binding DesignerViewModel.UndoRedo.UndoDescription, FallbackValue='撤销'}"
+            <MenuItem Header="_Edit">
+                <MenuItem Header="{Binding DesignerViewModel.UndoRedo.UndoDescription, FallbackValue='Undo'}"
                           Command="{Binding UndoCommand}"
                           IsEnabled="{Binding DesignerViewModel.UndoRedo.CanUndo, FallbackValue=False}"/>
-                <MenuItem Header="{Binding DesignerViewModel.UndoRedo.RedoDescription, FallbackValue='重做'}"
+                <MenuItem Header="{Binding DesignerViewModel.UndoRedo.RedoDescription, FallbackValue='Redo'}"
                           Command="{Binding RedoCommand}"
                           IsEnabled="{Binding DesignerViewModel.UndoRedo.CanRedo, FallbackValue=False}"/>
                 <Separator/>
-                <MenuItem Header="删除选中控件"
+                <MenuItem Header="Delete Selected Control"
                           Command="{Binding DesignerViewModel.DeleteSelectedControlsCommand}"/>
-                <MenuItem Header="复制"
+                <MenuItem Header="Copy"
                           Command="{Binding DesignerViewModel.CopySelectedControlsCommand}"/>
-                <MenuItem Header="粘贴"
+                <MenuItem Header="Paste"
                           Command="{Binding DesignerViewModel.PasteControlsCommand}"/>
                 <Separator/>
-                <MenuItem Header="对齐">
-                    <MenuItem Header="左对齐" Command="{Binding DesignerViewModel.AlignLeftCommand}"/>
-                    <MenuItem Header="右对齐" Command="{Binding DesignerViewModel.AlignRightCommand}"/>
-                    <MenuItem Header="顶对齐" Command="{Binding DesignerViewModel.AlignTopCommand}"/>
-                    <MenuItem Header="底对齐" Command="{Binding DesignerViewModel.AlignBottomCommand}"/>
-                    <MenuItem Header="水平居中" Command="{Binding DesignerViewModel.AlignCenterVerticalCommand}"/>
-                    <MenuItem Header="垂直居中" Command="{Binding DesignerViewModel.AlignCenterHorizontalCommand}"/>
+                <MenuItem Header="Align">
+                    <MenuItem Header="Align Left" Command="{Binding DesignerViewModel.AlignLeftCommand}"/>
+                    <MenuItem Header="Align Right" Command="{Binding DesignerViewModel.AlignRightCommand}"/>
+                    <MenuItem Header="Align Top" Command="{Binding DesignerViewModel.AlignTopCommand}"/>
+                    <MenuItem Header="Align Bottom" Command="{Binding DesignerViewModel.AlignBottomCommand}"/>
+                    <MenuItem Header="Center Horizontally" Command="{Binding DesignerViewModel.AlignCenterVerticalCommand}"/>
+                    <MenuItem Header="Center Vertically" Command="{Binding DesignerViewModel.AlignCenterHorizontalCommand}"/>
                     <Separator/>
-                    <MenuItem Header="水平均匀分布" Command="{Binding DesignerViewModel.DistributeHorizontallyCommand}"/>
-                    <MenuItem Header="垂直均匀分布" Command="{Binding DesignerViewModel.DistributeVerticallyCommand}"/>
+                    <MenuItem Header="Distribute Horizontally" Command="{Binding DesignerViewModel.DistributeHorizontallyCommand}"/>
+                    <MenuItem Header="Distribute Vertically" Command="{Binding DesignerViewModel.DistributeVerticallyCommand}"/>
                 </MenuItem>
-                <MenuItem Header="层次顺序">
-                    <MenuItem Header="置于顶层" Command="{Binding DesignerViewModel.BringToFrontCommand}"/>
-                    <MenuItem Header="向上一层" Command="{Binding DesignerViewModel.BringForwardCommand}"/>
-                    <MenuItem Header="向下一层" Command="{Binding DesignerViewModel.SendBackwardCommand}"/>
-                    <MenuItem Header="置于底层" Command="{Binding DesignerViewModel.SendToBackCommand}"/>
+                <MenuItem Header="Layer Order">
+                    <MenuItem Header="Bring to Front" Command="{Binding DesignerViewModel.BringToFrontCommand}"/>
+                    <MenuItem Header="Bring Forward" Command="{Binding DesignerViewModel.BringForwardCommand}"/>
+                    <MenuItem Header="Send Backward" Command="{Binding DesignerViewModel.SendBackwardCommand}"/>
+                    <MenuItem Header="Send to Back" Command="{Binding DesignerViewModel.SendToBackCommand}"/>
                 </MenuItem>
             </MenuItem>
-            <MenuItem Header="视图(_V)">
-                <MenuItem Header="返回设计器" Command="{Binding ShowDesignerCommand}"/>
-                <MenuItem Header="运行预览" Command="{Binding ShowRuntimePreviewCommand}"/>
+            <MenuItem Header="_View">
+                <MenuItem Header="Return to Designer" Command="{Binding ShowDesignerCommand}"/>
+                <MenuItem Header="Run Preview" Command="{Binding ShowRuntimePreviewCommand}"/>
                 <Separator/>
-                <MenuItem Header="切换网格" Command="{Binding ToggleGridCommand}"/>
-                <MenuItem Header="切换主题(深色/浅色)" Command="{Binding ToggleThemeCommand}"/>
+                <MenuItem Header="Toggle Grid" Command="{Binding ToggleGridCommand}"/>
+                <MenuItem Header="Toggle Theme (Dark/Light)" Command="{Binding ToggleThemeCommand}"/>
             </MenuItem>
-            <MenuItem Header="工程(_P)">
-                <MenuItem Header="变量管理" Command="{Binding ShowVariableManagerCommand}"/>
-                <MenuItem Header="资源管理" Command="{Binding ShowResourceManagerCommand}"/>
-                <MenuItem Header="脚本管理" Command="{Binding ShowScriptEditorCommand}"/>
-                <MenuItem Header="通信配置" Command="{Binding ShowCommunicationManagerCommand}"/>
-                <MenuItem Header="报警管理" Command="{Binding ShowAlarmManagerCommand}"/>
+            <MenuItem Header="_Project">
+                <MenuItem Header="Variable Manager" Command="{Binding ShowVariableManagerCommand}"/>
+                <MenuItem Header="Resource Manager" Command="{Binding ShowResourceManagerCommand}"/>
+                <MenuItem Header="Script Editor" Command="{Binding ShowScriptEditorCommand}"/>
+                <MenuItem Header="Communication Configuration" Command="{Binding ShowCommunicationManagerCommand}"/>
+                <MenuItem Header="Alarm Manager" Command="{Binding ShowAlarmManagerCommand}"/>
                 <Separator/>
-                <MenuItem Header="发布工程…" Command="{Binding ShowPublishCommand}"/>
+                <MenuItem Header="Publish Project…" Command="{Binding ShowPublishCommand}"/>
             </MenuItem>
-            <MenuItem Header="工具(_T)">
-                <MenuItem Header="设置"/>
-                <MenuItem Header="插件管理"/>
+            <MenuItem Header="_Tools">
+                <MenuItem Header="Settings"/>
+                <MenuItem Header="Plugin Manager"/>
             </MenuItem>
-            <MenuItem Header="帮助(_H)">
-                <MenuItem Header="关于" Command="{Binding ShowAboutCommand}"/>
+            <MenuItem Header="_Help">
+                <MenuItem Header="About" Command="{Binding ShowAboutCommand}"/>
             </MenuItem>
         </Menu>
 
         <!-- Toolbar -->
         <StackPanel DockPanel.Dock="Top" Orientation="Horizontal" Spacing="4" Margin="4,2">
-            <Button Content="新建" Command="{Binding NewProjectCommand}" ToolTip.Tip="新建工程"/>
-            <Button Content="打开" Command="{Binding OpenProjectCommand}" ToolTip.Tip="打开工程"/>
-            <Button Content="保存" Command="{Binding SaveProjectCommand}" ToolTip.Tip="保存工程"/>
+            <Button Content="New" Command="{Binding NewProjectCommand}" ToolTip.Tip="New Project"/>
+            <Button Content="Open" Command="{Binding OpenProjectCommand}" ToolTip.Tip="Open Project"/>
+            <Button Content="Save" Command="{Binding SaveProjectCommand}" ToolTip.Tip="Save Project"/>
             <Separator Width="1" Background="#444" Margin="2,4"/>
-            <Button Content="↩ 撤销" Command="{Binding UndoCommand}"
+            <Button Content="↩ Undo" Command="{Binding UndoCommand}"
                     IsEnabled="{Binding DesignerViewModel.UndoRedo.CanUndo, FallbackValue=False}"
-                    ToolTip.Tip="{Binding DesignerViewModel.UndoRedo.UndoDescription, FallbackValue='撤销'}"/>
-            <Button Content="↪ 重做" Command="{Binding RedoCommand}"
+                    ToolTip.Tip="{Binding DesignerViewModel.UndoRedo.UndoDescription, FallbackValue='Undo'}"/>
+            <Button Content="↪ Redo" Command="{Binding RedoCommand}"
                     IsEnabled="{Binding DesignerViewModel.UndoRedo.CanRedo, FallbackValue=False}"
-                    ToolTip.Tip="{Binding DesignerViewModel.UndoRedo.RedoDescription, FallbackValue='重做'}"/>
+                    ToolTip.Tip="{Binding DesignerViewModel.UndoRedo.RedoDescription, FallbackValue='Redo'}"/>
             <Separator Width="1" Background="#444" Margin="2,4"/>
-            <Button Content="设计" Command="{Binding ShowDesignerCommand}" ToolTip.Tip="返回设计器"/>
-            <Button Content="▶ 预览" Command="{Binding ShowRuntimePreviewCommand}" ToolTip.Tip="运行预览"/>
-            <Button Content="变量" Command="{Binding ShowVariableManagerCommand}" ToolTip.Tip="变量管理"/>
-            <Button Content="脚本" Command="{Binding ShowScriptEditorCommand}" ToolTip.Tip="脚本编辑器"/>
-            <Button Content="报警" Command="{Binding ShowAlarmManagerCommand}" ToolTip.Tip="报警管理"/>
-            <Button Content="通信" Command="{Binding ShowCommunicationManagerCommand}" ToolTip.Tip="通信配置"/>
-            <Button Content="资源" Command="{Binding ShowResourceManagerCommand}" ToolTip.Tip="资源管理"/>
+            <Button Content="Design" Command="{Binding ShowDesignerCommand}" ToolTip.Tip="Return to Designer"/>
+            <Button Content="▶ Preview" Command="{Binding ShowRuntimePreviewCommand}" ToolTip.Tip="Run Preview"/>
+            <Button Content="Variables" Command="{Binding ShowVariableManagerCommand}" ToolTip.Tip="Variable Manager"/>
+            <Button Content="Script" Command="{Binding ShowScriptEditorCommand}" ToolTip.Tip="Script Editor"/>
+            <Button Content="Alarms" Command="{Binding ShowAlarmManagerCommand}" ToolTip.Tip="Alarm Manager"/>
+            <Button Content="Communication" Command="{Binding ShowCommunicationManagerCommand}" ToolTip.Tip="Communication Configuration"/>
+            <Button Content="Resources" Command="{Binding ShowResourceManagerCommand}" ToolTip.Tip="Resource Manager"/>
             <Separator Width="1" Background="#444" Margin="2,4"/>
-            <Button Content="📦 发布" Command="{Binding ShowPublishCommand}" ToolTip.Tip="工程发布（跨平台打包）"/>
+            <Button Content="📦 Publish" Command="{Binding ShowPublishCommand}" ToolTip.Tip="Project Publishing (Cross-platform Packaging)"/>
         </StackPanel>
 
         <!-- Status Bar -->
@@ -113,7 +113,7 @@
             <TextBlock Text="{Binding DesignerViewModel.CurrentPage.Height, StringFormat='{}{0}', FallbackValue='1080'}"
                        Foreground="#AAAAAA" VerticalAlignment="Center"/>
             <TextBlock Text="|" Foreground="#444" VerticalAlignment="Center"/>
-            <TextBlock Text="{Binding DesignerViewModel.ZoomLevel, StringFormat='缩放: {0:P0}', FallbackValue='缩放: 100%'}"
+            <TextBlock Text="{Binding DesignerViewModel.ZoomLevel, StringFormat='Zoom: {0:P0}', FallbackValue='Zoom: 100%'}"
                        Foreground="#AAAAAA" VerticalAlignment="Center"/>
         </StackPanel>
 
