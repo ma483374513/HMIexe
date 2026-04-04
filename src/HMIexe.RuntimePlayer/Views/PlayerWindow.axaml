@@ -1,0 +1,237 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="using:HMIexe.RuntimePlayer.ViewModels"
+        xmlns:core="using:HMIexe.Core.Models.Controls"
+        xmlns:canvas="using:HMIexe.Core.Models.Canvas"
+        x:Class="HMIexe.RuntimePlayer.Views.PlayerWindow"
+        x:DataType="vm:PlayerViewModel"
+        Title="{Binding Title}"
+        Width="1280" Height="800"
+        MinWidth="640" MinHeight="480"
+        Background="#0A0A0A"
+        WindowStartupLocation="CenterScreen">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <!-- ── 顶部工具栏：页面标签 + 缩放控件 ────────────────────── -->
+        <Border Grid.Row="0" Background="#1A3A1A"
+                BorderThickness="0,0,0,1" BorderBrush="#2D6A2D"
+                IsVisible="{Binding !IsLoading}">
+            <DockPanel Margin="8,4">
+                <!-- 缩放按钮（靠右） -->
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" Spacing="6">
+                    <Button Content="🔍+" Command="{Binding ZoomInCommand}" ToolTip.Tip="放大"/>
+                    <Button Content="🔍-" Command="{Binding ZoomOutCommand}" ToolTip.Tip="缩小"/>
+                    <Button Content="1:1" Command="{Binding ResetZoomCommand}" ToolTip.Tip="重置缩放"/>
+                </StackPanel>
+                <!-- 页面标签（水平滚动） -->
+                <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                              VerticalScrollBarVisibility="Disabled">
+                    <ItemsControl ItemsSource="{Binding Pages}" x:CompileBindings="False">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal" Spacing="2"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="canvas:HmiPage">
+                                <Button Content="{Binding Name}" Padding="10,4"
+                                        Foreground="LightGreen"
+                                        Command="{Binding $parent[Window].DataContext.SelectPageCommand}"
+                                        CommandParameter="{Binding}"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </DockPanel>
+        </Border>
+
+        <!-- ── 主体区域 ─────────────────────────────────────────────── -->
+        <Grid Grid.Row="1">
+
+            <!-- 加载中 / 错误提示 -->
+            <StackPanel IsVisible="{Binding IsLoading}"
+                        HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="12">
+                <TextBlock Text="⏳ 正在加载工程…"
+                           Foreground="LightGreen" FontSize="18" TextAlignment="Center"/>
+            </StackPanel>
+
+            <StackPanel IsVisible="{Binding ErrorMessage, Converter={x:Static StringConverters.IsNotNullOrEmpty}}"
+                        HorizontalAlignment="Center" VerticalAlignment="Center" Spacing="16"
+                        MaxWidth="600">
+                <TextBlock Text="⚠ 无法加载工程"
+                           Foreground="OrangeRed" FontSize="20" FontWeight="Bold"
+                           TextAlignment="Center"/>
+                <TextBlock Text="{Binding ErrorMessage}"
+                           Foreground="#CCCCCC" FontSize="13"
+                           TextAlignment="Center" TextWrapping="Wrap"/>
+            </StackPanel>
+
+            <!-- HMI 画布（工程加载成功后显示） -->
+            <ScrollViewer Background="#0A0A0A"
+                          HorizontalScrollBarVisibility="Auto"
+                          VerticalScrollBarVisibility="Auto"
+                          IsVisible="{Binding !IsLoading}">
+                <Border Margin="20">
+                    <Border Background="{Binding CurrentPage.BackgroundColor, FallbackValue=White}"
+                            Width="{Binding CurrentPage.Width, FallbackValue=1920}"
+                            Height="{Binding CurrentPage.Height, FallbackValue=1080}">
+                        <Border.RenderTransform>
+                            <ScaleTransform ScaleX="{Binding ZoomLevel}" ScaleY="{Binding ZoomLevel}"/>
+                        </Border.RenderTransform>
+                        <ItemsControl ItemsSource="{Binding CurrentPage.AllControls}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <Canvas/>
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemContainerTheme>
+                                <ControlTheme TargetType="ContentPresenter" x:CompileBindings="False">
+                                    <Setter Property="Canvas.Left" Value="{Binding X}"/>
+                                    <Setter Property="Canvas.Top" Value="{Binding Y}"/>
+                                    <Setter Property="Width" Value="{Binding Width}"/>
+                                    <Setter Property="Height" Value="{Binding Height}"/>
+                                    <Setter Property="Opacity" Value="{Binding Opacity}"/>
+                                    <Setter Property="IsVisible" Value="{Binding Visible}"/>
+                                </ControlTheme>
+                            </ItemsControl.ItemContainerTheme>
+                            <ItemsControl.DataTemplates>
+                                <!-- 按钮 -->
+                                <DataTemplate x:CompileBindings="False" DataType="core:ButtonControl">
+                                    <Button Content="{Binding Text}"
+                                            Background="{Binding BackgroundColor}"
+                                            Foreground="{Binding ForegroundColor}"
+                                            HorizontalAlignment="Stretch"
+                                            VerticalAlignment="Stretch"
+                                            HorizontalContentAlignment="Center"/>
+                                </DataTemplate>
+                                <!-- 标签 -->
+                                <DataTemplate x:CompileBindings="False" DataType="core:LabelControl">
+                                    <TextBlock Text="{Binding Text}"
+                                               Foreground="{Binding ForegroundColor}"
+                                               FontSize="{Binding FontSize}"
+                                               TextWrapping="Wrap"
+                                               HorizontalAlignment="Stretch"
+                                               VerticalAlignment="Stretch"/>
+                                </DataTemplate>
+                                <!-- 文本框 -->
+                                <DataTemplate x:CompileBindings="False" DataType="core:TextBoxControl">
+                                    <TextBox Text="{Binding Text}"
+                                             Watermark="{Binding Placeholder}"
+                                             HorizontalAlignment="Stretch"
+                                             VerticalAlignment="Stretch"/>
+                                </DataTemplate>
+                                <!-- 仪表 -->
+                                <DataTemplate x:CompileBindings="False" DataType="core:GaugeControl">
+                                    <Border BorderBrush="#555" BorderThickness="1" CornerRadius="4"
+                                            HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                        <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center" Spacing="4">
+                                            <TextBlock Text="{Binding Name}" TextAlignment="Center" FontWeight="Bold"/>
+                                            <ProgressBar Value="{Binding Value}"
+                                                         Minimum="{Binding MinValue}"
+                                                         Maximum="{Binding MaxValue}"
+                                                         Width="80" Height="16"/>
+                                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" Spacing="2">
+                                                <TextBlock Text="{Binding Value, StringFormat='{}{0:F1}'}"
+                                                           TextAlignment="Center" FontSize="12" FontWeight="Bold"/>
+                                                <TextBlock Text="{Binding Unit}" FontSize="10" VerticalAlignment="Bottom"/>
+                                            </StackPanel>
+                                        </StackPanel>
+                                    </Border>
+                                </DataTemplate>
+                                <!-- 指示灯 -->
+                                <DataTemplate x:CompileBindings="False" DataType="core:IndicatorLightControl">
+                                    <Ellipse HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                             Fill="{Binding CurrentColor}"
+                                             Stroke="{Binding BorderColor}"
+                                             StrokeThickness="{Binding BorderThickness}"
+                                             ToolTip.Tip="{Binding Name}"/>
+                                </DataTemplate>
+                                <!-- 开关 -->
+                                <DataTemplate x:CompileBindings="False" DataType="core:SwitchControl">
+                                    <ToggleButton IsChecked="{Binding IsOn}"
+                                                  HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                                        <TextBlock Text="{Binding IsOn, StringFormat='{}ON:{0}'}"
+                                                   HorizontalAlignment="Center"/>
+                                    </ToggleButton>
+                                </DataTemplate>
+                                <!-- 滑块 -->
+                                <DataTemplate x:CompileBindings="False" DataType="core:SliderControl">
+                                    <StackPanel VerticalAlignment="Center" Spacing="4">
+                                        <Slider Value="{Binding Value}"
+                                                Minimum="{Binding Minimum}"
+                                                Maximum="{Binding Maximum}"
+                                                TickFrequency="{Binding TickFrequency}"/>
+                                        <TextBlock IsVisible="{Binding ShowValue}"
+                                                   Text="{Binding Value, StringFormat='{}{0:F1}'}"
+                                                   TextAlignment="Center" FontSize="10"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                                <!-- 矩形 -->
+                                <DataTemplate x:CompileBindings="False" DataType="core:RectangleControl">
+                                    <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                            Background="{Binding FillColor}"
+                                            BorderBrush="{Binding StrokeColor}"
+                                            BorderThickness="{Binding StrokeThickness}"
+                                            CornerRadius="{Binding CornerRadius}"/>
+                                </DataTemplate>
+                                <!-- 圆形 -->
+                                <DataTemplate x:CompileBindings="False" DataType="core:CircleControl">
+                                    <Ellipse HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                             Fill="{Binding FillColor}"
+                                             Stroke="{Binding StrokeColor}"
+                                             StrokeThickness="{Binding StrokeThickness}"/>
+                                </DataTemplate>
+                                <!-- 椭圆 -->
+                                <DataTemplate x:CompileBindings="False" DataType="core:EllipseControl">
+                                    <Ellipse HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                             Fill="{Binding FillColor}"
+                                             Stroke="{Binding StrokeColor}"
+                                             StrokeThickness="{Binding StrokeThickness}"/>
+                                </DataTemplate>
+                                <!-- 线条 -->
+                                <DataTemplate x:CompileBindings="False" DataType="core:LineControl">
+                                    <Line StartPoint="0,0" EndPoint="100,0"
+                                          Stroke="{Binding StrokeColor}"
+                                          StrokeThickness="{Binding StrokeThickness}"
+                                          HorizontalAlignment="Stretch" VerticalAlignment="Center"/>
+                                </DataTemplate>
+                                <!-- 图片 -->
+                                <DataTemplate x:CompileBindings="False" DataType="core:ImageControl">
+                                    <Border HorizontalAlignment="Stretch" VerticalAlignment="Stretch"
+                                            BorderBrush="#555" BorderThickness="1">
+                                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center"
+                                                   HorizontalAlignment="Center" FontSize="10"
+                                                   Foreground="#888"/>
+                                    </Border>
+                                </DataTemplate>
+                                <!-- 通用后备模板 -->
+                                <DataTemplate x:CompileBindings="False" DataType="core:HmiControlBase">
+                                    <Border BorderBrush="#555" BorderThickness="1">
+                                        <TextBlock Text="{Binding Name}" VerticalAlignment="Center"
+                                                   HorizontalAlignment="Center" FontSize="11"/>
+                                    </Border>
+                                </DataTemplate>
+                            </ItemsControl.DataTemplates>
+                        </ItemsControl>
+                    </Border>
+                </Border>
+            </ScrollViewer>
+
+        </Grid>
+
+        <!-- ── 底部状态栏 ─────────────────────────────────────────────── -->
+        <Border Grid.Row="2" Background="#1A3A1A"
+                BorderThickness="0,1,0,0" BorderBrush="#2D6A2D">
+            <StackPanel Orientation="Horizontal" Spacing="12" Margin="8,2">
+                <TextBlock Text="▶ 运行中" Foreground="LightGreen" FontWeight="Bold"
+                           VerticalAlignment="Center" FontSize="11"/>
+                <TextBlock Text="{Binding ZoomLevel, StringFormat='缩放: {0:P0}'}"
+                           Foreground="#88FF88" VerticalAlignment="Center" FontSize="11"/>
+                <TextBlock Text="{Binding StatusText}"
+                           Foreground="#88FF88" VerticalAlignment="Center" FontSize="11"/>
+            </StackPanel>
+        </Border>
+
+    </Grid>
+</Window>
